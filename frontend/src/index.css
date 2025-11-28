@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-sand-50 text-gray-900;
+  }
+}
+
+@layer components {
+  /* Glass morphism effect */
+  .glass {
+    @apply backdrop-blur-md bg-white/70 border border-white/20 shadow-xl;
+  }
+
+  .glass-dark {
+    @apply backdrop-blur-md bg-gray-900/70 border border-gray-700/20 shadow-2xl;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-maroon-600 to-ochre-500 bg-clip-text text-transparent;
+  }
+
+  /* Medicine card states */
+  .medicine-card-healthy {
+    @apply bg-gradient-to-br from-emerald-50 to-emerald-100/50 border-emerald-200;
+  }
+
+  .medicine-card-warning {
+    @apply bg-gradient-to-br from-amber-50 to-amber-100/50 border-amber-300;
+  }
+
+  .medicine-card-critical {
+    @apply bg-gradient-to-br from-red-50 to-red-100/50 border-red-300;
+  }
+
+  /* Neumorphic buttons */
+  .btn-neu {
+    @apply bg-sand-50 shadow-[6px_6px_12px_#d4cfc9,-6px_-6px_12px_#ffffff] transition-all duration-200;
+  }
+
+  .btn-neu:hover {
+    @apply shadow-[3px_3px_6px_#d4cfc9,-3px_-3px_6px_#ffffff];
+  }
+
+  .btn-neu:active {
+    @apply shadow-[inset_3px_3px_6px_#d4cfc9,inset_-3px_-3px_6px_#ffffff];
+  }
+
+  /* Scanner overlay */
+  .scanner-line {
+    @apply absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-red-500 to-transparent;
+    animation: scan 2s ease-in-out infinite;
+  }
+
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-sand-100 rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-maroon-300 rounded-full hover:bg-maroon-400 transition-colors;
+  }
+
+  /* Loading spinner */
+  .spinner {
+    @apply w-12 h-12 border-4 border-sand-200 border-t-maroon-600 rounded-full;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+}
+
+/* Print styles for labels */
+@media print {
+  @page {
+    size: 2in 1in;
+    margin: 0;
+  }
+  
+  body {
+    margin: 0;
+  }
+  
+  .label-print {
+    width: 2in;
+    height: 1in;
+    page-break-after: always;
+  }
+}
+
+/* Subtle noise texture overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.02;
+  z-index: 1;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuOSIgbnVtT2N0YXZlcz0iNCIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNub2lzZSkiIG9wYWNpdHk9IjEiLz48L3N2Zz4=');
+}

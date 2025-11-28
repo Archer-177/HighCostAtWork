@@ -1,0 +1,19 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8A2A2B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D97B5A;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="128" cy="128" r="120" fill="url(#bgGradient)" />
+  
+  <!-- Medicine Cross -->
+  <rect x="88" y="48" width="80" height="160" rx="12" fill="white" opacity="0.95" />
+  <rect x="48" y="88" width="160" height="80" rx="12" fill="white" opacity="0.95" />
+  
+  <!-- Center Heart -->
+  <path d="M128 140 C 108 120, 88 120, 88 135 C 88 150, 108 170, 128 180 C 148 170, 168 150, 168 135 C 168 120, 148 120, 128 140 Z" 
+        fill="#8A2A2B" opacity="0.8" />
+</svg>

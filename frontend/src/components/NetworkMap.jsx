@@ -1,0 +1,173 @@
+// Import necessary React hooks and animation library
+import React, { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Building2, MapPin, Heart, AlertTriangle, CheckCircle, Truck } from 'lucide-react'
+
+/**
+ * NetworkMap Component
+ * Displays an interactive map of all locations in the pharmacy network
+ * 
+ * @param {Function} onSelectLocation - Callback when a location is clicked
+ * @param {string} fromLocationId - ID of the source location for transfers
+ * @param {string} toLocationId - ID of the destination location for transfers
+ * @param {Array} validTargetIds - Array of location IDs that are valid transfer targets
+ */
+export default function NetworkMap({ onSelectLocation, fromLocationId, toLocationId, validTargetIds }) {
+    // State for storing all location data from the API
+    const [locations, setLocations] = useState([])
+    // State for tracking stock health status at each location (healthy/warning/critical)
+    const [stockStatus, setStockStatus] = useState({})
+    // Loading state while fetching data
+    const [loading, setLoading] = useState(true)
+
+    // Fetch location and stock data when component mounts
+    useEffect(() => {
+        fetchData()
+    }, [])
+
+    /**
+     * Fetches location and stock status data from the API
+     * Uses Promise.all to fetch both endpoints in parallel for better performance
+     */
+    const fetchData = async () => {
+        try {
+            // Fetch locations and stock data simultaneously
+            const [locRes, stockRes] = await Promise.all([
+                fetch('/api/locations'),
+                fetch('/api/stock/all')
+            ])
+
+            const locData = await locRes.json()
+            const stockData = await stockRes.json()
+
+            // Only update state if both requests were successful
+            if (locRes.ok && stockRes.ok) {
+                setLocations(locData)
+                setStockStatus(stockData)
+            }
+        } catch (err) {
+            console.error("Failed to load map data")
+        } finally {
+            // Always stop loading, even if there was an error
+            setLoading(false)
+        }
+    }
+
+    // Filter locations to get only hub locations (Port Augusta and Whyalla)
+    const hubs = locations.filter(l => l.type === 'HUB')
+    // Helper function to get all child locations (wards/remotes) for a specific hub
+    const getChildren = (hubId) => locations.filter(l => l.parent_hub_id === hubId)
+
+    /**
+     * Node Component - Renders a single location node on the map
+     * 
+     * @param {Object} location - Location data object
+     * @param {boolean} isHub - Whether this node represents a hub location
+     */
+    const Node = ({ location, isHub = false }) => {
+        // Get stock status for this location (default to 'healthy' if not found)
+        const status = stockStatus[location.id] || 'healthy'
+        // Determine indicator color based on stock status
+        const color = status === 'critical' ? 'bg-red-500' : status === 'warning' ? 'bg-amber-500' : 'bg-emerald-500'
+
+        // Check if this location is the source of the current transfer
+        const isFrom = fromLocationId === location.id.toString()
+        // Check if this location is the destination of the current transfer
+        const isTo = toLocationId === location.id.toString()
+
+        // Determine if this node is a valid target for selection
+        // - If no source selected yet, all locations are valid (for selecting source)
+        // - If source is selected, only valid target locations are clickable
+        // - The source location itself is always valid (to allow deselection)
+        const isValid = !fromLocationId || (validTargetIds && validTargetIds.includes(location.id.toString())) || isFrom
+
+        // Apply visual ring highlighting for selected locations
+        let ringClass = ''
+        if (isFrom) ringClass = 'ring-4 ring-blue-500 ring-offset-2'  // Blue ring for source
+        else if (isTo) ringClass = 'ring-4 ring-maroon-500 ring-offset-2'  // Maroon ring for destination
+
+        return (
+            <motion.div
+                // Animate on hover/tap only if the node is valid for selection
+                whileHover={isValid ? { scale: 1.1 } : {}}
+                whileTap={isValid ? { scale: 0.95 } : {}}
+                onClick={() => isValid && onSelectLocation(location.id)}
+                className={`relative flex flex-col items-center p-4 rounded-xl transition-all duration-300
+                    ${(isFrom || isTo) ? 'bg-white shadow-xl z-10 ' + ringClass : 'bg-white/80 shadow-sm'}
+                    ${isValid ? 'cursor-pointer hover:bg-white' : 'opacity-40 grayscale cursor-not-allowed'}
+                `}
+            >
+                {/* Stock status indicator - pulsing dot in top-right corner */}
+                <div className={`w-3 h-3 rounded-full absolute top-2 right-2 ${color} animate-pulse`} />
+
+                {/* Choose icon based on location type: Building for Hub, Heart for Ward, MapPin for Remote */}
+                {isHub ? <Building2 className="w-8 h-8 text-maroon-700 mb-2" /> :
+                    location.type === 'WARD' ? <Heart className="w-6 h-6 text-pink-600 mb-2" /> :
+                        <MapPin className="w-6 h-6 text-blue-600 mb-2" />}
+
+                {/* Display shortened location name */}
+                <span className="text-xs font-bold text-center max-w-[100px] leading-tight">
+                    {location.name.replace('Hospital Pharmacy', '').replace('Hospital', '')}
+                </span>
+
+                {/* Show FROM/TO badges for selected locations */}
+                {isFrom && <span className="absolute -bottom-6 text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">FROM</span>}
+                {isTo && <span className="absolute -bottom-6 text-[10px] font-bold bg-maroon-100 text-maroon-800 px-2 py-0.5 rounded-full">TO</span>}
+            </motion.div>
+        )
+    }
+
+    // Show loading state while fetching data
+    if (loading) return <div className="h-64 flex items-center justify-center">Loading Network Map...</div>
+
+    // Main render - network map with hub-and-spoke layout
+    return (
+        <div className="bg-sand-50 p-8 rounded-3xl overflow-hidden relative min-h-[500px]">
+            {/* Decorative background pattern */}
+            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#8A2A2B_1px,transparent_1px)] [background-size:16px_16px]" />
+
+            {/* Main grid layout - one column per hub */}
+            <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12">
+                {hubs.map(hub => (
+                    <div key={hub.id} className="bg-white/50 backdrop-blur-sm rounded-3xl p-6 border border-white/20">
+                        {/* Render hub at the top */}
+                        <div className="flex justify-center mb-8">
+                            <Node location={hub} isHub={true} />
+                        </div>
+
+                        {/* Connection lines and child locations */}
+                        <div className="grid grid-cols-3 gap-4 relative">
+                            {/* Horizontal line connecting to all children */}
+                            <div className="absolute top-0 left-0 right-0 h-px bg-gray-300 -translate-y-4" />
+
+                            {/* Render all child locations (wards/remotes) for this hub */}
+                            {getChildren(hub.id).map(child => (
+                                <div key={child.id} className="flex flex-col items-center relative pt-4">
+                                    {/* Vertical line connecting child to horizontal line */}
+                                    <div className="absolute top-0 w-px h-4 bg-gray-300 -translate-y-4" />
+                                    <Node location={child} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Legend showing stock status color meanings */}
+            <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur px-4 py-2 rounded-full shadow-lg border border-gray-100 text-xs z-20 flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm" />
+                    <span className="font-medium text-gray-700">Healthy</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-amber-500 shadow-sm" />
+                    <span className="font-medium text-gray-700">Expiring</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-red-500 shadow-sm" />
+                    <span className="font-medium text-gray-700">Critical</span>
+                </div>
+            </div>
+        </div>
+    )
+}
