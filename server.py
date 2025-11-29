@@ -142,6 +142,8 @@ def init_db():
                 status TEXT NOT NULL DEFAULT 'AVAILABLE' 
                     CHECK(status IN ('AVAILABLE', 'USED_CLINICAL', 'DISCARDED', 'IN_TRANSIT')),
                 discard_reason TEXT,
+                patient_mrn TEXT,
+                clinical_notes TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 used_at TIMESTAMP,
                 used_by INTEGER,
@@ -151,6 +153,18 @@ def init_db():
                 FOREIGN KEY (used_by) REFERENCES users(id)
             )
         ''')
+        
+        # Add columns to existing vials table if they don't exist
+        try:
+            cursor.execute("ALTER TABLE vials ADD COLUMN patient_mrn TEXT")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
+        
+        try:
+            cursor.execute("ALTER TABLE vials ADD COLUMN clinical_notes TEXT")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
+
         
         # Stock transfers
         cursor.execute('''
@@ -229,46 +243,73 @@ def init_db():
         # --- POPULATE SAMPLE STOCK & LEVELS (If missing) ---
         cursor.execute("SELECT COUNT(*) FROM stock_levels")
         if cursor.fetchone()[0] == 0:
-            locations = cursor.execute("SELECT id, type FROM locations").fetchall()
-            drugs = cursor.execute("SELECT id FROM drugs").fetchall()
+            locations = cursor.execute("SELECT id, type, name FROM locations").fetchall()
+            drugs = cursor.execute("SELECT id, name FROM drugs").fetchall()
             
             import random
             
+            # Set min stock levels for all drugs at all locations
             for loc in locations:
                 for drug in drugs:
-                    # 1. Set Min Stock Levels
-                    # Hubs have higher min stock
                     min_stock = 10 if loc['type'] == 'HUB' else 2
                     cursor.execute("""
                         INSERT INTO stock_levels (location_id, drug_id, min_stock)
                         VALUES (?, ?, ?)
                     """, (loc['id'], drug['id'], min_stock))
+            
+            # Get specific drug IDs
+            tenecteplase_id = None
+            antivenom_ids = []
+            for drug in drugs:
+                if drug['name'] == 'Tenecteplase':
+                    tenecteplase_id = drug['id']
+                elif 'Antivenom' in drug['name']:
+                    antivenom_ids.append(drug['id'])
+            
+            # --- TENECTEPLASE: 20 vials across 3 batches ---
+            if tenecteplase_id:
+                tenecteplase_batches = [
+                    ('TNK-2024-A', 7, 135),   # Batch A: 7 vials, ~135 days (healthy)
+                    ('TNK-2024-B', 7, 60),    # Batch B: 7 vials, ~60 days (warning)
+                    ('TNK-2024-C', 6, 20)     # Batch C: 6 vials, ~20 days (critical)
+                ]
+                
+                vial_idx = 0
+                for batch_num, count, days_offset in tenecteplase_batches:
+                    expiry_date = (datetime.now() + timedelta(days=days_offset)).strftime('%Y-%m-%d')
                     
-                    # 2. Add Stock (Vials)
-                    # Random quantity between 0 and 15
-                    qty = random.randint(0, 15)
-                    
-                    for _ in range(qty):
-                        # Generate random expiry
-                        # 20% Critical (< 30 days)
-                        # 30% Warning (30-90 days)
-                        # 50% Healthy (> 90 days)
-                        rand_val = random.random()
-                        if rand_val < 0.2:
-                            days_offset = random.randint(1, 29)
-                        elif rand_val < 0.5:
-                            days_offset = random.randint(30, 90)
-                        else:
-                            days_offset = random.randint(91, 365)
-                            
-                        expiry_date = (datetime.now() + timedelta(days=days_offset)).strftime('%Y-%m-%d')
-                        batch_num = f"B{random.randint(1000, 9999)}"
-                        asset_id = f"AST-{str(uuid.uuid4())[:8].upper()}"
+                    for _ in range(count):
+                        # Distribute across locations
+                        loc = locations[vial_idx % len(locations)]
+                        asset_id = f"TNK-{str(uuid.uuid4())[:8].upper()}"
                         
                         cursor.execute("""
                             INSERT INTO vials (asset_id, drug_id, batch_number, expiry_date, location_id, status)
                             VALUES (?, ?, ?, ?, ?, 'AVAILABLE')
-                        """, (asset_id, drug['id'], batch_num, expiry_date, loc['id']))
+                        """, (asset_id, tenecteplase_id, batch_num, expiry_date, loc['id']))
+                        vial_idx += 1
+            
+            # --- ANTIVENOMS: 2 batches each, 5 vials per batch (10 per antivenom type) ---
+            for antivenom_id in antivenom_ids:
+                antivenom_batches = [
+                    ('AV-2024-X', 5, 75),     # Batch X: 5 vials, ~75 days (warning/healthy)
+                    ('AV-2024-Y', 5, 150)     # Batch Y: 5 vials, ~150 days (healthy)
+                ]
+                
+                vial_idx = 0
+                for batch_num, count, days_offset in antivenom_batches:
+                    expiry_date = (datetime.now() + timedelta(days=days_offset)).strftime('%Y-%m-%d')
+                    
+                    for _ in range(count):
+                        loc = locations[vial_idx % len(locations)]
+                        asset_id = f"AV-{str(uuid.uuid4())[:8].upper()}"
+                        
+                        cursor.execute("""
+                            INSERT INTO vials (asset_id, drug_id, batch_number, expiry_date, location_id, status)
+                            VALUES (?, ?, ?, ?, ?, 'AVAILABLE')
+                        """, (asset_id, antivenom_id, batch_num, expiry_date, loc['id']))
+                        vial_idx += 1
+
         
         conn.commit()
 
@@ -361,7 +402,7 @@ def receive_stock():
     return jsonify(result), status
 
 # 6. USE/DISCARD STOCK
-def use_stock_logic(vial_id, user_id, action, discard_reason=None, user_version=None):
+def use_stock_logic(vial_id, user_id, action, discard_reason=None, user_version=None, patient_mrn=None, clinical_notes=None):
     with get_db() as conn:
         cursor = conn.cursor()
         
@@ -382,9 +423,9 @@ def use_stock_logic(vial_id, user_id, action, discard_reason=None, user_version=
         cursor.execute("""
             UPDATE vials 
             SET status = ?, used_at = CURRENT_TIMESTAMP, used_by = ?, 
-                discard_reason = ?, version = version + 1
+                discard_reason = ?, patient_mrn = ?, clinical_notes = ?, version = version + 1
             WHERE id = ?
-        """, (new_status, user_id, discard_reason, vial_id))
+        """, (new_status, user_id, discard_reason, patient_mrn, clinical_notes, vial_id))
         
         # Check if stock is below minimum
         cursor.execute("""
@@ -427,14 +468,16 @@ def use_stock_logic(vial_id, user_id, action, discard_reason=None, user_version=
 @app.route('/api/use_stock', methods=['POST'])
 def use_stock():
     data = request.json
-    # Pass user_version to logic
+    # Pass user_version and clinical info to logic
     result, status = queue_write(
         use_stock_logic,
         data['vial_id'],
         data['user_id'],
         data['action'],
         data.get('discard_reason'),
-        data.get('version')
+        data.get('version'),
+        data.get('patient_mrn'),
+        data.get('clinical_notes')
     )
 
     # Send notification if needed
@@ -638,6 +681,51 @@ def handle_drugs():
         conn.commit()
         return jsonify({"success": True, "id": cursor.lastrowid})
 
+@app.route('/api/stock_levels', methods=['GET', 'PUT'])
+def handle_stock_levels():
+    if request.method == 'GET':
+        with get_db() as conn:
+            levels = conn.execute("""
+                SELECT * FROM stock_levels ORDER BY location_id, drug_id
+            """).fetchall()
+            return jsonify([dict(level) for level in levels])
+    
+    # PUT - Update multiple stock levels
+    data = request.json
+    updates = data.get('updates', [])
+    
+    def update_logic():
+        with get_db() as conn:
+            cursor = conn.cursor()
+            for update in updates:
+                location_id = update['location_id']
+                drug_id = update['drug_id']
+                min_stock = update['min_stock']
+                
+                # Check if entry exists
+                existing = cursor.execute("""
+                    SELECT id FROM stock_levels 
+                    WHERE location_id = ? AND drug_id = ?
+                """, (location_id, drug_id)).fetchone()
+                
+                if existing:
+                    cursor.execute("""
+                        UPDATE stock_levels 
+                        SET min_stock = ?
+                        WHERE location_id = ? AND drug_id = ?
+                    """, (min_stock, location_id, drug_id))
+                else:
+                    cursor.execute("""
+                        INSERT INTO stock_levels (location_id, drug_id, min_stock)
+                        VALUES (?, ?, ?)
+                    """, (location_id, drug_id, min_stock))
+            
+            conn.commit()
+            return {"success": True}, 200
+    
+    result, status = queue_write(update_logic)
+    return jsonify(result), status
+
 @app.route('/api/stock/<int:location_id>', methods=['GET'])
 def get_location_stock(location_id):
     with get_db() as conn:
@@ -662,28 +750,52 @@ def get_all_stock_status():
         
         for loc in locations:
             loc_id = loc['id']
+            status_data = {
+                'expiry': 'healthy',
+                'level': 'healthy'
+            }
+            
+            # --- 1. Expiry Status ---
             # Check for critical items (expired or expiring < 30 days)
-            critical = conn.execute("""
+            critical_expiry = conn.execute("""
                 SELECT COUNT(*) as count FROM vials 
                 WHERE location_id = ? AND status = 'AVAILABLE' 
                 AND (julianday(expiry_date) - julianday('now')) < 30
             """, (loc_id,)).fetchone()['count']
             
-            if critical > 0:
-                status_map[loc_id] = 'critical'
-                continue
+            if critical_expiry > 0:
+                status_data['expiry'] = 'critical'
+            else:
+                # Check for warning items (expiring < 90 days)
+                warning_expiry = conn.execute("""
+                    SELECT COUNT(*) as count FROM vials 
+                    WHERE location_id = ? AND status = 'AVAILABLE' 
+                    AND (julianday(expiry_date) - julianday('now')) < 90
+                """, (loc_id,)).fetchone()['count']
                 
-            # Check for warning items (expiring < 90 days)
-            warning = conn.execute("""
-                SELECT COUNT(*) as count FROM vials 
-                WHERE location_id = ? AND status = 'AVAILABLE' 
-                AND (julianday(expiry_date) - julianday('now')) < 90
+                if warning_expiry > 0:
+                    status_data['expiry'] = 'warning'
+            
+            # --- 2. Stock Level Status ---
+            # Check if ANY drug is below minimum stock
+            # We need to check each drug that has a min_stock defined for this location
+            low_stock_items = conn.execute("""
+                SELECT COUNT(*) as count
+                FROM stock_levels sl
+                LEFT JOIN (
+                    SELECT location_id, drug_id, COUNT(*) as current_stock
+                    FROM vials
+                    WHERE status = 'AVAILABLE'
+                    GROUP BY location_id, drug_id
+                ) v ON sl.location_id = v.location_id AND sl.drug_id = v.drug_id
+                WHERE sl.location_id = ? 
+                AND (COALESCE(v.current_stock, 0) < sl.min_stock)
             """, (loc_id,)).fetchone()['count']
             
-            if warning > 0:
-                status_map[loc_id] = 'warning'
-            else:
-                status_map[loc_id] = 'healthy'
+            if low_stock_items > 0:
+                status_data['level'] = 'critical' # Red if below min levels
+            
+            status_map[loc_id] = status_data
                 
         return jsonify(status_map)
 

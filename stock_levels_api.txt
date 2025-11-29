@@ -1,0 +1,42 @@
+# Stock Levels API Endpoints - Add to server.py after the drugs endpoint
+
+@app.route('/api/stock_levels', methods=['GET', 'PUT'])
+def handle_stock_levels():
+    if request.method == 'GET':
+        with get_db() as conn:
+            levels = conn.execute("""
+                SELECT * FROM stock_levels ORDER BY location_id, drug_id
+            """).fetchall()
+            return jsonify([dict(level) for level in levels])
+    
+    # PUT - Update multiple stock levels
+    data = request.json
+    updates = data.get('updates', [])
+    
+    with get_db() as conn:
+        cursor = conn.cursor()
+        for update in updates:
+            location_id = update['location_id']
+            drug_id = update['drug_id']
+            min_stock = update['min_stock']
+            
+            # Check if entry exists
+            existing = cursor.execute("""
+                SELECT id FROM stock_levels 
+                WHERE location_id = ? AND drug_id = ?
+            """, (location_id, drug_id)).fetchone()
+            
+            if existing:
+                cursor.execute("""
+                    UPDATE stock_levels 
+                    SET min_stock = ?
+                    WHERE location_id = ? AND drug_id = ?
+                """, (min_stock, location_id, drug_id))
+            else:
+                cursor.execute("""
+                    INSERT INTO stock_levels (location_id, drug_id, min_stock)
+                    VALUES (?, ?, ?)
+                """, (location_id, drug_id, min_stock))
+        
+        conn.commit()
+        return jsonify({"success": True})

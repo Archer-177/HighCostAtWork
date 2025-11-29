@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import {
   Heart, Pill, AlertTriangle, CheckCircle, Clock, TrendingDown,
   Package, Building2, MapPin, Search, Filter, Scan, AlertCircle,
-  LayoutGrid, List
+  LayoutGrid, List, XCircle
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { useAuth } from '../contexts/AuthContext'
@@ -21,10 +21,20 @@ export default function Dashboard() {
   const [filterStatus, setFilterStatus] = useState('all')
   const [showScanner, setShowScanner] = useState(false)
   const [viewMode, setViewMode] = useState('grid')
+  const [groupingMode, setGroupingMode] = useState('grouped')
+  const [collapsedGroups, setCollapsedGroups] = useState(new Set())
 
   useEffect(() => {
     fetchDashboardData()
   }, [user])
+
+  // Set all groups as collapsed by default in list view when dashboardData is loaded
+  useEffect(() => {
+    if (dashboardData?.stock && groupingMode === 'grouped' && viewMode === 'list') {
+      const categories = [...new Set(dashboardData.stock.map(item => item.category))]
+      setCollapsedGroups(new Set(categories))
+    }
+  }, [dashboardData, groupingMode, viewMode])
 
   const fetchDashboardData = async () => {
     try {
@@ -47,7 +57,8 @@ export default function Dashboard() {
     const matchesSearch =
       item.drug_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.asset_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.batch_number.toLowerCase().includes(searchTerm.toLowerCase())
+      item.batch_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.category.toLowerCase().includes(searchTerm.toLowerCase())
 
     const matchesLocation = filterLocation === 'all' || item.location_name === filterLocation
     const matchesStatus = filterStatus === 'all' || item.status_color === filterStatus
@@ -55,7 +66,55 @@ export default function Dashboard() {
     return matchesSearch && matchesLocation && matchesStatus
   }) || []
 
+  // Group medications by category, then by batch+location within each category
+  const groupedStock = {}
+  const batchGroups = {} // Track batch groups for quantity display
+
+  filteredStock.forEach(item => {
+    if (!groupedStock[item.category]) {
+      groupedStock[item.category] = []
+      batchGroups[item.category] = {}
+    }
+
+    // Create unique key for batch+location combination
+    const batchLocationKey = `${item.batch_number}-${item.location_id}`
+
+    if (!batchGroups[item.category][batchLocationKey]) {
+      // First item of this batch+location combination
+      batchGroups[item.category][batchLocationKey] = {
+        ...item,
+        vialIds: [item.id],  // Track all vial IDs in this group
+        quantity: 1
+      }
+      groupedStock[item.category].push(batchGroups[item.category][batchLocationKey])
+    } else {
+      // Add to existing batch+location group
+      batchGroups[item.category][batchLocationKey].vialIds.push(item.id)
+      batchGroups[item.category][batchLocationKey].quantity += 1
+    }
+  })
+
+  const toggleGroup = (category) => {
+    setCollapsedGroups(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(category)) {
+        newSet.delete(category)
+      } else {
+        newSet.add(category)
+      }
+      return newSet
+    })
+  }
+
   const locations = [...new Set(dashboardData?.stock?.map(item => item.location_name) || [])]
+
+  // Calculate filtered expiring count based on filterLocation
+  const filteredExpiringCount = dashboardData?.stock?.filter(item => {
+    const matchesLocation = filterLocation === 'all' || item.location_name === filterLocation
+    return matchesLocation && item.days_until_expiry <= 30
+  }).length || 0
+
+  const locationText = filterLocation === 'all' ? 'all sites' : filterLocation
 
   const statsCards = [
     {
@@ -148,18 +207,25 @@ export default function Dashboard() {
       >
         <div className="flex flex-wrap gap-4">
           {/* Search */}
-          <div className="flex-1 min-w-[300px]">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search by drug name, asset ID, or batch..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl
-                         focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
-              />
-            </div>
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by drug, asset ID, batch, or category..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-lg focus:outline-none 
+                       focus:ring-2 focus:ring-maroon-500 focus:border-transparent"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                title="Clear search"
+              >
+                <XCircle className="w-4 h-4 text-gray-400" />
+              </button>
+            )}
           </div>
 
           {/* Location Filter */}
@@ -192,15 +258,37 @@ export default function Dashboard() {
           <div className="flex bg-gray-100 p-1 rounded-lg">
             <button
               onClick={() => setViewMode('grid')}
+              title="Card View"
               className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white shadow-sm text-maroon-600' : 'text-gray-500 hover:text-gray-700'}`}
             >
               <LayoutGrid className="w-5 h-5" />
             </button>
             <button
               onClick={() => setViewMode('list')}
+              title="List View"
               className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-maroon-600' : 'text-gray-500 hover:text-gray-700'}`}
             >
               <List className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Grouping Toggle */}
+          <div className="flex bg-gray-100 p-1 rounded-lg">
+            <button
+              onClick={() => setGroupingMode('grouped')}
+              title="Group by Category"
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all
+                       ${groupingMode === 'grouped' ? 'bg-white shadow-sm text-maroon-600' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              Grouped
+            </button>
+            <button
+              onClick={() => setGroupingMode('ungrouped')}
+              title="Show All Items"
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all
+                       ${groupingMode === 'ungrouped' ? 'bg-white shadow-sm text-maroon-600' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              Show All
             </button>
           </div>
 
@@ -224,10 +312,7 @@ export default function Dashboard() {
             className="mt-4"
           >
             <QRScanner
-              onScan={(assetId) => {
-                setSearchTerm(assetId)
-                setShowScanner(false)
-              }}
+              onScan={handleScan}
               onClose={() => setShowScanner(false)}
             />
           </motion.div>
@@ -240,61 +325,249 @@ export default function Dashboard() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-12 bg-white rounded-2xl"
-          >
+            className="text-center py-12 bg-white rounded-2xl">
             <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-500">No stock items found matching your filters</p>
           </motion.div>
+        ) : groupingMode === 'grouped' && viewMode === 'grid' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Object.entries(groupedStock).sort(([a], [b]) => a.localeCompare(b)).map(([category, items]) => {
+              const criticalCount = items.filter(item => item.status_color === 'red').length
+              const warningCount = items.filter(item => item.status_color === 'amber').length
+              const healthyCount = items.filter(item => item.status_color === 'green').length
+              const totalQuantity = items.reduce((sum, item) => sum + (item.quantity || 1), 0)
+
+              return (
+                <motion.button
+                  key={category}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  whileHover={{ scale: 1.02 }}
+                  onClick={() => {
+                    // Filter to show this category
+                    setGroupingMode('ungrouped')
+                    setSearchTerm(category)
+                  }}
+                  className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md 
+                           transition-all text-left group cursor-pointer"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900 group-hover:text-maroon-600 transition-colors">
+                        {category}
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {totalQuantity} {totalQuantity === 1 ? 'vial' : 'vials'} • {items.length} {items.length === 1 ? 'batch group' : 'batch groups'}
+                      </p>
+                    </div>
+                    <div className="flex-shrink-0">
+                      <svg className="w-6 h-6 text-gray-400 group-hover:text-maroon-600 transition-colors"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {healthyCount > 0 && (
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 rounded-full">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+                        <span className="text-sm font-semibold text-emerald-700">{healthyCount}</span>
+                        <span className="text-xs text-emerald-600">Healthy</span>
+                      </div>
+                    )}
+                    {warningCount > 0 && (
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 rounded-full">
+                        <div className="w-2 h-2 bg-amber-500 rounded-full" />
+                        <span className="text-sm font-semibold text-amber-700">{warningCount}</span>
+                        <span className="text-xs text-amber-600">Warning</span>
+                      </div>
+                    )}
+                    {criticalCount > 0 && (
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 rounded-full">
+                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                        <span className="text-sm font-semibold text-red-700">{criticalCount}</span>
+                        <span className="text-xs text-red-600">Critical</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <p className="text-xs text-gray-500">
+                      Click to view all {category} items
+                    </p>
+                  </div>
+                </motion.button>
+              )
+            })}
+          </div>
         ) : viewMode === 'grid' ? (
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
+          <motion.div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
             {filteredStock.map((item, index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(index * 0.05, 0.5) }}
-              >
-                <StockCard
-                  item={item}
-                  onRefresh={fetchDashboardData}
-                />
+              <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(index * 0.05, 0.5) }}>
+                <StockCard item={item} onRefresh={fetchDashboardData} />
               </motion.div>
             ))}
           </motion.div>
+        ) : groupingMode === 'grouped' ? (
+          // Grouped List View
+          <div className="space-y-4">
+            {Object.entries(groupedStock).sort(([a], [b]) => a.localeCompare(b)).map(([category, items]) => {
+              const isCollapsed = collapsedGroups.has(category)
+              const criticalCount = items.filter(item => item.status_color === 'red').length
+              const warningCount = items.filter(item => item.status_color === 'amber').length
+              const healthyCount = items.filter(item => item.status_color === 'green').length
+              const totalVials = items.reduce((sum, item) => sum + (item.quantity || 1), 0)
+              const batchGroupsCount = new Set(items.map(item => `${item.batch_number}-${item.location_id}`)).size
+
+              return (
+                <div key={category} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                  <button
+                    onClick={() => toggleGroup(category)}
+                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`transform transition-transform ${isCollapsed ? '' : 'rotate-90'}`}>
+                        <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                      <div className="text-left">
+                        <h3 className="text-lg font-bold text-gray-900">{category}</h3>
+                        <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
+                          <span>{totalVials} {totalVials === 1 ? 'vial' : 'vials'}</span>
+                          <span className="text-gray-300">•</span>
+                          <span>{batchGroupsCount} {batchGroupsCount === 1 ? 'batch group' : 'batch groups'}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {criticalCount > 0 && (
+                        <span className="px-3 py-1 bg-red-100 text-red-700 text-sm font-bold rounded-full flex items-center gap-1.5">
+                          {criticalCount > 1 && <span className="text-xs opacity-75">{criticalCount}</span>}
+                          <span>Critical</span>
+                        </span>
+                      )}
+                      {warningCount > 0 && (
+                        <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm font-bold rounded-full flex items-center gap-1.5">
+                          {warningCount > 1 && <span className="text-xs opacity-75">{warningCount}</span>}
+                          <span>Warning</span>
+                        </span>
+                      )}
+                      {healthyCount > 0 && (
+                        <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-sm font-bold rounded-full flex items-center gap-1.5">
+                          {healthyCount > 1 && <span className="text-xs opacity-75">{healthyCount}</span>}
+                          <span>Healthy</span>
+                        </span>
+                      )}
+                    </div>
+                  </button>
+
+                  {!isCollapsed && (
+                    <div className="border-t border-gray-200">
+                      <table className="w-full text-left">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm">Drug Name</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm">Asset ID</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm">Batch</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm">Location</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm">Storage</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm">Expiry</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm">Status</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {items.map((item, index) => (
+                            <tr key={item.id} className={`hover:bg-blue-50 transition-colors
+                              ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
+                              <td className="px-6 py-3">
+                                <div className="font-semibold text-gray-900">{item.drug_name}</div>
+                                {item.quantity && item.quantity > 1 && (
+                                  <span className="text-xs text-blue-600 font-bold">×{item.quantity}</span>
+                                )}
+                              </td>
+                              <td className="px-6 py-3 font-mono text-xs text-gray-600">{item.asset_id}</td>
+                              <td className="px-6 py-3 font-mono text-sm text-gray-700">{item.batch_number}</td>
+                              <td className="px-6 py-3 text-sm text-gray-700">{item.location_name}</td>
+                              <td className="px-6 py-3">
+                                <div className="flex items-center gap-1.5 text-sm">
+                                  {item.storage_temp?.includes('2-8') ? (
+                                    <>
+                                      <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 8h6m-5 0a3 3 0 110 6H9l3 3m-3-6h6m6 1a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      </svg>
+                                      <span className="text-xs text-blue-700">2-8°C</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <svg className="w-4 h-4 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                      </svg>
+                                      <span className="text-xs text-orange-700">&lt;25°C</span>
+                                    </>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="px-6 py-3">
+                                <div className="text-sm font-semibold text-gray-900">{format(new Date(item.expiry_date), 'dd MMM yyyy')}</div>
+                                <div className="text-xs text-gray-500">{Math.floor(item.days_until_expiry)} days remaining</div>
+                              </td>
+                              <td className="px-6 py-3">
+                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold
+                                  ${item.status_color === 'green' ? 'bg-emerald-100 text-emerald-800' :
+                                    item.status_color === 'amber' ? 'bg-amber-100 text-amber-800' :
+                                      'bg-red-100 text-red-800'}`}>
+                                  {item.status_color === 'green' ? 'Healthy' : item.status_color === 'amber' ? 'Warning' : 'Critical'}
+                                </span>
+                              </td>
+                              <td className="px-6 py-3 text-right">
+                                <StockCard item={item} onRefresh={fetchDashboardData} compact={true} />
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
         ) : (
+          // Ungrouped List View
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <table className="w-full text-left">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
                 <tr>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Drug Name</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Asset ID</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Location</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Expiry</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700 text-right">Actions</th>
+                  <th className="px-6 py-4 font-bold text-gray-800 text-sm">Drug Name</th>
+                  <th className="px-6 py-4 font-bold text-gray-800 text-sm">Asset ID</th>
+                  <th className="px-6 py-4 font-bold text-gray-800 text-sm">Location</th>
+                  <th className="px-6 py-4 font-bold text-gray-800 text-sm">Expiry</th>
+                  <th className="px-6 py-4 font-bold text-gray-800 text-sm">Status</th>
+                  <th className="px-6 py-4 font-bold text-gray-800 text-sm text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {filteredStock.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                {filteredStock.map((item, index) => (
+                  <tr key={item.id} className={`hover:bg-blue-50 transition-colors cursor-pointer
+                    ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
                     <td className="px-6 py-4">
-                      <div className="font-medium text-gray-900">{item.drug_name}</div>
+                      <div className="font-semibold text-gray-900">{item.drug_name}</div>
                       <div className="text-sm text-gray-500">{item.category}</div>
                     </td>
-                    <td className="px-6 py-4 font-mono text-sm text-gray-600">{item.asset_id}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{item.location_name}</td>
+                    <td className="px-6 py-4 font-mono text-sm text-gray-700 font-medium">{item.asset_id}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{item.location_name}</td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{format(new Date(item.expiry_date), 'dd MMM yyyy')}</div>
-                      <div className="text-xs text-gray-500">{Math.floor(item.days_until_expiry)} days left</div>
+                      <div className="text-sm font-semibold text-gray-900">{format(new Date(item.expiry_date), 'dd MMM yyyy')}</div>
+                      <div className="text-xs text-gray-500">{Math.floor(item.days_until_expiry)} days remaining</div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                        ${item.status_color === 'green' ? 'bg-emerald-100 text-emerald-800' :
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold
+                        ${item.status_color === 'green' ? 'bg-emerald-100 text-emerald-800' :
                           item.status_color === 'amber' ? 'bg-amber-100 text-amber-800' :
                             'bg-red-100 text-red-800'}`}>
                         {item.status_color === 'green' ? 'Healthy' : item.status_color === 'amber' ? 'Warning' : 'Critical'}
@@ -311,22 +584,42 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Low Stock Alert */}
-      {dashboardData?.stats?.expiring_soon > 5 && (
+      {/* Elegant Notification Banner */}
+      {dashboardData?.stats?.expiring_soon > 0 && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="fixed bottom-6 right-6 bg-red-900 text-white p-4 rounded-lg shadow-2xl 
-                   max-w-sm animate-alert-pulse"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 bg-gradient-to-r from-red-50 via-amber-50 to-red-50 border-l-4 border-red-500 
+                     rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
         >
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="w-6 h-6 flex-shrink-0" />
-            <div>
-              <p className="font-semibold">Critical Stock Alert</p>
-              <p className="text-sm mt-1 opacity-90">
-                {dashboardData.stats.expiring_soon} items expiring within 30 days.
-                Consider stock rotation immediately.
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h4 className="font-bold text-gray-900">Stock Expiry Notice</h4>
+                <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded-full">
+                  {filteredExpiringCount}
+                </span>
+              </div>
+              <p className="text-sm text-gray-700">
+                {filteredExpiringCount === 1
+                  ? `One item is expiring within 30 days at ${locationText}`
+                  : `${filteredExpiringCount} items are expiring within 30 days at ${locationText}`
+                }. Review and consider stock rotation or transfer to optimise usage.
               </p>
+            </div>
+            <div className="flex-shrink-0">
+              <button
+                onClick={() => { setFilterStatus('red'); setSearchTerm(''); }}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium 
+                           rounded-lg transition-colors shadow-sm"
+              >
+                View Items
+              </button>
             </div>
           </div>
         </motion.div>

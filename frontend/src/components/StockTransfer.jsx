@@ -204,267 +204,350 @@ export default function StockTransfer() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+            className="space-y-6"
           >
-            {/* Location Selection */}
-            <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-xl font-bold mb-6">Transfer Details</h3>
-
-              {/* Network Map Integration */}
-              <div className="mb-6">
-                <p className="text-xs font-semibold text-gray-500 mb-2">SELECT SOURCE AND DESTINATION FROM MAP</p>
-                <div className="w-full">
-                  <NetworkMap
-                    onSelectLocation={(id) => {
-                      const locId = id.toString()
-
-                      // Smart Selection Logic
-                      if (!fromLocation || (fromLocation && toLocation)) {
-                        // First click or reset: Select Source
-                        // Allow deselection if clicking the same location
-                        if (fromLocation === locId) {
-                          setFromLocation('')
-                          setToLocation('')
-                          setSelectedItems([])
-                        } else {
-                          setFromLocation(locId)
-                          setToLocation('')
-                          setSelectedItems([])
-                        }
-                      } else if (fromLocation && !toLocation) {
-                        // Second click: Select Destination
-                        if (locId === fromLocation) {
-                          // Deselect if clicking source again
-                          setFromLocation('')
-                          return
-                        }
-
-                        // Validation is now visual (disabled nodes), so we just set it
-                        // Double check validity just in case
-                        const source = locations.find(l => l.id.toString() === fromLocation)
-                        const target = locations.find(l => l.id.toString() === locId)
-
-                        if (source && target) {
-                          setToLocation(locId)
-                        }
-                      }
-                    }}
-                    fromLocationId={fromLocation}
-                    toLocationId={toLocation}
-                    validTargetIds={(() => {
-                      if (!fromLocation) return locations.map(l => l.id.toString())
-                      const source = locations.find(l => l.id.toString() === fromLocation)
-                      if (!source) return []
-
-                      return locations.filter(target => {
-                        if (target.id.toString() === fromLocation) return false
-
-                        // Rule 1: Ward -> Same Hospital Ward OR Parent Hub
-                        if (source.type === 'WARD') {
-                          return (target.type === 'WARD' && target.parent_hub_id === source.parent_hub_id) ||
-                            (target.id === source.parent_hub_id)
-                        }
-                        // Rule 2: Remote -> Other Remote OR Parent Hub
-                        if (source.type === 'REMOTE') {
-                          return target.type === 'REMOTE' || target.id === source.parent_hub_id
-                        }
-                        // Rule 3: Hub -> Children OR Other Hubs
-                        if (source.type === 'HUB') {
-                          return target.parent_hub_id === source.id || target.type === 'HUB'
-                        }
-                        return false
-                      }).map(l => l.id.toString())
-                    })()}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {/* From Location */}
+            {/* Interactive Network Map - Full Width, Primary Interaction */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    From Location
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={fromLocation}
-                      onChange={(e) => setFromLocation(e.target.value)}
-                      className="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl
-                                 focus:outline-none focus:border-maroon-500 focus:bg-white transition-all appearance-none"
-                    >
-                      <option value="">Select source...</option>
-                      {locations
-                        .filter(loc => loc.type === 'HUB' || (user.location_id === loc.id))
-                        .map(loc => {
-                          const Icon = locationIcon[loc.type]
-                          return (
-                            <option key={loc.id} value={loc.id}>
-                              {loc.name}
-                            </option>
-                          )
-                        })}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
-                      <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" fillRule="evenodd"></path>
-                      </svg>
-                    </div>
-                  </div>
+                  <h3 className="text-xl font-bold">Select Locations</h3>
+                  <p className="text-sm text-gray-600 mt-1">Click locations on the map to select source and destination</p>
                 </div>
 
-                {/* Inline Message / Spacer */}
-                <div className="py-1 min-h-[24px]">
-                  {fromLocation && toLocation &&
-                    locations.find(l => l.id.toString() === fromLocation)?.type === 'HUB' &&
-                    locations.find(l => l.id.toString() === toLocation)?.type === 'HUB' && (
-                      <div className="flex items-center justify-center gap-2 text-amber-600 text-sm font-medium animate-fade-in">
-                        <AlertTriangle className="w-4 h-4" />
-                        <span>Transfer between hubs requires approval</span>
-                      </div>
+                {/* Selection Status Indicator */}
+                {fromLocation && (
+                  <div className="flex items-center gap-3 text-sm">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg">
+                      <div className="w-2 h-2 rounded-full bg-blue-500" />
+                      <span className="font-medium text-blue-900">
+                        {locations.find(l => l.id.toString() === fromLocation)?.name || 'Source selected'}
+                      </span>
+                    </div>
+                    {toLocation && (
+                      <>
+                        <ArrowRight className="w-4 h-4 text-gray-400" />
+                        <div className="flex items-center gap-2 px-3 py-2 bg-maroon-50 rounded-lg">
+                          <div className="w-2 h-2 rounded-full bg-maroon-600" />
+                          <span className="font-medium text-maroon-900">
+                            {locations.find(l => l.id.toString() === toLocation)?.name || 'Destination selected'}
+                          </span>
+                        </div>
+                      </>
                     )}
-                </div>
-
-                {/* To Location */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    To Location
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={toLocation}
-                      onChange={(e) => setToLocation(e.target.value)}
-                      className="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl
-                                 focus:outline-none focus:border-maroon-500 focus:bg-white transition-all appearance-none"
-                    >
-                      <option value="">Select destination...</option>
-                      {locations
-                        .filter(loc => loc.id !== parseInt(fromLocation))
-                        .map(loc => {
-                          const Icon = locationIcon[loc.type]
-                          return (
-                            <option key={loc.id} value={loc.id}>
-                              {loc.name}
-                            </option>
-                          )
-                        })}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
-                      <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" fillRule="evenodd"></path>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Selected Items Summary */}
-                {selectedItems.length > 0 && (
-                  <div className="mt-6 p-4 bg-blue-50 rounded-xl">
-                    <p className="text-sm font-semibold text-blue-900 mb-2">
-                      Selected Items
-                    </p>
-                    <p className="text-2xl font-bold text-blue-700">
-                      {selectedItems.length}
-                    </p>
-                    <p className="text-sm text-blue-600">
-                      items ready for transfer
-                    </p>
                   </div>
                 )}
-
-                {/* Create Button */}
-                <button
-                  onClick={handleCreateTransfer}
-                  disabled={!fromLocation || !toLocation || selectedItems.length === 0 || loading}
-                  className="w-full py-3 bg-gradient-to-r from-maroon-600 to-maroon-800 text-white 
-                           font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 
-                           transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
-                           flex items-center justify-center gap-2"
-                >
-                  {loading ? (
-                    <>
-                      <span className="spinner w-5 h-5" />
-                      Creating...
-                    </>
-                  ) : (
-                    <>
-                      <TruckIcon className="w-5 h-5" />
-                      Create Transfer
-                    </>
-                  )}
-                </button>
               </div>
+
+              {/* Network Map */}
+              <NetworkMap
+                onSelectLocation={(id) => {
+                  const locId = id.toString()
+
+                  // Smart Selection Logic
+                  if (!fromLocation || (fromLocation && toLocation)) {
+                    // First click or reset: Select Source
+                    // Allow deselection if clicking the same location
+                    if (fromLocation === locId) {
+                      setFromLocation('')
+                      setToLocation('')
+                      setSelectedItems([])
+                    } else {
+                      setFromLocation(locId)
+                      setToLocation('')
+                      setSelectedItems([])
+                    }
+                  } else if (fromLocation && !toLocation) {
+                    // Second click: Select Destination
+                    if (locId === fromLocation) {
+                      // Deselect if clicking source again
+                      setFromLocation('')
+                      return
+                    }
+
+                    // Validation is now visual (disabled nodes), so we just set it
+                    // Double check validity just in case
+                    const source = locations.find(l => l.id.toString() === fromLocation)
+                    const target = locations.find(l => l.id.toString() === locId)
+
+                    if (source && target) {
+                      setToLocation(locId)
+                    }
+                  }
+                }}
+                fromLocationId={fromLocation}
+                toLocationId={toLocation}
+                validTargetIds={(() => {
+                  if (!fromLocation) return locations.map(l => l.id.toString())
+                  const source = locations.find(l => l.id.toString() === fromLocation)
+                  if (!source) return []
+
+                  return locations.filter(target => {
+                    if (target.id.toString() === fromLocation) return false
+
+                    // Rule 1: Ward -> Same Hospital Ward OR Parent Hub
+                    if (source.type === 'WARD') {
+                      return (target.type === 'WARD' && target.parent_hub_id === source.parent_hub_id) ||
+                        (target.id === source.parent_hub_id)
+                    }
+                    // Rule 2: Remote -> Other Remote OR Parent Hub
+                    if (source.type === 'REMOTE') {
+                      return target.type === 'REMOTE' || target.id === source.parent_hub_id
+                    }
+                    // Rule 3: Hub -> Children OR Other Hubs
+                    if (source.type === 'HUB') {
+                      return target.parent_hub_id === source.id || target.type === 'HUB'
+                    }
+                    return false
+                  }).map(l => l.id.toString())
+                })()}
+              />
+
+              {/* Hub-to-Hub Approval Notice */}
+              {fromLocation && toLocation &&
+                locations.find(l => l.id.toString() === fromLocation)?.type === 'HUB' &&
+                locations.find(l => l.id.toString() === toLocation)?.type === 'HUB' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-4 flex items-center gap-3 p-4 bg-amber-50 border-2 border-amber-200 rounded-xl"
+                  >
+                    <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                    <div>
+                      <p className="font-semibold text-amber-900">Approval Required</p>
+                      <p className="text-sm text-amber-700">
+                        Hub-to-hub transfers require approval from a pharmacist at {locations.find(l => l.id.toString() === toLocation)?.name}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
             </div>
 
-            {/* Stock Selection */}
-            <div className="lg:col-span-1 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold">Available Stock</h3>
+            {/* Form Controls and Stock Selection - 2 Column Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left: Form Controls with Dropdowns */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 className="text-lg font-bold mb-4">Transfer Details</h3>
 
-                {/* Search */}
-                <div className="relative w-64">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search items..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                             focus:outline-none focus:border-maroon-500 focus:bg-white transition-all text-sm"
-                  />
+                <div className="space-y-4">
+                  {/* From Location Dropdown */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      From Location
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={fromLocation}
+                        onChange={(e) => {
+                          setFromLocation(e.target.value)
+                          setToLocation('')
+                          setSelectedItems([])
+                        }}
+                        className="w-full pl-4 pr-10 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl
+                                   focus:outline-none focus:border-blue-500 focus:bg-white transition-all appearance-none
+                                   font-medium"
+                      >
+                        <option value="">Select source location...</option>
+                        {locations
+                          .filter(loc => loc.type === 'HUB' || (user.location_id === loc.id))
+                          .map(loc => {
+                            const Icon = locationIcon[loc.type]
+                            return (
+                              <option key={loc.id} value={loc.id}>
+                                {loc.type} - {loc.name}
+                              </option>
+                            )
+                          })}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
+                        <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                          <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" fillRule="evenodd"></path>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* To Location Dropdown */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      To Location
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={toLocation}
+                        onChange={(e) => setToLocation(e.target.value)}
+                        disabled={!fromLocation}
+                        className="w-full pl-4 pr-10 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl
+                                   focus:outline-none focus:border-maroon-500 focus:bg-white transition-all appearance-none
+                                   disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                      >
+                        <option value="">Select destination location...</option>
+                        {fromLocation && locations
+                          .filter(loc => {
+                            const source = locations.find(l => l.id.toString() === fromLocation)
+                            if (!source || loc.id.toString() === fromLocation) return false
+
+                            // Apply transfer rules
+                            if (source.type === 'WARD') {
+                              return (loc.type === 'WARD' && loc.parent_hub_id === source.parent_hub_id) ||
+                                (loc.id === source.parent_hub_id)
+                            }
+                            if (source.type === 'REMOTE') {
+                              return loc.type === 'REMOTE' || loc.id === source.parent_hub_id
+                            }
+                            if (source.type === 'HUB') {
+                              return loc.parent_hub_id === source.id || loc.type === 'HUB'
+                            }
+                            return false
+                          })
+                          .map(loc => (
+                            <option key={loc.id} value={loc.id}>
+                              {loc.type} - {loc.name}
+                            </option>
+                          ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
+                        <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                          <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" fillRule="evenodd"></path>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Selected Items Summary */}
+                  {selectedItems.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="p-4 bg-blue-50 rounded-xl border-2 border-blue-200"
+                    >
+                      <p className="text-sm font-semibold text-blue-900 mb-1">
+                        Items Selected
+                      </p>
+                      <p className="text-3xl font-bold text-blue-700">{selectedItems.length}</p>
+                      <p className="text-sm text-blue-600 mt-1">
+                        {selectedItems.length === 1 ? 'item' : 'items'} ready for transfer
+                      </p>
+                    </motion.div>
+                  )}
+
+                  {/* Create Transfer Button */}
+                  <button
+                    onClick={handleCreateTransfer}
+                    disabled={!fromLocation || !toLocation || selectedItems.length === 0 || loading}
+                    className="w-full py-4 bg-gradient-to-r from-maroon-600 to-maroon-800 text-white 
+                             font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 
+                             transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+                             flex items-center justify-center gap-2 text-lg"
+                  >
+                    {loading ? (
+                      <>
+                        <span className="spinner w-5 h-5" />
+                        Creating Transfer...
+                      </>
+                    ) : (
+                      <>
+                        <TruckIcon className="w-6 h-6" />
+                        Create Transfer
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
 
-              {fromLocation ? (
-                <div className="space-y-2 max-h-[600px] overflow-y-auto custom-scrollbar">
-                  {filteredStock.length === 0 ? (
-                    <div className="text-center py-12 text-gray-400">
-                      <Package className="w-12 h-12 mx-auto mb-4" />
-                      <p>No available stock at this location</p>
-                    </div>
-                  ) : (
-                    filteredStock.map(item => (
-                      <motion.div
-                        key={item.id}
-                        whileHover={{ scale: 1.01 }}
-                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${selectedItems.includes(item.id)
-                          ? 'border-maroon-500 bg-maroon-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                        onClick={() => toggleItemSelection(item.id)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-semibold">{item.drug_name}</p>
-                            <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
-                              <span className="font-mono">{item.asset_id}</span>
-                              <span>Expires: {format(new Date(item.expiry_date), 'dd MMM yyyy')}</span>
-                              <span className={`font-medium ${item.days_until_expiry > 90 ? 'text-emerald-600' :
-                                item.days_until_expiry > 30 ? 'text-amber-600' : 'text-red-600'
-                                }`}>
-                                {item.days_until_expiry} days
-                              </span>
-                            </div>
-                          </div>
+              {/* Right: Stock Selection */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold">Available Stock</h3>
 
-                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedItems.includes(item.id)
-                            ? 'bg-maroon-600 border-maroon-600'
-                            : 'border-gray-300'
-                            }`}>
-                            {selectedItems.includes(item.id) && (
-                              <CheckCircle className="w-4 h-4 text-white" />
+                  {/* Search */}
+                  <div className="relative w-48">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg
+                               focus:outline-none focus:border-maroon-500 focus:bg-white transition-all text-sm"
+                    />
+                  </div>
+                </div>
+
+                {fromLocation ? (
+                  <div className="space-y-2 max-h-[500px] overflow-y-auto custom-scrollbar">
+                    {filteredStock.length === 0 ? (
+                      <div className="text-center py-12 text-gray-400">
+                        <Package className="w-12 h-12 mx-auto mb-4" />
+                        <p>No available stock</p>
+                      </div>
+                    ) : (
+                      <>
+                        {/* Quick Select Actions */}
+                        {filteredStock.length > 0 && (
+                          <div className="flex gap-2 mb-3 pb-3 border-b border-gray-200">
+                            <button
+                              onClick={() => setSelectedItems(filteredStock.map(item => item.id))}
+                              className="text-xs px-3 py-1.5 bg-maroon-50 text-maroon-700 rounded-lg hover:bg-maroon-100 font-medium transition-colors"
+                            >
+                              Select All ({filteredStock.length})
+                            </button>
+                            {selectedItems.length > 0 && (
+                              <button
+                                onClick={() => setSelectedItems([])}
+                                className="text-xs px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors"
+                              >
+                                Clear Selection
+                              </button>
                             )}
                           </div>
-                        </div>
-                      </motion.div>
-                    ))
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-gray-400">
-                  <MapPin className="w-12 h-12 mx-auto mb-4" />
-                  <p>Select a source location to view available stock</p>
-                </div>
-              )}
+                        )}
+
+                        {filteredStock.map(item => (
+                          <motion.div
+                            key={item.id}
+                            whileHover={{ scale: 1.01 }}
+                            className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${selectedItems.includes(item.id)
+                              ? 'border-maroon-500 bg-maroon-50'
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                              }`}
+                            onClick={() => toggleItemSelection(item.id)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <p className="font-semibold text-sm">{item.drug_name}</p>
+                                <div className="flex items-center gap-3 text-xs text-gray-600 mt-1">
+                                  <span className="font-mono">{item.asset_id}</span>
+                                  <span>Exp: {format(new Date(item.expiry_date), 'dd/MM/yy')}</span>
+                                  <span className={`font-medium ${item.days_until_expiry > 90 ? 'text-emerald-600' :
+                                    item.days_until_expiry > 30 ? 'text-amber-600' : 'text-red-600'
+                                    }`}>
+                                    {item.days_until_expiry}d
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${selectedItems.includes(item.id)
+                                ? 'bg-maroon-600 border-maroon-600'
+                                : 'border-gray-300'
+                                }`}>
+                                {selectedItems.includes(item.id) && (
+                                  <CheckCircle className="w-3 h-3 text-white" />
+                                )}
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-gray-400">
+                    <MapPin className="w-12 h-12 mx-auto mb-4" />
+                    <p className="font-medium">Select a source location</p>
+                    <p className="text-sm mt-1">Click on the map or use the dropdown above</p>
+                  </div>
+                )}
+              </div>
             </div>
           </motion.div>
         )}

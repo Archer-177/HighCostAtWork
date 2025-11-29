@@ -1,9 +1,9 @@
 import React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { 
-  LayoutDashboard, Package, TruckIcon, FileText, Settings, 
-  LogOut, Heart, ChevronRight, Pill, Building2, MapPin 
+import {
+  LayoutDashboard, Package, TruckIcon, FileText, Settings,
+  LogOut, Heart, ChevronRight, Pill, Building2, MapPin
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -17,35 +17,41 @@ export default function Navigation() {
   }
 
   const navItems = [
-    { 
-      path: '/', 
-      label: 'Dashboard', 
+    {
+      path: '/',
+      label: 'Dashboard',
       icon: LayoutDashboard,
-      show: true 
+      show: true
     },
-    { 
-      path: '/receive', 
-      label: 'Receive Stock', 
+    {
+      path: '/receive',
+      label: 'Receive Stock',
       icon: Package,
-      show: canReceiveStock 
+      show: canReceiveStock
     },
-    { 
-      path: '/transfer', 
-      label: 'Transfer Stock', 
+    {
+      path: '/transfer',
+      label: 'Transfer Stock',
       icon: TruckIcon,
-      show: canTransferStock 
+      show: canTransferStock
     },
-    { 
-      path: '/reports', 
-      label: 'Reports', 
+    {
+      path: '/reports',
+      label: 'Reports',
       icon: FileText,
-      show: canViewReports 
+      show: canViewReports
     },
-    { 
-      path: '/settings', 
-      label: 'Settings', 
+    {
+      path: '/stock-levels',
+      label: 'Min Stock Levels',
+      icon: Package,
+      show: user?.role === 'PHARMACIST'
+    },
+    {
+      path: '/settings',
+      label: 'Settings',
       icon: Settings,
-      show: canManageSettings 
+      show: canManageSettings
     },
   ]
 
@@ -61,7 +67,7 @@ export default function Navigation() {
     <nav className="fixed left-0 top-0 w-64 h-full bg-gradient-to-b from-gray-900 to-gray-950 text-white z-40">
       <div className="p-6">
         {/* Logo */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="mb-8"
@@ -76,7 +82,7 @@ export default function Navigation() {
               <p className="text-xs text-gray-400">Medicine Tracker</p>
             </div>
           </div>
-          
+
           {/* User Info */}
           <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50">
             <div className="flex items-center gap-2 mb-1">
@@ -102,8 +108,8 @@ export default function Navigation() {
                 to={item.path}
                 className={({ isActive }) => `
                   relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all group
-                  ${isActive 
-                    ? 'bg-gradient-to-r from-maroon-600 to-maroon-700 text-white shadow-lg' 
+                  ${isActive
+                    ? 'bg-gradient-to-r from-maroon-600 to-maroon-700 text-white shadow-lg'
                     : 'hover:bg-gray-800/50 text-gray-300 hover:text-white'
                   }
                 `}

@@ -1,22 +1,44 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import {
   Pill, Calendar, MapPin, Thermometer, Hash, Package,
-  CheckCircle, XCircle, AlertTriangle, MoreVertical, QrCode
+  CheckCircle, XCircle, AlertTriangle, MoreVertical, QrCode, TruckIcon
 } from 'lucide-react'
 import { format, differenceInDays } from 'date-fns'
 import { useAuth } from '../contexts/AuthContext'
 import { useNotification } from '../contexts/NotificationContext'
+import { useNavigate } from 'react-router-dom'
 
 export default function StockCard({ item, onRefresh, compact = false }) {
   const { user } = useAuth()
   const { success, error: showError } = useNotification()
+  const navigate = useNavigate()
   const [showActions, setShowActions] = useState(false)
   const [showDiscardModal, setShowDiscardModal] = useState(false)
+  const [showClinicalUseModal, setShowClinicalUseModal] = useState(false)
   const [discardReason, setDiscardReason] = useState('')
+  const [patientMRN, setPatientMRN] = useState('')
+  const [clinicalNotes, setClinicalNotes] = useState('')
   const [loading, setLoading] = useState(false)
+  const actionsRef = useRef(null)
 
   const daysUntilExpiry = Math.floor(item.days_until_expiry)
+
+  // Close actions menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (actionsRef.current && !actionsRef.current.contains(event.target)) {
+        setShowActions(false)
+      }
+    }
+
+    if (showActions) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
+    }
+  }, [showActions])
 
   const statusConfig = {
     green: {
@@ -46,6 +68,11 @@ export default function StockCard({ item, onRefresh, compact = false }) {
   const StatusIcon = config.icon
 
   const handleUse = async () => {
+    if (!patientMRN || patientMRN.trim() === '') {
+      showError('MRN Required', 'Please enter the patient MRN')
+      return
+    }
+
     setLoading(true)
     try {
       const response = await fetch('/api/use_stock', {
@@ -55,18 +82,22 @@ export default function StockCard({ item, onRefresh, compact = false }) {
           vial_id: item.id,
           user_id: user.id,
           action: 'USE',
-          version: item.version // Send version
+          version: item.version,
+          patient_mrn: patientMRN,
+          clinical_notes: clinicalNotes || null
         })
       })
 
       const data = await response.json()
 
       if (response.ok) {
-        success('Stock Used', `${item.drug_name} marked as used`)
+        success('Stock Used', `${item.drug_name} marked as used for patient ${patientMRN}`)
         if (data.needs_notification) {
-          // In a real app, this might trigger a local alert too
           console.log('Low stock alert triggered')
         }
+        setShowClinicalUseModal(false)
+        setPatientMRN('')
+        setClinicalNotes('')
         onRefresh?.()
       } else if (response.status === 409) {
         showError('Update Conflict', 'Data has changed. Refreshing...')
@@ -133,11 +164,11 @@ export default function StockCard({ item, onRefresh, compact = false }) {
   if (compact) {
     return (
       <>
-        <div className="relative">
+        <div className="relative" ref={actionsRef}>
           <button
-            onClick={() => setShowActions(!showActions)}
+            onClick={(e) => { e.stopPropagation(); setShowActions(!showActions); }}
             disabled={loading}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors relative z-10"
           >
             <MoreVertical className="w-5 h-5 text-gray-500" />
           </button>
@@ -150,7 +181,7 @@ export default function StockCard({ item, onRefresh, compact = false }) {
                             border border-gray-200 overflow-hidden z-50"
             >
               <button
-                onClick={handleUse}
+                onClick={(e) => { e.stopPropagation(); setShowClinicalUseModal(true); setShowActions(false); }}
                 className="w-full px-4 py-3 text-left hover:bg-emerald-50 transition-colors
                             flex items-center gap-3 text-emerald-700"
               >
@@ -159,12 +190,25 @@ export default function StockCard({ item, onRefresh, compact = false }) {
               </button>
 
               <button
-                onClick={() => setShowDiscardModal(true)}
+                onClick={(e) => { e.stopPropagation(); setShowDiscardModal(true); setShowActions(false); }}
                 className="w-full px-4 py-3 text-left hover:bg-red-50 transition-colors
                             flex items-center gap-3 text-red-700 border-t"
               >
                 <XCircle className="w-4 h-4" />
                 <span className="font-medium text-sm">Discard</span>
+              </button>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate('/transfer', { state: { selectedItem: item } });
+                  setShowActions(false);
+                }}
+                className="w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors
+                            flex items-center gap-3 text-blue-700 border-t"
+              >
+                <TruckIcon className="w-4 h-4" />
+                <span className="font-medium text-sm">Transfer</span>
               </button>
             </motion.div>
           )}
@@ -226,6 +270,75 @@ export default function StockCard({ item, onRefresh, compact = false }) {
             </motion.div>
           </motion.div>
         )}
+
+        {/* Clinical Use Modal - also for compact mode */}
+        {showClinicalUseModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            onClick={() => { setShowClinicalUseModal(false); setPatientMRN(''); setClinicalNotes(''); }}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+            >
+              <h3 className="text-xl font-bold text-gray-900 mb-1">Clinical Use</h3>
+              <p className="text-sm text-gray-600 mb-4">{item.drug_name} • {item.asset_id}</p>
+
+              <div className="space-y-4">
+                {/* Patient MRN - Required */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Patient MRN <span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={patientMRN}
+                    onChange={(e) => setPatientMRN(e.target.value)}
+                    placeholder="Enter patient MRN"
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:border-emerald-500 
+                             focus:outline-none transition-colors text-sm"
+                    autoFocus
+                  />
+                </div>
+
+                {/* Clinical Notes - Optional */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Clinical Notes <span className="text-gray-400 font-normal">(Optional)</span>
+                  </label>
+                  <textarea
+                    value={clinicalNotes}
+                    onChange={(e) => setClinicalNotes(e.target.value)}
+                    placeholder="Enter any relevant clinical notes..."
+                    rows={3}
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:border-emerald-500 
+                             focus:outline-none transition-colors text-sm resize-none"
+                  />
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => { setShowClinicalUseModal(false); setPatientMRN(''); setClinicalNotes(''); }}
+                  className="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold 
+                           rounded-lg transition-colors text-sm"
+                  disabled={loading}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUse}
+                  disabled={loading || !patientMRN.trim()}
+                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold 
+                           rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                >
+                  {loading ? 'Processing...' : 'Confirm Use'}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </>
     )
   }
@@ -233,131 +346,142 @@ export default function StockCard({ item, onRefresh, compact = false }) {
   return (
     <>
       <motion.div
-        whileHover={{ y: -4, shadow: 'lg' }}
-        className={`relative ${config.bg} rounded-xl p-4 border shadow-sm transition-all group overflow-hidden`}
+        whileHover={{ y: -2, scale: 1.02 }}
+        className={`relative bg-white rounded-xl p-3 border-2 shadow-sm transition-all group
+          ${showActions ? 'z-[100]' : 'z-0'}
+          ${item.status_color === 'green' ? 'border-emerald-200 hover:border-emerald-300 hover:shadow-emerald-100' :
+            item.status_color === 'amber' ? 'border-amber-200 hover:border-amber-300 hover:shadow-amber-100' :
+              'border-red-200 hover:border-red-300 hover:shadow-red-100'}`}
       >
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute -right-8 -top-8 w-32 h-32">
-            <Pill className="w-full h-full transform rotate-12" />
-          </div>
-        </div>
+        {/* Glass effect background gradient */}
+        <div className={`absolute inset-0 opacity-5 bg-gradient-to-br 
+          ${item.status_color === 'green' ? 'from-emerald-100 to-emerald-50' :
+            item.status_color === 'amber' ? 'from-amber-100 to-amber-50' :
+              'from-red-100 to-red-50'}`}
+        />
 
         {/* Content */}
         <div className="relative z-10">
-          {/* Header */}
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h3 className="text-lg font-bold text-gray-900">{item.drug_name}</h3>
-              <p className="text-sm text-gray-600">{item.category}</p>
+          {/* Header with status badge */}
+          <div className="flex items-start justify-between mb-2.5">
+            <div className="flex-1 min-w-0 pr-2">
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-gray-900 truncate">{item.drug_name}</h3>
+                {item.quantity && item.quantity > 1 && (
+                  <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded">
+                    ×{item.quantity}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-gray-500 truncate">{item.category}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <StatusIcon className={`w-5 h-5 ${config.iconColor}`} />
-              <span className={`text-sm font-semibold ${config.labelColor}`}>
-                {config.label}
+            <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold flex-shrink-0
+              ${item.status_color === 'green' ? 'bg-emerald-100 text-emerald-700' :
+                item.status_color === 'amber' ? 'bg-amber-100 text-amber-700' :
+                  'bg-red-100 text-red-700'}`}>
+              {daysUntilExpiry > 0 ? `${daysUntilExpiry}d` : 'EXP'}
+            </div>
+          </div>
+
+          {/* Compact Info Grid */}
+          <div className="space-y-1.5 mb-2.5 text-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-gray-600">
+                <QrCode className="w-3 h-3 flex-shrink-0" />
+                <span className="font-mono font-semibold text-[11px]">{item.asset_id}</span>
+              </div>
+              <div className="flex items-center gap-1 text-gray-600">
+                <storageIcon.icon className={`w-3 h-3 ${storageIcon.color} flex-shrink-0`} />
+                <span className="text-[10px] font-medium">{storageIcon.label.split(' ')[0]}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-gray-600">
+                <MapPin className="w-3 h-3 flex-shrink-0" />
+                <span className="truncate text-[11px]">{item.location_name}</span>
+              </div>
+              <div className="flex items-center gap-1 text-gray-600">
+                <Hash className="w-3 h-3 flex-shrink-0" />
+                <span className="font-mono text-[10px]">{item.batch_number}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Expiry - Simple display without progress bar */}
+          <div className={`rounded-lg p-2 mb-2.5 border
+            ${item.status_color === 'green' ? 'bg-emerald-50/50 border-emerald-100' :
+              item.status_color === 'amber' ? 'bg-amber-50/50 border-amber-100' :
+                'bg-red-50/50 border-red-100'}`}>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-gray-600 font-medium">Expires</span>
+              <span className="text-xs font-bold text-gray-900">
+                {format(new Date(item.expiry_date), 'dd/MM/yy')}
               </span>
             </div>
           </div>
 
-          {/* Details Grid */}
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="flex items-center gap-2 text-sm">
-              <QrCode className="w-4 h-4 text-gray-400" />
-              <span className="font-mono font-semibold">{item.asset_id}</span>
+          {/* Price and Action in one row */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] text-gray-500">Value:</span>
+              <span className="text-sm font-bold gradient-text">
+                ${item.unit_price?.toFixed(2)}
+              </span>
             </div>
 
-            <div className="flex items-center gap-2 text-sm">
-              <Hash className="w-4 h-4 text-gray-400" />
-              <span>{item.batch_number}</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm">
-              <MapPin className="w-4 h-4 text-gray-400" />
-              <span className="truncate">{item.location_name}</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm">
-              <storageIcon.icon className={`w-4 h-4 ${storageIcon.color}`} />
-              <span>{storageIcon.label}</span>
-            </div>
-          </div>
-
-          {/* Expiry Info */}
-          <div className="bg-white/50 rounded-xl p-4 backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-600">Expires</span>
-              <span className="font-semibold">{format(new Date(item.expiry_date), 'dd MMM yyyy')}</span>
-            </div>
-
-            <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
-              <motion.div
-                className={`absolute left-0 top-0 h-full rounded-full ${daysUntilExpiry > 90 ? 'bg-emerald-500' :
-                  daysUntilExpiry > 30 ? 'bg-amber-500' : 'bg-red-500'
-                  }`}
-                initial={{ width: 0 }}
-                animate={{ width: `${Math.max(0, Math.min(100, (daysUntilExpiry / 365) * 100))}%` }}
-                transition={{ duration: 1, ease: 'easeOut' }}
-              />
-            </div>
-
-            <p className="text-center mt-2 font-semibold">
-              {daysUntilExpiry > 0 ? (
-                <span>{daysUntilExpiry} days remaining</span>
-              ) : (
-                <span className="text-red-600">Expired {Math.abs(daysUntilExpiry)} days ago</span>
-              )}
-            </p>
-          </div>
-
-          {/* Price Tag */}
-          <div className="mt-4 flex items-center justify-between">
-            <span className="text-sm text-gray-600">Unit Value</span>
-            <span className="text-lg font-bold gradient-text">
-              ${item.unit_price?.toFixed(2)}
-            </span>
-          </div>
-
-          {/* Action Button */}
-          <div className="mt-4 relative">
             <button
-              onClick={() => setShowActions(!showActions)}
+              onClick={(e) => { e.stopPropagation(); setShowActions(!showActions); }}
               disabled={loading}
-              className="w-full py-2 bg-white/70 hover:bg-white text-gray-700 font-medium 
-                       rounded-lg transition-all flex items-center justify-center gap-2
-                       disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-[11px]
+                       rounded-md transition-all flex items-center gap-1
+                       disabled:opacity-50 disabled:cursor-not-allowed relative z-10"
             >
-              <MoreVertical className="w-4 h-4" />
+              <MoreVertical className="w-3 h-3" />
               Actions
             </button>
-
-            {/* Action Menu */}
-            {showActions && !loading && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-lg shadow-xl 
-                         border border-gray-200 overflow-hidden z-20"
-              >
-                <button
-                  onClick={handleUse}
-                  className="w-full px-4 py-3 text-left hover:bg-emerald-50 transition-colors
-                           flex items-center gap-3 text-emerald-700"
-                >
-                  <CheckCircle className="w-5 h-5" />
-                  <span className="font-medium">Use (Clinical)</span>
-                </button>
-
-                <button
-                  onClick={() => setShowDiscardModal(true)}
-                  className="w-full px-4 py-3 text-left hover:bg-red-50 transition-colors
-                           flex items-center gap-3 text-red-700 border-t"
-                >
-                  <XCircle className="w-5 h-5" />
-                  <span className="font-medium">Discard</span>
-                </button>
-              </motion.div>
-            )}
           </div>
+
+          {/* Action Menu */}
+          {showActions && !loading && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl 
+                       border border-gray-200 overflow-hidden z-[100]"
+            >
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowClinicalUseModal(true); setShowActions(false); }}
+                className="w-full px-3 py-2 text-left hover:bg-emerald-50 transition-colors
+                         flex items-center gap-2 text-emerald-700 text-sm"
+              >
+                <CheckCircle className="w-4 h-4" />
+                <span className="font-medium">Use (Clinical)</span>
+              </button>
+
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowDiscardModal(true); setShowActions(false); }}
+                className="w-full px-3 py-2 text-left hover:bg-red-50 transition-colors
+                         flex items-center gap-2 text-red-700 border-t text-sm"
+              >
+                <XCircle className="w-3.5 h-3.5" />
+                <span className="font-medium">Discard</span>
+              </button>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate('/transfer', { state: { selectedItem: item } });
+                  setShowActions(false);
+                }}
+                className="w-full px-3 py-2 text-left hover:bg-blue-50 transition-colors
+                            flex items-center gap-2 text-blue-700 border-t text-sm"
+              >
+                <TruckIcon className="w-3.5 h-3.5" />
+                <span className="font-medium">Transfer</span>
+              </button>
+            </motion.div>
+          )}
         </div>
       </motion.div>
 
@@ -417,6 +541,75 @@ export default function StockCard({ item, onRefresh, compact = false }) {
             </div>
           </motion.div>
         </motion.div>
+      )}
+
+      {/* Clinical Use Modal */}
+      {showClinicalUseModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => { setShowClinicalUseModal(false); setPatientMRN(''); setClinicalNotes(''); }}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+          >
+            <h3 className="text-xl font-bold text-gray-900 mb-1">Clinical Use</h3>
+            <p className="text-sm text-gray-600 mb-4">{item.drug_name} • {item.asset_id}</p>
+
+            <div className="space-y-4">
+              {/* Patient MRN - Required */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Patient MRN <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={patientMRN}
+                  onChange={(e) => setPatientMRN(e.target.value)}
+                  placeholder="Enter patient MRN"
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:border-emerald-500 
+                           focus:outline-none transition-colors text-sm"
+                  autoFocus
+                />
+              </div>
+
+              {/* Clinical Notes - Optional */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Clinical Notes <span className="text-gray-400 font-normal">(Optional)</span>
+                </label>
+                <textarea
+                  value={clinicalNotes}
+                  onChange={(e) => setClinicalNotes(e.target.value)}
+                  placeholder="Enter any relevant clinical notes..."
+                  rows={3}
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:border-emerald-500 
+                           focus:outline-none transition-colors text-sm resize-none"
+                />
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => { setShowClinicalUseModal(false); setPatientMRN(''); setClinicalNotes(''); }}
+                className="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold 
+                         rounded-lg transition-colors text-sm"
+                disabled={loading}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUse}
+                disabled={loading || !patientMRN.trim()}
+                className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold 
+                         rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              >
+                {loading ? 'Processing...' : 'Confirm Use'}
+              </button>
+            </div>
+          </motion.div>
+        </div>
       )}
     </>
   )

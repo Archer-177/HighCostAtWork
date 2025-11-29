@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  Package, Calendar, Hash, Plus, Printer, Save, 
+import {
+  Package, Calendar, Hash, Plus, Printer, Save,
   AlertCircle, CheckCircle, ChevronDown, Pill
 } from 'lucide-react'
 import { format } from 'date-fns'
@@ -11,7 +11,7 @@ import { useNotification } from '../contexts/NotificationContext'
 export default function StockReceive() {
   const { user } = useAuth()
   const { success, error: showError } = useNotification()
-  
+
   const [drugs, setDrugs] = useState([])
   const [selectedDrug, setSelectedDrug] = useState('')
   const [batchNumber, setBatchNumber] = useState('')
@@ -39,7 +39,7 @@ export default function StockReceive() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!selectedDrug || !batchNumber || !expiryDate || quantity < 1) {
       showError('Validation Error', 'Please fill all required fields')
       return
@@ -61,7 +61,7 @@ export default function StockReceive() {
       })
 
       const data = await response.json()
-      
+
       if (response.ok) {
         success(
           'Stock Received Successfully',
@@ -69,7 +69,7 @@ export default function StockReceive() {
         )
         setGeneratedAssets(data.asset_ids)
         setShowLabels(true)
-        
+
         // Reset form
         setSelectedDrug('')
         setBatchNumber('')
@@ -94,7 +94,7 @@ export default function StockReceive() {
       })
 
       const data = await response.json()
-      
+
       if (response.ok) {
         // In a real implementation, this would send commands to the Zebra printer
         success('Labels Sent to Printer', `${generatedAssets.length} labels queued for printing`)
@@ -109,7 +109,7 @@ export default function StockReceive() {
   return (
     <div className="min-h-screen p-6">
       {/* Header */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
@@ -332,7 +332,7 @@ export default function StockReceive() {
               </button>
 
               <p className="text-xs text-gray-500 mt-4 text-center">
-                Labels will be printed on 2" x 1" thermal labels optimized for medicine tracking
+                Labels will be printed on 2" x 1" thermal labels optimised for medicine tracking
               </p>
             </div>
           ) : (
