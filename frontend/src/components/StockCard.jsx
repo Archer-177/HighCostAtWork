@@ -9,7 +9,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useNotification } from '../contexts/NotificationContext'
 import { useNavigate } from 'react-router-dom'
 
-export default function StockCard({ item, onRefresh, compact = false }) {
+export default function StockCard({ item, onRefresh, compact = false, hideActions = false }) {
   const { user } = useAuth()
   const { success, error: showError } = useNotification()
   const navigate = useNavigate()
@@ -165,13 +165,15 @@ export default function StockCard({ item, onRefresh, compact = false }) {
     return (
       <>
         <div className="relative" ref={actionsRef}>
-          <button
-            onClick={(e) => { e.stopPropagation(); setShowActions(!showActions); }}
-            disabled={loading}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors relative z-10"
-          >
-            <MoreVertical className="w-5 h-5 text-gray-500" />
-          </button>
+          {!hideActions && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowActions(!showActions); }}
+              disabled={loading}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors relative z-10"
+            >
+              <MoreVertical className="w-5 h-5 text-gray-500" />
+            </button>
+          )}
 
           {showActions && !loading && (
             <motion.div

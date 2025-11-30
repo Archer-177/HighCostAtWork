@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   TruckIcon, MapPin, Package, ArrowRight, Clock,
   CheckCircle, XCircle, AlertTriangle, Search, Filter,
-  Building2, Heart, Users
+  Building2, Heart, Users, Thermometer
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { useAuth } from '../contexts/AuthContext'
@@ -577,7 +577,47 @@ export default function StockTransfer() {
   )
 }
 
-// Transfer Card Component
+// Asset Tag Component - Represents a physical item
+function AssetTag({ item }) {
+  // Check for 2-8°C (Fridge) vs <25°C (Shelf)
+  const isFridge = item.storage_temp && item.storage_temp.includes('2-8')
+  const daysUntilExpiry = Math.floor(item.days_until_expiry)
+
+  return (
+    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 group hover:border-blue-300 transition-colors">
+      <div className="flex items-center gap-3">
+        {/* Storage Icon */}
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isFridge ? 'bg-blue-100 text-blue-600' : 'bg-orange-100 text-orange-600'
+          }`}>
+          {isFridge ? <Thermometer className="w-4 h-4" /> : <Package className="w-4 h-4" />}
+        </div>
+
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="font-mono font-bold text-gray-900 tracking-wider text-sm">
+              {item.asset_id}
+            </span>
+            <span className="text-xs text-gray-500 font-medium px-1.5 py-0.5 bg-white rounded border border-gray-200">
+              {item.batch_number}
+            </span>
+          </div>
+          <p className="text-sm font-semibold text-gray-700">{item.drug_name}</p>
+        </div>
+      </div>
+
+      {/* Expiry Badge */}
+      <div className={`px-2 py-1 rounded text-xs font-bold flex flex-col items-end ${item.status_color === 'green' ? 'bg-emerald-100 text-emerald-700' :
+        item.status_color === 'amber' ? 'bg-amber-100 text-amber-700' :
+          'bg-red-100 text-red-700'
+        }`}>
+        <span>{format(new Date(item.expiry_date), 'dd MMM yy')}</span>
+        <span className="text-[10px] opacity-80">{daysUntilExpiry} days</span>
+      </div>
+    </div>
+  )
+}
+
+// Transfer Manifest Component (formerly TransferCard)
 function TransferCard({ transfer, onUpdate, readonly }) {
   const { user, canApproveTransfers } = useAuth()
   const { success, error: showError } = useNotification()
@@ -591,7 +631,7 @@ function TransferCard({ transfer, onUpdate, readonly }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_id: user.id,
-          version: transfer.version // Send current version
+          version: transfer.version
         })
       })
 
@@ -599,129 +639,157 @@ function TransferCard({ transfer, onUpdate, readonly }) {
 
       if (response.ok) {
         success(
-          action === 'approve' ? 'Transfer Approved' :
-            action === 'complete' ? 'Transfer Completed' : 'Transfer Cancelled',
-          `Transfer #${transfer.id} has been ${action}d`
+          action === 'approve' ? 'Transfer Authorized' :
+            action === 'complete' ? 'Shipment Received' : 'Transfer Cancelled',
+          `Transfer #${transfer.id} has been processed`
         )
         onUpdate?.()
       } else if (response.status === 409) {
         showError('Update Conflict', 'Data has changed. Refreshing...')
-        onUpdate?.() // Auto-refresh
+        onUpdate?.()
       } else {
-        console.error('Transfer action failed:', data)
         showError(`Failed to ${action} transfer`, data.error)
       }
     } catch (err) {
-      console.error('Transfer action network error:', err)
       showError('Connection Error', `Failed to ${action} transfer`)
     } finally {
       setLoading(false)
     }
   }
 
+  // Status Configuration
   const statusConfig = {
-    PENDING: { color: 'bg-amber-100 text-amber-800', icon: Clock },
-    IN_TRANSIT: { color: 'bg-blue-100 text-blue-800', icon: TruckIcon },
-    COMPLETED: { color: 'bg-emerald-100 text-emerald-800', icon: CheckCircle },
-    CANCELLED: { color: 'bg-red-100 text-red-800', icon: XCircle }
+    PENDING: { label: 'DRAFT / PENDING', color: 'bg-amber-50 text-amber-700 border-amber-200', step: 1 },
+    IN_TRANSIT: { label: 'IN TRANSIT', color: 'bg-blue-50 text-blue-700 border-blue-200', step: 2 },
+    COMPLETED: { label: 'RECEIVED', color: 'bg-emerald-50 text-emerald-700 border-emerald-200', step: 3 },
+    CANCELLED: { label: 'VOID', color: 'bg-gray-100 text-gray-500 border-gray-200', step: 0 }
   }
 
   const config = statusConfig[transfer.status]
-  const StatusIcon = config.icon
 
-  // Logic for Hub-to-Hub transfers
+  // Permissions Logic
   const isHubToHub = transfer.from_location_type === 'HUB' && transfer.to_location_type === 'HUB'
   const needsApproval = isHubToHub
 
-  // 1. APPROVE: Only for PENDING Hub-to-Hub transfers, by Pharmacist at Destination
   const canApproveThisTransfer = canApproveTransfers &&
     transfer.status === 'PENDING' &&
     needsApproval &&
     user.location_id === transfer.to_location_id
 
-  // 2. RECEIVE: Only for IN_TRANSIT transfers, by anyone at Destination
-  // Note: Hub-to-Remote starts as IN_TRANSIT, so they can receive immediately.
-  // Hub-to-Hub becomes IN_TRANSIT after approval.
   const canReceiveThisTransfer = transfer.status === 'IN_TRANSIT' &&
     user.location_id === transfer.to_location_id
 
-  // 3. CANCEL: Only for PENDING transfers, by Creator or Source Location
   const canCancelThisTransfer = transfer.status === 'PENDING' &&
     (user.id === transfer.created_by || user.location_id === transfer.from_location_id)
 
   return (
     <motion.div
-      whileHover={{ scale: 1.01 }}
-      className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+      whileHover={{ y: -2 }}
+      className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden group"
     >
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-4">
-          <div className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 ${config.color}`}>
-            <StatusIcon className="w-4 h-4" />
-            {transfer.status.replace('_', ' ')}
+      {/* Manifest Header - "Ticket" Style */}
+      <div className="bg-gray-50 border-b border-gray-200 p-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-white rounded-lg border border-gray-200 flex items-center justify-center shadow-sm">
+            <TruckIcon className="w-5 h-5 text-gray-600" />
           </div>
-          <span className="text-sm text-gray-500">
-            Transfer #{transfer.id}
-          </span>
+          <div>
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Transfer ID</p>
+            <p className="text-lg font-mono font-bold text-gray-900">#{transfer.id.toString().padStart(5, '0')}</p>
+          </div>
         </div>
 
-        <span className="text-sm text-gray-500">
-          {format(new Date(transfer.created_at), 'dd MMM yyyy HH:mm')}
-        </span>
-      </div>
-
-      <div className="flex items-center gap-4 mb-4">
-        <div className="flex-1">
-          <p className="text-sm text-gray-600 mb-1">From</p>
-          <p className="font-semibold">{transfer.from_location}</p>
-        </div>
-
-        <ArrowRight className="w-5 h-5 text-gray-400" />
-
-        <div className="flex-1">
-          <p className="text-sm text-gray-600 mb-1">To</p>
-          <p className="font-semibold">{transfer.to_location}</p>
+        <div className={`px-4 py-1.5 rounded-full border text-xs font-bold tracking-wide ${config.color}`}>
+          {config.label}
         </div>
       </div>
 
-      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-        <div className="text-sm text-gray-500">
-          {transfer.item_count} items • Created by {transfer.created_by_name}
+      <div className="p-6">
+        {/* Route Visualization */}
+        <div className="flex items-center justify-between mb-8 relative">
+          {/* Connecting Line */}
+          <div className="absolute top-1/2 left-10 right-10 h-0.5 bg-gray-100 -z-10" />
+
+          {/* Source */}
+          <div className="flex flex-col items-start relative bg-white pr-4">
+            <p className="text-xs font-bold text-gray-400 uppercase mb-1">Origin</p>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-blue-500" />
+              <p className="font-bold text-gray-900">{transfer.from_location}</p>
+            </div>
+            <p className="text-xs text-gray-500 mt-1 pl-4">
+              {format(new Date(transfer.created_at), 'dd MMM HH:mm')} • {transfer.created_by_name}
+            </p>
+          </div>
+
+          {/* Arrow */}
+          <div className="bg-white px-2 text-gray-300">
+            <ArrowRight className="w-5 h-5" />
+          </div>
+
+          {/* Destination */}
+          <div className="flex flex-col items-end relative bg-white pl-4">
+            <p className="text-xs font-bold text-gray-400 uppercase mb-1">Destination</p>
+            <div className="flex items-center gap-2">
+              <p className="font-bold text-gray-900 text-right">{transfer.to_location}</p>
+              <div className="w-2 h-2 rounded-full bg-maroon-600" />
+            </div>
+            {transfer.status === 'COMPLETED' && (
+              <p className="text-xs text-emerald-600 mt-1 pr-4 font-medium">
+                Received {transfer.completed_at ? format(new Date(transfer.completed_at), 'dd MMM HH:mm') : ''}
+              </p>
+            )}
+          </div>
         </div>
 
-        <div className="flex gap-2">
-          {canApproveThisTransfer && (
-            <button
-              onClick={() => handleAction('approve')}
-              disabled={loading}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2"
-            >
-              <CheckCircle className="w-4 h-4" />
-              Approve
-            </button>
-          )}
-
-          {canReceiveThisTransfer && (
-            <button
-              onClick={() => handleAction('complete')}
-              disabled={loading}
-              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 flex items-center gap-2"
-            >
-              <Package className="w-4 h-4" />
-              Receive
-            </button>
-          )}
-
-          {canCancelThisTransfer && (
-            <button
-              onClick={() => handleAction('cancel')}
-              disabled={loading}
-              className="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-            >
-              Cancel
-            </button>
-          )}
+        {/* Items List - "Asset Tags" */}
+        <div className="mb-6">
+          <p className="text-xs font-bold text-gray-400 uppercase mb-3">Shipment Contents ({transfer.item_count})</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {transfer.items && transfer.items.map(item => (
+              <AssetTag key={item.id} item={item} />
+            ))}
+          </div>
         </div>
+
+        {/* Action Footer - "Signature" Area */}
+        {(canApproveThisTransfer || canReceiveThisTransfer || canCancelThisTransfer) && (
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 bg-gray-50/50 -mx-6 -mb-6 p-4">
+            {canCancelThisTransfer && (
+              <button
+                onClick={() => handleAction('cancel')}
+                disabled={loading}
+                className="px-4 py-2 text-gray-600 font-medium hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm"
+              >
+                Void Transfer
+              </button>
+            )}
+
+            {canApproveThisTransfer && (
+              <button
+                onClick={() => handleAction('approve')}
+                disabled={loading}
+                className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg shadow-sm 
+                         hover:bg-indigo-700 hover:shadow-md transition-all flex items-center gap-2"
+              >
+                <CheckCircle className="w-4 h-4" />
+                Authorize Shipment
+              </button>
+            )}
+
+            {canReceiveThisTransfer && (
+              <button
+                onClick={() => handleAction('complete')}
+                disabled={loading}
+                className="px-6 py-2 bg-emerald-600 text-white font-bold rounded-lg shadow-sm 
+                         hover:bg-emerald-700 hover:shadow-md transition-all flex items-center gap-2"
+              >
+                <Package className="w-4 h-4" />
+                Confirm Receipt
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </motion.div>
   )

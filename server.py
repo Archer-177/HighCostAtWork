@@ -858,7 +858,41 @@ def get_transfers(location_id):
             GROUP BY t.id
             ORDER BY t.created_at DESC
         """, (location_id, location_id)).fetchall()
-        return jsonify([dict(transfer) for transfer in transfers])
+        
+        # Convert to list of dicts and fetch items for each transfer
+        transfer_list = []
+        for t in transfers:
+            t_dict = dict(t)
+            
+            # Fetch items for this transfer
+            items = conn.execute("""
+                SELECT 
+                    v.id, v.asset_id, v.batch_number, v.expiry_date,
+                    d.name as drug_name, d.category, d.storage_temp, d.unit_price,
+                    julianday(v.expiry_date) - julianday('now') as days_until_expiry
+                FROM transfer_items ti
+                JOIN vials v ON ti.vial_id = v.id
+                JOIN drugs d ON v.drug_id = d.id
+                WHERE ti.transfer_id = ?
+            """, (t['id'],)).fetchall()
+            
+            # Process items to add status_color
+            processed_items = []
+            for item in items:
+                item_dict = dict(item)
+                days = item_dict['days_until_expiry'] or 0
+                if days <= 30:
+                    item_dict['status_color'] = 'red'
+                elif days <= 90:
+                    item_dict['status_color'] = 'amber'
+                else:
+                    item_dict['status_color'] = 'green'
+                processed_items.append(item_dict)
+            
+            t_dict['items'] = processed_items
+            transfer_list.append(t_dict)
+            
+        return jsonify(transfer_list)
 
 @app.route('/api/transfer/<int:transfer_id>/<string:action>', methods=['POST'])
 def handle_transfer_action(transfer_id, action):
