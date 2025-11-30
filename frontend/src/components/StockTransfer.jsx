@@ -482,30 +482,9 @@ export default function StockTransfer() {
                       </div>
                     ) : (
                       <>
-                        {/* Quick Select Actions */}
-                        {filteredStock.length > 0 && (
-                          <div className="flex gap-2 mb-3 pb-3 border-b border-gray-200">
-                            <button
-                              onClick={() => setSelectedItems(filteredStock.map(item => item.id))}
-                              className="text-xs px-3 py-1.5 bg-maroon-50 text-maroon-700 rounded-lg hover:bg-maroon-100 font-medium transition-colors"
-                            >
-                              Select All ({filteredStock.length})
-                            </button>
-                            {selectedItems.length > 0 && (
-                              <button
-                                onClick={() => setSelectedItems([])}
-                                className="text-xs px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors"
-                              >
-                                Clear Selection
-                              </button>
-                            )}
-                          </div>
-                        )}
-
                         {filteredStock.map(item => (
                           <motion.div
                             key={item.id}
-                            whileHover={{ scale: 1.01 }}
                             className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${selectedItems.includes(item.id)
                               ? 'border-maroon-500 bg-maroon-50'
                               : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
@@ -521,7 +500,7 @@ export default function StockTransfer() {
                                   <span className={`font-medium ${item.days_until_expiry > 90 ? 'text-emerald-600' :
                                     item.days_until_expiry > 30 ? 'text-amber-600' : 'text-red-600'
                                     }`}>
-                                    {item.days_until_expiry}d
+                                    {Math.floor(item.days_until_expiry)}d
                                   </span>
                                 </div>
                               </div>

@@ -76,8 +76,25 @@ export default function NetworkMap({ onSelectLocation, fromLocationId, toLocatio
         const status = statusObj[viewMode] || 'healthy'
 
         // Determine indicator color based on stock status
-        const color = status === 'critical' ? 'bg-red-500' : status === 'warning' ? 'bg-amber-500' : 'bg-emerald-500'
-        const pulseIntensity = status === 'critical' ? 'animate-pulse' : ''
+        let color = 'bg-emerald-500'
+        let pulseIntensity = ''
+
+        if (viewMode === 'level') {
+            // Binary state for Stock Levels: Red (Low/Critical) vs Green (Adequate)
+            // Assuming 'critical' is below min. 'warning' might be close to min but above.
+            // User said: "at or above min ... green".
+            if (status === 'critical') {
+                color = 'bg-red-500'
+                pulseIntensity = 'animate-pulse'
+            } else {
+                // healthy or warning (both considered adequate/above min)
+                color = 'bg-emerald-500'
+            }
+        } else {
+            // Expiry view (3 states)
+            color = status === 'critical' ? 'bg-red-500' : status === 'warning' ? 'bg-amber-500' : 'bg-emerald-500'
+            pulseIntensity = status === 'critical' ? 'animate-pulse' : ''
+        }
 
         // Check if this location is the source of the current transfer
         const isFrom = fromLocationId === location.id.toString()
@@ -149,10 +166,10 @@ export default function NetworkMap({ onSelectLocation, fromLocationId, toLocatio
                             <div className="text-gray-300 space-y-0.5">
                                 <div className="flex items-center gap-1">
                                     <div className={`w-2 h-2 rounded-full ${color}`} />
-                                    <span className="capitalize">{viewMode === 'expiry' ? 'Expiry' : 'Stock Level'}: {status}</span>
-                                </div>
-                                <div className="text-gray-400 text-[10px]">
-                                    {location.type} {location.parent_hub_id && '• Child location'}
+                                    <span className="capitalize">
+                                        {viewMode === 'expiry' ? 'Expiry: ' + status :
+                                            status === 'critical' ? 'Low Stock' : 'Adequate Stock'}
+                                    </span>
                                 </div>
                             </div>
                             {/* Tooltip arrow */}
@@ -173,8 +190,8 @@ export default function NetworkMap({ onSelectLocation, fromLocationId, toLocatio
             {/* Decorative background pattern */}
             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#8A2A2B_1px,transparent_1px)] [background-size:16px_16px]" />
 
-            {/* View Mode Toggle */}
-            <div className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur rounded-lg shadow-sm border border-gray-200 p-1 flex gap-1">
+            {/* View Mode Toggle - Bottom Right */}
+            <div className="absolute bottom-4 right-4 z-20 bg-white/90 backdrop-blur rounded-lg shadow-sm border border-gray-200 p-1 flex gap-1">
                 <button
                     onClick={() => setViewMode('expiry')}
                     className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${viewMode === 'expiry'
@@ -222,30 +239,36 @@ export default function NetworkMap({ onSelectLocation, fromLocationId, toLocatio
                 ))}
             </div>
 
-            {/* Legend - Horizontal at Bottom */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 px-6 py-3 z-20">
-                <div className="flex items-center gap-6">
-                    <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wide">Legend:</h4>
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                            <span className="text-xs font-medium text-gray-700">
-                                {viewMode === 'expiry' ? '>90d' : 'Above Min'}
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-amber-500" />
-                            <span className="text-xs font-medium text-gray-700">
-                                {viewMode === 'expiry' ? '30-90d' : 'Low'}
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-red-500" />
-                            <span className="text-xs font-medium text-gray-700">
-                                {viewMode === 'expiry' ? '<30d' : 'Below Min'}
-                            </span>
-                        </div>
-                    </div>
+            {/* Legend - Bottom Left */}
+            <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 px-4 py-3 z-20">
+                <div className="flex items-center gap-4">
+                    {viewMode === 'expiry' ? (
+                        <>
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                                <span className="text-xs font-medium text-gray-700">&gt;90d</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full bg-amber-500" />
+                                <span className="text-xs font-medium text-gray-700">30-90d</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full bg-red-500" />
+                                <span className="text-xs font-medium text-gray-700">&lt;30d</span>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                                <span className="text-xs font-medium text-gray-700">Adequate Stock</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full bg-red-500" />
+                                <span className="text-xs font-medium text-gray-700">Low Stock</span>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

@@ -84,6 +84,7 @@ def init_db():
                 location_id INTEGER NOT NULL,
                 can_delegate BOOLEAN DEFAULT 0,
                 email TEXT,
+                is_active BOOLEAN DEFAULT 1,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 version INTEGER DEFAULT 1,
                 FOREIGN KEY (location_id) REFERENCES locations(id)
@@ -321,6 +322,7 @@ def login():
     password = data.get('password')
     
     with get_db() as conn:
+        print(f"DEBUG: Attempting login for username: {username}")
         user = conn.execute("""
             SELECT u.*, l.name as location_name, l.type as location_type, l.parent_hub_id
             FROM users u 
@@ -328,21 +330,32 @@ def login():
             WHERE u.username = ?
         """, (username,)).fetchone()
         
-        if user and check_password_hash(user['password_hash'], password):
-            return jsonify({
-                'success': True,
-                'user': {
-                    'id': user['id'],
-                    'username': user['username'],
-                    'role': user['role'],
-                    'location_id': user['location_id'],
-                    'location_name': user['location_name'],
-                    'location_type': user['location_type'],
-                    'parent_hub_id': user['parent_hub_id'],
-                    'can_delegate': user['can_delegate'],
-                    'email': user['email']
-                }
-            })
+        if user:
+            print(f"DEBUG: User found: {user['username']}, ID: {user['id']}, Role: {user['role']}")
+            # Check if active
+            if not user['is_active']:
+                 return jsonify({'success': False, 'error': 'Account is inactive'}), 401
+
+            is_valid = check_password_hash(user['password_hash'], password)
+            print(f"DEBUG: Password valid: {is_valid}")
+            
+            if is_valid:
+                return jsonify({
+                    'success': True,
+                    'user': {
+                        'id': user['id'],
+                        'username': user['username'],
+                        'role': user['role'],
+                        'location_id': user['location_id'],
+                        'location_name': user['location_name'],
+                        'location_type': user['location_type'],
+                        'parent_hub_id': user['parent_hub_id'],
+                        'can_delegate': bool(user['can_delegate']),
+                        'email': user['email']
+                    }
+                })
+        else:
+            print("DEBUG: User not found or JOIN failed")
     
     return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
 
@@ -645,6 +658,31 @@ def get_dashboard(user_id):
 
 
 # Additional API endpoints for complete functionality
+@app.route('/api/locations/<int:location_id>', methods=['DELETE'])
+def delete_location(location_id):
+    with get_db() as conn:
+        cursor = conn.cursor()
+        
+        # Check dependencies
+        # 1. Users assigned to this location
+        users = cursor.execute("SELECT COUNT(*) FROM users WHERE location_id = ?", (location_id,)).fetchone()[0]
+        if users > 0:
+            return jsonify({"error": "Cannot delete location with assigned users"}), 400
+            
+        # 2. Stock (vials) at this location
+        stock = cursor.execute("SELECT COUNT(*) FROM vials WHERE location_id = ?", (location_id,)).fetchone()[0]
+        if stock > 0:
+            return jsonify({"error": "Cannot delete location with existing stock"}), 400
+            
+        # 3. Transfers involving this location
+        transfers = cursor.execute("SELECT COUNT(*) FROM transfers WHERE from_location_id = ? OR to_location_id = ?", (location_id, location_id)).fetchone()[0]
+        if transfers > 0:
+            return jsonify({"error": "Cannot delete location with transfer history"}), 400
+
+        cursor.execute("DELETE FROM locations WHERE id = ?", (location_id,))
+        conn.commit()
+        return jsonify({"success": True})
+
 @app.route('/api/locations', methods=['GET', 'POST'])
 def handle_locations():
     if request.method == 'GET':
@@ -911,6 +949,7 @@ def handle_users():
                 SELECT u.*, l.name as location_name
                 FROM users u
                 JOIN locations l ON u.location_id = l.id
+                WHERE u.is_active = 1
                 ORDER BY u.username
             """).fetchall()
             return jsonify([dict(user) for user in users])
@@ -928,6 +967,11 @@ def handle_users():
         return jsonify({"error": "Missing required fields"}), 400
 
     with get_db() as conn:
+        # Verify location exists
+        loc = conn.execute("SELECT id FROM locations WHERE id = ?", (location_id,)).fetchone()
+        if not loc:
+             return jsonify({"error": "Invalid location"}), 400
+
         try:
             conn.execute("""
                 INSERT INTO users (username, password_hash, role, location_id, can_delegate, email)
@@ -935,6 +979,53 @@ def handle_users():
             """, (username, generate_password_hash(password), role, location_id, can_delegate, email))
             conn.commit()
             return jsonify({"success": True}), 201
+        except sqlite3.IntegrityError:
+            return jsonify({"error": "Username already exists"}), 409
+
+@app.route('/api/users/<int:user_id>', methods=['PUT', 'DELETE'])
+def handle_user_detail(user_id):
+    if request.method == 'DELETE':
+        with get_db() as conn:
+            # Soft delete: Set is_active = 0
+            conn.execute("UPDATE users SET is_active = 0 WHERE id = ?", (user_id,))
+            conn.commit()
+            return jsonify({"success": True})
+
+    # PUT - Update user
+    data = request.json
+    username = data.get('username')
+    role = data.get('role')
+    location_id = data.get('location_id')
+    email = data.get('email')
+    can_delegate = data.get('can_delegate', 0)
+    password = data.get('password') # Optional
+
+    # Validate location_id
+    if not location_id:
+        return jsonify({"error": "Location is required"}), 400
+
+    with get_db() as conn:
+        # Verify location exists
+        loc = conn.execute("SELECT id FROM locations WHERE id = ?", (location_id,)).fetchone()
+        if not loc:
+             return jsonify({"error": "Invalid location"}), 400
+
+        try:
+            if password:
+                conn.execute("""
+                    UPDATE users 
+                    SET username = ?, role = ?, location_id = ?, email = ?, can_delegate = ?, password_hash = ?, version = version + 1
+                    WHERE id = ?
+                """, (username, role, location_id, email, can_delegate, generate_password_hash(password), user_id))
+            else:
+                conn.execute("""
+                    UPDATE users 
+                    SET username = ?, role = ?, location_id = ?, email = ?, can_delegate = ?, version = version + 1
+                    WHERE id = ?
+                """, (username, role, location_id, email, can_delegate, user_id))
+            
+            conn.commit()
+            return jsonify({"success": True})
         except sqlite3.IntegrityError:
             return jsonify({"error": "Username already exists"}), 409
 

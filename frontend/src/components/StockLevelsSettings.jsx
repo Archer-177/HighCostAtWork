@@ -1,19 +1,41 @@
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Package, Save, X, AlertCircle, CheckCircle } from 'lucide-react'
+import React, { useState, useEffect, useMemo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+    Search,
+    ThermometerSnowflake,
+    ThermometerSun,
+    ShieldAlert,
+    Save,
+    Filter,
+    AlertCircle,
+    Loader2,
+    XCircle
+} from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNotification } from '../contexts/NotificationContext'
 
 export default function StockLevelsSettings() {
     const { user } = useAuth()
     const { success, error: showError } = useNotification()
-    const [stockLevels, setStockLevels] = useState([])
-    const [locations, setLocations] = useState([])
-    const [drugs, setDrugs] = useState([])
+
+    // --- STATE ---
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
-    const [editedLevels, setEditedLevels] = useState({})
 
+    // Data
+    const [locations, setLocations] = useState([])
+    const [drugs, setDrugs] = useState([])
+    const [stockLevels, setStockLevels] = useState([]) // Array of { location_id, drug_id, min_stock }
+
+    // Local State
+    const [unsavedChanges, setUnsavedChanges] = useState({}) // { "locationId_drugId": newValue }
+
+    // Filters
+    const [searchQuery, setSearchQuery] = useState('')
+    const [groupFilter, setGroupFilter] = useState('All')
+    const [storageFilter, setStorageFilter] = useState('all') // 'all', 'fridge', 'ambient'
+
+    // --- INITIALIZATION ---
     useEffect(() => {
         fetchData()
     }, [])
@@ -30,41 +52,113 @@ export default function StockLevelsSettings() {
             const drugsData = await drugsRes.json()
             const levelsData = await levelsRes.json()
 
-            setLocations(locationsData)
+            // Sort locations: Hubs first, then others
+            const sortedLocations = locationsData.sort((a, b) => {
+                if (a.type === 'HUB' && b.type !== 'HUB') return -1
+                if (a.type !== 'HUB' && b.type === 'HUB') return 1
+                return a.name.localeCompare(b.name)
+            })
+
+            setLocations(sortedLocations)
             setDrugs(drugsData)
             setStockLevels(levelsData)
         } catch (err) {
             showError('Load Error', 'Failed to load stock levels')
+            console.error(err)
         } finally {
             setLoading(false)
         }
     }
 
-    const handleMinStockChange = (locationId, drugId, value) => {
-        const key = `${locationId}-${drugId}`
-        setEditedLevels(prev => ({
-            ...prev,
-            [key]: parseInt(value) || 0
-        }))
-    }
+    // --- DERIVED DATA & FILTERING ---
 
-    const getMinStock = (locationId, drugId) => {
-        const key = `${locationId}-${drugId}`
-        if (editedLevels[key] !== undefined) {
-            return editedLevels[key]
+    // 1. Create a lookup map for current saved levels: levelsMap[locationId][drugId] = min_stock
+    const levelsMap = useMemo(() => {
+        const map = {}
+        stockLevels.forEach(level => {
+            if (!map[level.location_id]) map[level.location_id] = {}
+            map[level.location_id][level.drug_id] = level.min_stock
+        })
+        return map
+    }, [stockLevels])
+
+    // 2. Filter Drugs
+    const filteredDrugs = useMemo(() => {
+        return drugs.filter(drug => {
+            const matchesSearch = drug.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (drug.category && drug.category.toLowerCase().includes(searchQuery.toLowerCase()))
+
+            const matchesGroup = groupFilter === 'All' || drug.category === groupFilter
+
+            // Determine storage type (Fridge vs Ambient)
+            // Using logic similar to Dashboard: '2-8' implies Fridge
+            const isFridge = drug.storage_temp?.includes('2-8') || drug.is_fridge
+
+            const matchesStorage = storageFilter === 'all' ||
+                (storageFilter === 'fridge' && isFridge) ||
+                (storageFilter === 'ambient' && !isFridge)
+
+            return matchesSearch && matchesGroup && matchesStorage
+        })
+    }, [drugs, searchQuery, groupFilter, storageFilter])
+
+    // 3. Group Drugs
+    const groupedDrugs = useMemo(() => {
+        const groups = {}
+        filteredDrugs.forEach(drug => {
+            const groupName = drug.category || 'Uncategorized'
+            if (!groups[groupName]) groups[groupName] = []
+            groups[groupName].push(drug)
+        })
+        return groups
+    }, [filteredDrugs])
+
+    const sortedGroupKeys = Object.keys(groupedDrugs).sort()
+    const uniqueGroups = useMemo(() => [...new Set(drugs.map(d => d.category || 'Uncategorized'))].sort(), [drugs])
+
+    // --- HANDLERS ---
+
+    const getStockValue = (locationId, drugId) => {
+        const key = `${locationId}_${drugId}`
+        if (unsavedChanges.hasOwnProperty(key)) {
+            return unsavedChanges[key]
         }
-        const level = stockLevels.find(l => l.location_id === locationId && l.drug_id === drugId)
-        return level?.min_stock || 0
+        return levelsMap[locationId]?.[drugId] || 0
     }
 
-    const hasChanges = Object.keys(editedLevels).length > 0
+    const isModified = (locationId, drugId) => {
+        return unsavedChanges.hasOwnProperty(`${locationId}_${drugId}`)
+    }
 
-    const handleSave = async () => {
+    const handleStockChange = (locationId, drugId, value) => {
+        const cleanValue = parseInt(value)
+        if (isNaN(cleanValue) || cleanValue < 0) return
+
+        const key = `${locationId}_${drugId}`
+        const originalValue = levelsMap[locationId]?.[drugId] || 0
+
+        if (cleanValue === originalValue) {
+            // Reverted to original, remove from unsaved
+            setUnsavedChanges(prev => {
+                const next = { ...prev }
+                delete next[key]
+                return next
+            })
+        } else {
+            setUnsavedChanges(prev => ({
+                ...prev,
+                [key]: cleanValue
+            }))
+        }
+    }
+
+    const saveChanges = async () => {
         setSaving(true)
         try {
-            const updates = Object.entries(editedLevels).map(([key, minStock]) => {
-                const [locationId, drugId] = key.split('-').map(Number)
-                return { location_id: locationId, drug_id: drugId, min_stock: minStock }
+            // Convert unsavedChanges object back to array of updates
+            const updates = Object.entries(unsavedChanges).map(([key, min_stock]) => {
+                const [locationId, drugId] = key.split('_').map(Number)
+                return { location_id: locationId, drug_id: drugId, min_stock }
             })
 
             const response = await fetch('/api/stock_levels', {
@@ -75,8 +169,8 @@ export default function StockLevelsSettings() {
 
             if (response.ok) {
                 success('Saved', 'Stock levels updated successfully')
-                setEditedLevels({})
-                fetchData()
+                setUnsavedChanges({})
+                fetchData() // Refresh data to confirm sync
             } else {
                 showError('Error', 'Failed to update stock levels')
             }
@@ -87,151 +181,271 @@ export default function StockLevelsSettings() {
         }
     }
 
-    const handleCancel = () => {
-        setEditedLevels({})
-    }
+    // --- RENDER ---
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-maroon-600" />
+            <div className="flex items-center justify-center h-screen bg-sand-50">
+                <div className="flex flex-col items-center gap-3">
+                    <Loader2 className="w-8 h-8 text-maroon-600 animate-spin" />
+                    <p className="text-maroon-800 font-medium">Loading Matrix...</p>
+                </div>
             </div>
         )
     }
 
-    // Only allow pharmacists
-    if (user.role !== 'PHARMACIST') {
+    // Access Control
+    if (user?.role !== 'PHARMACIST') {
         return (
-            <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                    <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <div className="flex items-center justify-center h-screen bg-sand-50">
+                <div className="text-center p-8 bg-white rounded-2xl shadow-lg border border-maroon-100">
+                    <AlertCircle className="w-16 h-16 text-maroon-500 mx-auto mb-4" />
                     <h2 className="text-xl font-bold text-gray-900">Access Denied</h2>
-                    <p className="text-gray-600">Only pharmacists can access stock level settings</p>
+                    <p className="text-gray-600 mt-2">Only pharmacists can manage minimum stock levels.</p>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-sand via-white to-orange-50 p-6">
-            <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-                        <Package className="w-8 h-8 text-maroon-600" />
-                        Minimum Stock Levels
-                    </h1>
-                    <p className="text-gray-600 mt-2">
-                        Set minimum stock thresholds for automatic low stock alerts
-                    </p>
+        <div className="flex flex-col h-screen bg-sand-50 text-slate-900 font-sans overflow-hidden p-6">
+
+            {/* 1. HEADER (Standard App Style) */}
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 flex-none"
+            >
+                <h1 className="text-4xl font-display tracking-wider gradient-text mb-2">
+                    Minimum Stock Levels
+                </h1>
+                <p className="text-gray-600">
+                    Manage stock thresholds across all sites to trigger automatic alerts
+                </p>
+            </motion.div>
+
+            {/* 2. FILTERS & CONTROLS (Single Line) */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6 flex-none flex flex-wrap items-center gap-4 z-20">
+
+                {/* Search */}
+                <div className="relative flex-1 min-w-[300px]">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="Search drug name or category..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:outline-none 
+                                 focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition-all"
+                    />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery('')}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                        >
+                            <XCircle className="w-4 h-4 text-gray-400" />
+                        </button>
+                    )}
                 </div>
 
-                {/* Actions Bar */}
-                {hasChanges && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mb-4 bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between"
+                <div className="h-8 w-px bg-gray-200 mx-2 hidden md:block"></div>
+
+                {/* Storage Filter */}
+                <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100">
+                    <button
+                        onClick={() => setStorageFilter('all')}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${storageFilter === 'all' ? 'bg-white shadow-sm text-maroon-700' : 'text-gray-500 hover:text-gray-700'}`}
                     >
-                        <div className="flex items-center gap-2">
-                            <AlertCircle className="w-5 h-5 text-blue-600" />
-                            <span className="font-semibold text-blue-900">
-                                You have unsaved changes
-                            </span>
-                        </div>
-                        <div className="flex gap-3">
+                        All
+                    </button>
+                    <button
+                        onClick={() => setStorageFilter('fridge')}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all ${storageFilter === 'fridge' ? 'bg-white shadow-sm text-blue-700' : 'text-gray-500 hover:text-gray-700'}`}
+                    >
+                        <ThermometerSnowflake className="w-4 h-4" />
+                        <span>Fridge</span>
+                    </button>
+                    <button
+                        onClick={() => setStorageFilter('ambient')}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all ${storageFilter === 'ambient' ? 'bg-white shadow-sm text-orange-700' : 'text-gray-500 hover:text-gray-700'}`}
+                    >
+                        <ThermometerSun className="w-4 h-4" />
+                        <span>Shelf</span>
+                    </button>
+                </div>
+
+                {/* Group Filter */}
+                <div className="relative min-w-[200px]">
+                    <select
+                        value={groupFilter}
+                        onChange={(e) => setGroupFilter(e.target.value)}
+                        className="w-full pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl
+                                 focus:outline-none focus:border-maroon-500 focus:bg-white transition-all appearance-none cursor-pointer text-sm font-medium text-gray-700"
+                    >
+                        <option value="All">All Categories</option>
+                        {uniqueGroups.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <Filter className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                </div>
+
+                <div className="text-xs text-gray-400 font-mono ml-auto">
+                    {filteredDrugs.length} items
+                </div>
+            </div>
+
+            {/* 3. MATRIX GRID */}
+            <div className="flex-1 overflow-auto bg-white rounded-2xl shadow-sm border border-gray-200 relative">
+                <table className="w-full border-collapse min-w-[1200px]">
+                    <thead className="sticky top-0 z-20 shadow-sm">
+                        <tr className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider h-12">
+                            {/* Sticky Corner */}
+                            <th className="sticky left-0 bg-gray-50 z-30 text-left pl-6 pr-4 w-64 border-b border-r border-gray-200 font-semibold shadow-[4px_0_12px_-4px_rgba(0,0,0,0.05)]">
+                                Drug Details
+                            </th>
+                            <th className="w-32 px-2 text-center border-b border-gray-200 border-r">Storage</th>
+
+                            {/* Location Columns */}
+                            {locations.map(loc => (
+                                <th key={loc.id} className={`px-2 text-center border-b border-gray-200 border-r min-w-[100px] ${loc.type === 'HUB' ? 'bg-maroon-50/30 text-maroon-800 font-bold' : ''}`}>
+                                    <div className="flex flex-col items-center justify-center">
+                                        <span>{loc.name}</span>
+                                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full mt-1 ${loc.type === 'HUB' ? 'bg-maroon-100 text-maroon-700' : 'bg-gray-200 text-gray-600'}`}>
+                                            {loc.type}
+                                        </span>
+                                    </div>
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white">
+                        {sortedGroupKeys.map(group => (
+                            <React.Fragment key={group}>
+                                {/* Group Header */}
+                                <tr className="bg-gray-50/50 border-b border-gray-100">
+                                    <td colSpan={2 + locations.length} className="sticky left-0 z-10 bg-gray-50/95 backdrop-blur-sm px-6 py-2 border-b border-gray-100">
+                                        <div className="flex items-center space-x-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-maroon-400"></div>
+                                            <span className="text-xs font-bold text-gray-700 uppercase tracking-widest">{group}</span>
+                                            <span className="text-xs text-gray-400 font-normal">({groupedDrugs[group].length})</span>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                {/* Drug Rows */}
+                                {groupedDrugs[group].map(drug => {
+                                    // Determine storage display based on Dashboard logic
+                                    const isFridge = drug.storage_temp?.includes('2-8') || drug.is_fridge
+
+                                    return (
+                                        <tr key={drug.id} className="hover:bg-blue-50/30 group transition-colors h-14 border-b border-gray-100">
+                                            {/* Sticky Name Column */}
+                                            <td className="sticky left-0 bg-white group-hover:bg-blue-50/30 z-10 pl-6 pr-4 py-2 border-r border-gray-200 shadow-[4px_0_12px_-4px_rgba(0,0,0,0.02)]">
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium text-gray-900 text-sm truncate max-w-[220px]" title={drug.name}>
+                                                        {drug.name}
+                                                    </span>
+                                                    <span className="text-xs text-gray-500 truncate">{drug.category}</span>
+                                                </div>
+                                            </td>
+
+                                            {/* Storage Type */}
+                                            <td className="text-center py-2 border-r border-gray-100">
+                                                {isFridge ? (
+                                                    <div className="inline-flex items-center gap-1.5">
+                                                        <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 8h6m-5 0a3 3 0 110 6H9l3 3m-3-6h6m6 1a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        <span className="text-xs font-medium text-blue-700">2-8°C</span>
+                                                    </div>
+                                                ) : (
+                                                    <div className="inline-flex items-center gap-1.5">
+                                                        <svg className="w-4 h-4 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                                        </svg>
+                                                        <span className="text-xs font-medium text-orange-700">&lt;25°C</span>
+                                                    </div>
+                                                )}
+                                            </td>
+
+                                            {/* Stock Level Inputs */}
+                                            {locations.map(loc => {
+                                                const value = getStockValue(loc.id, drug.id)
+                                                const modified = isModified(loc.id, drug.id)
+
+                                                return (
+                                                    <td key={loc.id} className={`p-0 border-r border-gray-100 text-center relative ${loc.type === 'HUB' ? 'bg-maroon-50/5' : ''}`}>
+                                                        <div className="h-full w-full p-2 flex items-center justify-center">
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                value={value}
+                                                                onChange={(e) => handleStockChange(loc.id, drug.id, e.target.value)}
+                                                                className={`w-16 text-center text-sm p-1.5 rounded-lg border transition-all focus:outline-none focus:ring-2 focus:ring-maroon-500 font-mono
+                                                                    ${modified
+                                                                        ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold shadow-sm'
+                                                                        : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                                                                    }`}
+                                                            />
+                                                        </div>
+                                                    </td>
+                                                )
+                                            })}
+                                        </tr>
+                                    )
+                                })}
+                            </React.Fragment>
+                        ))}
+
+                        {/* Empty State */}
+                        {sortedGroupKeys.length === 0 && (
+                            <tr>
+                                <td colSpan={2 + locations.length} className="py-20 text-center text-gray-400">
+                                    <div className="flex flex-col items-center justify-center space-y-3">
+                                        <Search className="w-12 h-12 opacity-20" />
+                                        <p className="text-lg font-medium">No items found</p>
+                                        <p className="text-sm">Try adjusting your filters</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* 4. UNSAVED CHANGES FLOATING BAR */}
+            <AnimatePresence>
+                {Object.keys(unsavedChanges).length > 0 && (
+                    <motion.div
+                        initial={{ y: 100, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 100, opacity: 0 }}
+                        className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50"
+                    >
+                        <div className="bg-gray-900 text-white pl-6 pr-2 py-2 rounded-full shadow-2xl flex items-center space-x-6 border border-gray-700">
+                            <div className="flex items-center space-x-3">
+                                <ShieldAlert className="w-5 h-5 text-amber-400 animate-pulse" />
+                                <span className="text-sm font-medium">
+                                    {Object.keys(unsavedChanges).length} unsaved updates
+                                </span>
+                            </div>
                             <button
-                                onClick={handleCancel}
+                                onClick={saveChanges}
                                 disabled={saving}
-                                className="px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg 
-                         transition-colors border border-gray-200 flex items-center gap-2"
+                                className="bg-gradient-to-r from-maroon-600 to-maroon-700 hover:from-maroon-500 hover:to-maroon-600 
+                                         text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all 
+                                         flex items-center shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                <X className="w-4 h-4" />
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleSave}
-                                disabled={saving}
-                                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg 
-                         transition-colors flex items-center gap-2 disabled:opacity-50"
-                            >
-                                <Save className="w-4 h-4" />
+                                {saving ? (
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                ) : (
+                                    <Save className="w-4 h-4 mr-2" />
+                                )}
                                 {saving ? 'Saving...' : 'Save Changes'}
                             </button>
                         </div>
                     </motion.div>
                 )}
-
-                {/* Stock Levels Table */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
-                                <tr>
-                                    <th className="px-6 py-4 text-left font-bold text-gray-800 sticky left-0 bg-gray-50">
-                                        Location
-                                    </th>
-                                    {drugs.map(drug => (
-                                        <th key={drug.id} className="px-6 py-4 text-center font-bold text-gray-800 min-w-[150px]">
-                                            <div className="flex flex-col">
-                                                <span>{drug.name}</span>
-                                                <span className="text-xs font-normal text-gray-500">{drug.category}</span>
-                                            </div>
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {locations.map((location, index) => (
-                                    <tr key={location.id} className={`hover:bg-blue-50 transition-colors
-                    ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
-                                        <td className="px-6 py-4 font-semibold text-gray-900 sticky left-0 bg-inherit">
-                                            <div>
-                                                {location.name}
-                                                <div className="text-xs font-normal text-gray-500">{location.type}</div>
-                                            </div>
-                                        </td>
-                                        {drugs.map(drug => {
-                                            const currentValue = getMinStock(location.id, drug.id)
-                                            const isEdited = editedLevels[`${location.id}-${drug.id}`] !== undefined
-
-                                            return (
-                                                <td key={drug.id} className="px-6 py-4">
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        value={currentValue}
-                                                        onChange={(e) => handleMinStockChange(location.id, drug.id, e.target.value)}
-                                                        className={`w-24 px-3 py-2 text-center border-2 rounded-lg transition-colors
-                              ${isEdited
-                                                                ? 'border-blue-500 bg-blue-50'
-                                                                : 'border-gray-200 focus:border-maroon-500'
-                                                            } focus:outline-none`}
-                                                    />
-                                                </td>
-                                            )
-                                        })}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                {/* Help Text */}
-                <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
-                    <div className="flex gap-3">
-                        <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                        <div className="text-sm text-amber-900">
-                            <p className="font-semibold mb-1">About Minimum Stock Levels</p>
-                            <p>
-                                These thresholds trigger low stock notifications. When available stock falls below the minimum level,
-                                pharmacists will receive alerts to reorder or transfer stock. Changes are saved automatically to the database.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </AnimatePresence>
         </div>
     )
 }
