@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { Plus, Save, X } from 'lucide-react'
 import { useNotification } from '../contexts/NotificationContext'
 
-export default function AdminCatalog() {
+export default function AdminCatalogue() {
     const { success, error: showError } = useNotification()
     const [isAdding, setIsAdding] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -28,7 +28,7 @@ export default function AdminCatalog() {
             })
 
             if (response.ok) {
-                success('Drug Added', `${formData.name} has been added to the catalog`)
+                success('Drug Added', `${formData.name} has been added to the catalogue`)
                 setIsAdding(false)
                 setFormData({ name: '', category: '', storage_temp: '<25°C', unit_price: '' })
             } else {
@@ -44,7 +44,7 @@ export default function AdminCatalog() {
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold">Drug Catalog</h2>
+                <h2 className="text-xl font-bold">Drug Catalogue</h2>
                 <button
                     onClick={() => setIsAdding(!isAdding)}
                     className="flex items-center gap-2 px-4 py-2 bg-maroon-600 text-white rounded-lg hover:bg-maroon-700 transition-colors"
@@ -124,7 +124,7 @@ export default function AdminCatalog() {
             )}
 
             <div className="text-center text-gray-500 py-8 bg-gray-50 rounded-xl border-2 border-dashed">
-                Catalog list view would go here...
+                Catalogue list view would go here...
             </div>
         </div>
     )

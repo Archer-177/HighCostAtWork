@@ -113,7 +113,7 @@ export default function Settings() {
   }
 
   const tabs = [
-    { id: 'drugs', label: 'Medicine Catalog', icon: Pill },
+    { id: 'drugs', label: 'Medicine Catalogue', icon: Pill },
     { id: 'locations', label: 'Locations', icon: MapPin },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'security', label: 'Security', icon: Shield }
@@ -170,7 +170,7 @@ export default function Settings() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <DrugsCatalog
+                <DrugsCatalogue
                   drugs={drugs}
                   onAdd={() => handleOpenModal('drug')}
                   onEdit={(drug) => handleOpenModal('drug', drug)}
@@ -253,14 +253,14 @@ export default function Settings() {
   )
 }
 
-// Drugs Catalog Component
-function DrugsCatalog({ drugs, onAdd, onEdit, onDelete }) {
+// Drugs Catalogue Component
+function DrugsCatalogue({ drugs, onAdd, onEdit, onDelete }) {
   const { success, error: showError } = useNotification()
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
       <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-        <h2 className="text-xl font-bold">Medicine Catalog</h2>
+        <h2 className="text-xl font-bold">Medicine Catalogue</h2>
         <button
           onClick={onAdd}
           className="px-4 py-2 bg-maroon-600 hover:bg-maroon-700 text-white 

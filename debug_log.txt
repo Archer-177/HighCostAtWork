@@ -2153,3 +2153,577 @@ ValueError: not enough values to unpack (expected 2, got 1)
 2025-11-30 11:54:59,322 - INFO - 127.0.0.1 - - [30/Nov/2025 11:54:59] "GET /api/stock/all HTTP/1.1" 200 -
 2025-11-30 11:54:59,393 - INFO - 127.0.0.1 - - [30/Nov/2025 11:54:59] "GET /api/stock/1 HTTP/1.1" 200 -
 2025-11-30 11:55:02,022 - INFO - 127.0.0.1 - - [30/Nov/2025 11:55:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:55:07,001 - INFO - 127.0.0.1 - - [30/Nov/2025 11:55:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:55:12,005 - INFO - 127.0.0.1 - - [30/Nov/2025 11:55:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:55:17,039 - INFO - 127.0.0.1 - - [30/Nov/2025 11:55:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:55:22,021 - INFO - 127.0.0.1 - - [30/Nov/2025 11:55:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:55:27,006 - INFO - 127.0.0.1 - - [30/Nov/2025 11:55:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:55:32,006 - INFO - 127.0.0.1 - - [30/Nov/2025 11:55:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:55:37,005 - INFO - 127.0.0.1 - - [30/Nov/2025 11:55:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:55:41,278 - INFO - 127.0.0.1 - - [30/Nov/2025 11:55:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:55:42,010 - INFO - 127.0.0.1 - - [30/Nov/2025 11:55:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:55:47,026 - INFO - 127.0.0.1 - - [30/Nov/2025 11:55:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:55:51,998 - INFO - 127.0.0.1 - - [30/Nov/2025 11:55:51] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:55:57,020 - INFO - 127.0.0.1 - - [30/Nov/2025 11:55:57] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:56:02,011 - INFO - 127.0.0.1 - - [30/Nov/2025 11:56:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:56:07,007 - INFO - 127.0.0.1 - - [30/Nov/2025 11:56:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:56:12,012 - INFO - 127.0.0.1 - - [30/Nov/2025 11:56:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:56:17,011 - INFO - 127.0.0.1 - - [30/Nov/2025 11:56:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:56:22,007 - INFO - 127.0.0.1 - - [30/Nov/2025 11:56:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:56:27,012 - INFO - 127.0.0.1 - - [30/Nov/2025 11:56:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:56:32,025 - INFO - 127.0.0.1 - - [30/Nov/2025 11:56:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:56:37,263 - INFO - 127.0.0.1 - - [30/Nov/2025 11:56:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:56:41,270 - INFO - 127.0.0.1 - - [30/Nov/2025 11:56:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:56:42,267 - INFO - 127.0.0.1 - - [30/Nov/2025 11:56:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:56:47,003 - INFO - 127.0.0.1 - - [30/Nov/2025 11:56:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:56:52,001 - INFO - 127.0.0.1 - - [30/Nov/2025 11:56:52] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:56:57,003 - INFO - 127.0.0.1 - - [30/Nov/2025 11:56:57] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:57:02,009 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:57:07,002 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:57:12,009 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:57:14,097 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:14] "GET /api/stock/10 HTTP/1.1" 200 -
+2025-11-30 11:57:17,012 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:57:21,530 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:21] "GET /api/stock/1 HTTP/1.1" 200 -
+2025-11-30 11:57:22,005 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:57:25,224 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:25] "GET /api/stock/9 HTTP/1.1" 200 -
+2025-11-30 11:57:27,004 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:57:28,722 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:28] "GET /api/stock/7 HTTP/1.1" 200 -
+2025-11-30 11:57:32,007 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:57:35,419 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:35] "GET /api/stock/1 HTTP/1.1" 200 -
+2025-11-30 11:57:37,003 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:57:41,284 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:57:41,999 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:57:47,023 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:57:52,007 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:52] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:57:57,010 - INFO - 127.0.0.1 - - [30/Nov/2025 11:57:57] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:58:02,006 - INFO - 127.0.0.1 - - [30/Nov/2025 11:58:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:58:07,008 - INFO - 127.0.0.1 - - [30/Nov/2025 11:58:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:58:12,008 - INFO - 127.0.0.1 - - [30/Nov/2025 11:58:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:58:17,010 - INFO - 127.0.0.1 - - [30/Nov/2025 11:58:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:58:22,000 - INFO - 127.0.0.1 - - [30/Nov/2025 11:58:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:58:27,007 - INFO - 127.0.0.1 - - [30/Nov/2025 11:58:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:58:32,001 - INFO - 127.0.0.1 - - [30/Nov/2025 11:58:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:58:37,009 - INFO - 127.0.0.1 - - [30/Nov/2025 11:58:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:58:41,297 - INFO - 127.0.0.1 - - [30/Nov/2025 11:58:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:58:42,001 - INFO - 127.0.0.1 - - [30/Nov/2025 11:58:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:58:47,000 - INFO - 127.0.0.1 - - [30/Nov/2025 11:58:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:58:52,010 - INFO - 127.0.0.1 - - [30/Nov/2025 11:58:52] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:58:57,014 - INFO - 127.0.0.1 - - [30/Nov/2025 11:58:57] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:59:02,035 - INFO - 127.0.0.1 - - [30/Nov/2025 11:59:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:59:06,998 - INFO - 127.0.0.1 - - [30/Nov/2025 11:59:06] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:59:12,008 - INFO - 127.0.0.1 - - [30/Nov/2025 11:59:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:59:17,007 - INFO - 127.0.0.1 - - [30/Nov/2025 11:59:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:59:22,010 - INFO - 127.0.0.1 - - [30/Nov/2025 11:59:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:59:27,009 - INFO - 127.0.0.1 - - [30/Nov/2025 11:59:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:59:32,008 - INFO - 127.0.0.1 - - [30/Nov/2025 11:59:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:59:37,013 - INFO - 127.0.0.1 - - [30/Nov/2025 11:59:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:59:41,273 - INFO - 127.0.0.1 - - [30/Nov/2025 11:59:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:59:42,007 - INFO - 127.0.0.1 - - [30/Nov/2025 11:59:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:59:47,004 - INFO - 127.0.0.1 - - [30/Nov/2025 11:59:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:59:52,011 - INFO - 127.0.0.1 - - [30/Nov/2025 11:59:52] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 11:59:56,996 - INFO - 127.0.0.1 - - [30/Nov/2025 11:59:56] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:00:02,000 - INFO - 127.0.0.1 - - [30/Nov/2025 12:00:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:00:07,009 - INFO - 127.0.0.1 - - [30/Nov/2025 12:00:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:00:12,003 - INFO - 127.0.0.1 - - [30/Nov/2025 12:00:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:00:16,999 - INFO - 127.0.0.1 - - [30/Nov/2025 12:00:16] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:00:22,003 - INFO - 127.0.0.1 - - [30/Nov/2025 12:00:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:00:27,254 - INFO - 127.0.0.1 - - [30/Nov/2025 12:00:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:00:32,265 - INFO - 127.0.0.1 - - [30/Nov/2025 12:00:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:00:37,261 - INFO - 127.0.0.1 - - [30/Nov/2025 12:00:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:00:41,264 - INFO - 127.0.0.1 - - [30/Nov/2025 12:00:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:00:42,259 - INFO - 127.0.0.1 - - [30/Nov/2025 12:00:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:00:47,263 - INFO - 127.0.0.1 - - [30/Nov/2025 12:00:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:00:52,271 - INFO - 127.0.0.1 - - [30/Nov/2025 12:00:52] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:00:57,270 - INFO - 127.0.0.1 - - [30/Nov/2025 12:00:57] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:01:02,266 - INFO - 127.0.0.1 - - [30/Nov/2025 12:01:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:01:07,270 - INFO - 127.0.0.1 - - [30/Nov/2025 12:01:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:01:12,258 - INFO - 127.0.0.1 - - [30/Nov/2025 12:01:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:01:17,257 - INFO - 127.0.0.1 - - [30/Nov/2025 12:01:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:01:22,268 - INFO - 127.0.0.1 - - [30/Nov/2025 12:01:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:01:41,283 - INFO - 127.0.0.1 - - [30/Nov/2025 12:01:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:01:41,284 - INFO - 127.0.0.1 - - [30/Nov/2025 12:01:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:01:50,501 - INFO - 127.0.0.1 - - [30/Nov/2025 12:01:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:01:52,004 - INFO - 127.0.0.1 - - [30/Nov/2025 12:01:52] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:01:57,260 - INFO - 127.0.0.1 - - [30/Nov/2025 12:01:57] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:02:02,262 - INFO - 127.0.0.1 - - [30/Nov/2025 12:02:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:02:07,268 - INFO - 127.0.0.1 - - [30/Nov/2025 12:02:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:02:12,261 - INFO - 127.0.0.1 - - [30/Nov/2025 12:02:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:02:17,268 - INFO - 127.0.0.1 - - [30/Nov/2025 12:02:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:02:22,265 - INFO - 127.0.0.1 - - [30/Nov/2025 12:02:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:02:27,261 - INFO - 127.0.0.1 - - [30/Nov/2025 12:02:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:02:32,270 - INFO - 127.0.0.1 - - [30/Nov/2025 12:02:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:02:37,266 - INFO - 127.0.0.1 - - [30/Nov/2025 12:02:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:02:41,278 - INFO - 127.0.0.1 - - [30/Nov/2025 12:02:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:02:42,018 - INFO - 127.0.0.1 - - [30/Nov/2025 12:02:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:02:47,275 - INFO - 127.0.0.1 - - [30/Nov/2025 12:02:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:02:52,261 - INFO - 127.0.0.1 - - [30/Nov/2025 12:02:52] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:02:57,271 - INFO - 127.0.0.1 - - [30/Nov/2025 12:02:57] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:03:02,269 - INFO - 127.0.0.1 - - [30/Nov/2025 12:03:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:03:07,260 - INFO - 127.0.0.1 - - [30/Nov/2025 12:03:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:03:12,286 - INFO - 127.0.0.1 - - [30/Nov/2025 12:03:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:03:17,263 - INFO - 127.0.0.1 - - [30/Nov/2025 12:03:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:03:22,268 - INFO - 127.0.0.1 - - [30/Nov/2025 12:03:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:03:27,270 - INFO - 127.0.0.1 - - [30/Nov/2025 12:03:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:03:32,267 - INFO - 127.0.0.1 - - [30/Nov/2025 12:03:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:03:37,265 - INFO - 127.0.0.1 - - [30/Nov/2025 12:03:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:03:42,265 - INFO - 127.0.0.1 - - [30/Nov/2025 12:03:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:05:09,430 - INFO - Server started on port 5000
+2025-11-30 12:05:09,639 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-11-30 12:05:09,639 - INFO - [33mPress CTRL+C to quit[0m
+2025-11-30 12:05:10,687 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:10] "GET / HTTP/1.1" 200 -
+2025-11-30 12:05:10,751 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:10] "GET /static/index-d847623a.js HTTP/1.1" 200 -
+2025-11-30 12:05:10,751 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:10] "GET /static/index-b1545b12.css HTTP/1.1" 200 -
+2025-11-30 12:05:15,943 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:05:18,775 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:18] "POST /api/login HTTP/1.1" 200 -
+2025-11-30 12:05:19,072 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:19] "GET /api/dashboard/1 HTTP/1.1" 200 -
+2025-11-30 12:05:24,156 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:05:24,839 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:24] "GET /api/drugs HTTP/1.1" 200 -
+2025-11-30 12:05:28,560 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:28] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:05:28,574 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:28] "GET /api/transfers/1 HTTP/1.1" 200 -
+2025-11-30 12:05:28,626 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:28] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:05:28,647 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:28] "GET /api/stock/all HTTP/1.1" 200 -
+2025-11-30 12:05:28,729 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:28] "GET /api/stock/1 HTTP/1.1" 200 -
+2025-11-30 12:05:29,047 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:05:34,048 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:34] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:05:39,051 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:39] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:05:44,082 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:44] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:05:49,045 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:49] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:05:54,050 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:05:59,055 - INFO - 127.0.0.1 - - [30/Nov/2025 12:05:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:06:04,049 - INFO - 127.0.0.1 - - [30/Nov/2025 12:06:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:06:09,059 - INFO - 127.0.0.1 - - [30/Nov/2025 12:06:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:06:14,065 - INFO - 127.0.0.1 - - [30/Nov/2025 12:06:14] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:06:19,055 - INFO - 127.0.0.1 - - [30/Nov/2025 12:06:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:06:24,058 - INFO - 127.0.0.1 - - [30/Nov/2025 12:06:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:06:29,061 - INFO - 127.0.0.1 - - [30/Nov/2025 12:06:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:06:34,260 - INFO - 127.0.0.1 - - [30/Nov/2025 12:06:34] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:06:39,267 - INFO - 127.0.0.1 - - [30/Nov/2025 12:06:39] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:06:44,271 - INFO - 127.0.0.1 - - [30/Nov/2025 12:06:44] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:06:49,260 - INFO - 127.0.0.1 - - [30/Nov/2025 12:06:49] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:06:54,269 - INFO - 127.0.0.1 - - [30/Nov/2025 12:06:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:06:59,265 - INFO - 127.0.0.1 - - [30/Nov/2025 12:06:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:07:04,269 - INFO - 127.0.0.1 - - [30/Nov/2025 12:07:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:07:09,264 - INFO - 127.0.0.1 - - [30/Nov/2025 12:07:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:07:14,265 - INFO - 127.0.0.1 - - [30/Nov/2025 12:07:14] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:07:19,268 - INFO - 127.0.0.1 - - [30/Nov/2025 12:07:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:07:24,264 - INFO - 127.0.0.1 - - [30/Nov/2025 12:07:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:07:29,273 - INFO - 127.0.0.1 - - [30/Nov/2025 12:07:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:07:41,270 - INFO - 127.0.0.1 - - [30/Nov/2025 12:07:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:08:41,269 - INFO - 127.0.0.1 - - [30/Nov/2025 12:08:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:09:02,114 - INFO - 127.0.0.1 - - [30/Nov/2025 12:09:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:09:04,053 - INFO - 127.0.0.1 - - [30/Nov/2025 12:09:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:09:09,049 - INFO - 127.0.0.1 - - [30/Nov/2025 12:09:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:09:14,064 - INFO - 127.0.0.1 - - [30/Nov/2025 12:09:14] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:09:19,039 - INFO - 127.0.0.1 - - [30/Nov/2025 12:09:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:09:24,048 - INFO - 127.0.0.1 - - [30/Nov/2025 12:09:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:09:29,062 - INFO - 127.0.0.1 - - [30/Nov/2025 12:09:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:09:34,046 - INFO - 127.0.0.1 - - [30/Nov/2025 12:09:34] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:09:39,048 - INFO - 127.0.0.1 - - [30/Nov/2025 12:09:39] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:09:44,040 - INFO - 127.0.0.1 - - [30/Nov/2025 12:09:44] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:09:49,049 - INFO - 127.0.0.1 - - [30/Nov/2025 12:09:49] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:09:54,054 - INFO - 127.0.0.1 - - [30/Nov/2025 12:09:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:09:59,052 - INFO - 127.0.0.1 - - [30/Nov/2025 12:09:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:10:04,063 - INFO - 127.0.0.1 - - [30/Nov/2025 12:10:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:10:09,037 - INFO - 127.0.0.1 - - [30/Nov/2025 12:10:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:10:14,048 - INFO - 127.0.0.1 - - [30/Nov/2025 12:10:14] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:10:19,050 - INFO - 127.0.0.1 - - [30/Nov/2025 12:10:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:10:24,048 - INFO - 127.0.0.1 - - [30/Nov/2025 12:10:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:10:29,046 - INFO - 127.0.0.1 - - [30/Nov/2025 12:10:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:10:34,050 - INFO - 127.0.0.1 - - [30/Nov/2025 12:10:34] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:10:39,047 - INFO - 127.0.0.1 - - [30/Nov/2025 12:10:39] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:10:44,057 - INFO - 127.0.0.1 - - [30/Nov/2025 12:10:44] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:10:49,050 - INFO - 127.0.0.1 - - [30/Nov/2025 12:10:49] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:10:54,052 - INFO - 127.0.0.1 - - [30/Nov/2025 12:10:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:10:59,049 - INFO - 127.0.0.1 - - [30/Nov/2025 12:10:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:11:04,050 - INFO - 127.0.0.1 - - [30/Nov/2025 12:11:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:11:09,045 - INFO - 127.0.0.1 - - [30/Nov/2025 12:11:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:11:14,054 - INFO - 127.0.0.1 - - [30/Nov/2025 12:11:14] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:11:19,047 - INFO - 127.0.0.1 - - [30/Nov/2025 12:11:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:11:24,062 - INFO - 127.0.0.1 - - [30/Nov/2025 12:11:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:11:29,063 - INFO - 127.0.0.1 - - [30/Nov/2025 12:11:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:11:34,049 - INFO - 127.0.0.1 - - [30/Nov/2025 12:11:34] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:11:39,059 - INFO - 127.0.0.1 - - [30/Nov/2025 12:11:39] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:11:44,061 - INFO - 127.0.0.1 - - [30/Nov/2025 12:11:44] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:11:49,053 - INFO - 127.0.0.1 - - [30/Nov/2025 12:11:49] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:11:54,043 - INFO - 127.0.0.1 - - [30/Nov/2025 12:11:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:11:59,535 - INFO - 127.0.0.1 - - [30/Nov/2025 12:11:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:12:04,263 - INFO - 127.0.0.1 - - [30/Nov/2025 12:12:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:12:09,270 - INFO - 127.0.0.1 - - [30/Nov/2025 12:12:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:12:14,260 - INFO - 127.0.0.1 - - [30/Nov/2025 12:12:14] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:12:19,388 - INFO - 127.0.0.1 - - [30/Nov/2025 12:12:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:12:24,057 - INFO - 127.0.0.1 - - [30/Nov/2025 12:12:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:12:29,051 - INFO - 127.0.0.1 - - [30/Nov/2025 12:12:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:12:34,048 - INFO - 127.0.0.1 - - [30/Nov/2025 12:12:34] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:12:39,050 - INFO - 127.0.0.1 - - [30/Nov/2025 12:12:39] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:12:44,049 - INFO - 127.0.0.1 - - [30/Nov/2025 12:12:44] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:12:49,060 - INFO - 127.0.0.1 - - [30/Nov/2025 12:12:49] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:12:54,048 - INFO - 127.0.0.1 - - [30/Nov/2025 12:12:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:12:59,054 - INFO - 127.0.0.1 - - [30/Nov/2025 12:12:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:13:04,051 - INFO - 127.0.0.1 - - [30/Nov/2025 12:13:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:13:09,060 - INFO - 127.0.0.1 - - [30/Nov/2025 12:13:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:13:14,056 - INFO - 127.0.0.1 - - [30/Nov/2025 12:13:14] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:13:19,049 - INFO - 127.0.0.1 - - [30/Nov/2025 12:13:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:13:24,059 - INFO - 127.0.0.1 - - [30/Nov/2025 12:13:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:13:29,053 - INFO - 127.0.0.1 - - [30/Nov/2025 12:13:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:13:34,047 - INFO - 127.0.0.1 - - [30/Nov/2025 12:13:34] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:13:39,053 - INFO - 127.0.0.1 - - [30/Nov/2025 12:13:39] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:13:44,057 - INFO - 127.0.0.1 - - [30/Nov/2025 12:13:44] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:13:49,046 - INFO - 127.0.0.1 - - [30/Nov/2025 12:13:49] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:13:54,052 - INFO - 127.0.0.1 - - [30/Nov/2025 12:13:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:13:59,050 - INFO - 127.0.0.1 - - [30/Nov/2025 12:13:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:14:04,057 - INFO - 127.0.0.1 - - [30/Nov/2025 12:14:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:14:09,047 - INFO - 127.0.0.1 - - [30/Nov/2025 12:14:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:14:14,058 - INFO - 127.0.0.1 - - [30/Nov/2025 12:14:14] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:14:19,049 - INFO - 127.0.0.1 - - [30/Nov/2025 12:14:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:14:24,062 - INFO - 127.0.0.1 - - [30/Nov/2025 12:14:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:14:29,057 - INFO - 127.0.0.1 - - [30/Nov/2025 12:14:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:14:34,050 - INFO - 127.0.0.1 - - [30/Nov/2025 12:14:34] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:14:39,062 - INFO - 127.0.0.1 - - [30/Nov/2025 12:14:39] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:14:44,049 - INFO - 127.0.0.1 - - [30/Nov/2025 12:14:44] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:14:49,051 - INFO - 127.0.0.1 - - [30/Nov/2025 12:14:49] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:14:54,049 - INFO - 127.0.0.1 - - [30/Nov/2025 12:14:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:14:59,049 - INFO - 127.0.0.1 - - [30/Nov/2025 12:14:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:15:04,037 - INFO - 127.0.0.1 - - [30/Nov/2025 12:15:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:15:09,063 - INFO - 127.0.0.1 - - [30/Nov/2025 12:15:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:15:14,108 - INFO - 127.0.0.1 - - [30/Nov/2025 12:15:14] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:15:19,046 - INFO - 127.0.0.1 - - [30/Nov/2025 12:15:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:15:24,047 - INFO - 127.0.0.1 - - [30/Nov/2025 12:15:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:15:29,060 - INFO - 127.0.0.1 - - [30/Nov/2025 12:15:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:15:34,052 - INFO - 127.0.0.1 - - [30/Nov/2025 12:15:34] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:15:39,054 - INFO - 127.0.0.1 - - [30/Nov/2025 12:15:39] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:15:44,055 - INFO - 127.0.0.1 - - [30/Nov/2025 12:15:44] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:15:49,047 - INFO - 127.0.0.1 - - [30/Nov/2025 12:15:49] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:15:54,044 - INFO - 127.0.0.1 - - [30/Nov/2025 12:15:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:15:59,047 - INFO - 127.0.0.1 - - [30/Nov/2025 12:15:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:16:04,040 - INFO - 127.0.0.1 - - [30/Nov/2025 12:16:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:16:09,044 - INFO - 127.0.0.1 - - [30/Nov/2025 12:16:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:16:14,053 - INFO - 127.0.0.1 - - [30/Nov/2025 12:16:14] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:16:19,044 - INFO - 127.0.0.1 - - [30/Nov/2025 12:16:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:16:24,048 - INFO - 127.0.0.1 - - [30/Nov/2025 12:16:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:16:29,051 - INFO - 127.0.0.1 - - [30/Nov/2025 12:16:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:21:32,502 - WARNING - Heartbeat timeout - shutting down
+2025-11-30 12:28:18,132 - INFO - Server started on port 5000
+2025-11-30 12:28:18,316 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-11-30 12:28:18,316 - INFO - [33mPress CTRL+C to quit[0m
+2025-11-30 12:28:19,167 - INFO - 127.0.0.1 - - [30/Nov/2025 12:28:19] "GET / HTTP/1.1" 200 -
+2025-11-30 12:28:19,234 - INFO - 127.0.0.1 - - [30/Nov/2025 12:28:19] "GET /static/index-aca71051.js HTTP/1.1" 200 -
+2025-11-30 12:28:19,248 - INFO - 127.0.0.1 - - [30/Nov/2025 12:28:19] "GET /static/index-b1545b12.css HTTP/1.1" 200 -
+2025-11-30 12:28:24,443 - INFO - 127.0.0.1 - - [30/Nov/2025 12:28:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:28:29,427 - INFO - 127.0.0.1 - - [30/Nov/2025 12:28:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:28:30,486 - INFO - 127.0.0.1 - - [30/Nov/2025 12:28:30] "POST /api/login HTTP/1.1" 200 -
+2025-11-30 12:28:30,760 - INFO - 127.0.0.1 - - [30/Nov/2025 12:28:30] "GET /api/dashboard/2 HTTP/1.1" 200 -
+2025-11-30 12:28:35,738 - INFO - 127.0.0.1 - - [30/Nov/2025 12:28:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:28:36,499 - INFO - 127.0.0.1 - - [30/Nov/2025 12:28:36] "GET /api/drugs?t=1764467916454 HTTP/1.1" 200 -
+2025-11-30 12:28:40,735 - INFO - 127.0.0.1 - - [30/Nov/2025 12:28:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:28:45,730 - INFO - 127.0.0.1 - - [30/Nov/2025 12:28:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:28:46,842 - INFO - 127.0.0.1 - - [30/Nov/2025 12:28:46] "GET /api/dashboard/2 HTTP/1.1" 200 -
+2025-11-30 12:28:50,744 - INFO - 127.0.0.1 - - [30/Nov/2025 12:28:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:28:55,733 - INFO - 127.0.0.1 - - [30/Nov/2025 12:28:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:29:00,745 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:29:05,773 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:29:10,736 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:29:15,750 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:29:20,732 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:29:25,738 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:29:30,733 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:29:35,734 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:29:40,747 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:29:43,620 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:43] "GET /api/drugs HTTP/1.1" 200 -
+2025-11-30 12:29:45,738 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:29:46,932 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:46] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:29:46,952 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:46] "GET /api/transfers/2 HTTP/1.1" 200 -
+2025-11-30 12:29:46,988 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:46] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:29:47,008 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:47] "GET /api/stock/all HTTP/1.1" 200 -
+2025-11-30 12:29:47,068 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:47] "GET /api/stock/2 HTTP/1.1" 200 -
+2025-11-30 12:29:50,733 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:29:54,405 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:54] "GET /api/reports/usage?start_date=2025-10-31&end_date=2025-11-30 HTTP/1.1" 200 -
+2025-11-30 12:29:55,728 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:29:55,994 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:55] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:29:56,003 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:56] "GET /api/transfers/2 HTTP/1.1" 200 -
+2025-11-30 12:29:56,065 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:56] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:29:56,075 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:56] "GET /api/stock/all HTTP/1.1" 200 -
+2025-11-30 12:29:56,138 - INFO - 127.0.0.1 - - [30/Nov/2025 12:29:56] "GET /api/stock/2 HTTP/1.1" 200 -
+2025-11-30 12:30:00,731 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:30:08,872 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:08] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:30:13,900 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:13] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:30:15,185 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:15] "POST /api/login HTTP/1.1" 200 -
+2025-11-30 12:30:15,376 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:15] "GET /api/dashboard/1 HTTP/1.1" 200 -
+2025-11-30 12:30:20,349 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:30:25,342 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:30:27,510 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:27] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:30:27,622 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:27] "GET /api/transfers/1 HTTP/1.1" 200 -
+2025-11-30 12:30:27,646 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:27] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:30:27,669 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:27] "GET /api/stock/all HTTP/1.1" 200 -
+2025-11-30 12:30:27,671 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:27] "GET /api/stock/1 HTTP/1.1" 200 -
+2025-11-30 12:30:30,345 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:30:35,349 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:30:36,237 - ERROR - Exception on /api/transfer/4/approve [POST]
+Traceback (most recent call last):
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ~^^^^^^^^^^^^^^^^^
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Stock rotation\server.py", line 940, in handle_transfer_action
+    result, status = queue_write(update_transfer_logic)
+    ^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 1)
+2025-11-30 12:30:36,688 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:36] "[35m[1mPOST /api/transfer/4/approve HTTP/1.1[0m" 500 -
+2025-11-30 12:30:40,358 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:30:45,349 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:30:50,341 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:30:56,270 - INFO - 127.0.0.1 - - [30/Nov/2025 12:30:56] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:31:01,272 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:01] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:31:06,257 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:06] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:31:11,275 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:11] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:31:16,263 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:16] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:31:21,262 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:21] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:31:26,270 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:26] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:31:30,911 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:31:32,819 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:32] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:31:32,859 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:32] "GET /api/stock/all HTTP/1.1" 200 -
+2025-11-30 12:31:35,354 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:31:40,347 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:31:44,589 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:44] "GET /api/stock/10 HTTP/1.1" 200 -
+2025-11-30 12:31:45,375 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:31:50,340 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:31:50,805 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:50] "POST /api/create_transfer HTTP/1.1" 200 -
+2025-11-30 12:31:50,879 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:50] "GET /api/transfers/1 HTTP/1.1" 200 -
+2025-11-30 12:31:55,352 - INFO - 127.0.0.1 - - [30/Nov/2025 12:31:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:32:00,337 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:32:05,350 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:32:10,349 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:32:15,350 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:32:20,345 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:32:23,561 - ERROR - Exception on /api/transfer/6/complete [POST]
+Traceback (most recent call last):
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ~^^^^^^^^^^^^^^^^^
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Stock rotation\server.py", line 940, in handle_transfer_action
+    result, status = queue_write(update_transfer_logic)
+    ^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 1)
+2025-11-30 12:32:23,572 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:23] "[35m[1mPOST /api/transfer/6/complete HTTP/1.1[0m" 500 -
+2025-11-30 12:32:25,346 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:32:29,418 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:29] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:32:29,444 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:29] "GET /api/stock/all HTTP/1.1" 200 -
+2025-11-30 12:32:30,343 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:32:33,065 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:33] "GET /api/stock/1 HTTP/1.1" 200 -
+2025-11-30 12:32:35,351 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:32:40,350 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:32:45,341 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:32:50,351 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:32:55,348 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:32:58,902 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:58] "[31m[1mPOST /api/transfer/6/complete HTTP/1.1[0m" 409 -
+2025-11-30 12:32:58,952 - INFO - 127.0.0.1 - - [30/Nov/2025 12:32:58] "GET /api/transfers/1 HTTP/1.1" 200 -
+2025-11-30 12:33:00,346 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:33:05,342 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:33:10,341 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:33:14,325 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:14] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:33:14,367 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:14] "GET /api/stock/all HTTP/1.1" 200 -
+2025-11-30 12:33:15,356 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:33:18,146 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:18] "GET /api/stock/9 HTTP/1.1" 200 -
+2025-11-30 12:33:20,342 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:33:24,694 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:24] "GET /api/stock/1 HTTP/1.1" 200 -
+2025-11-30 12:33:25,336 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:33:30,343 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:33:35,354 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:33:40,340 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:33:45,356 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:33:47,300 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:47] "GET /api/stock/10 HTTP/1.1" 200 -
+2025-11-30 12:33:50,363 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:33:54,556 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:54] "GET /api/stock/1 HTTP/1.1" 200 -
+2025-11-30 12:33:55,343 - INFO - 127.0.0.1 - - [30/Nov/2025 12:33:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:34:00,343 - INFO - 127.0.0.1 - - [30/Nov/2025 12:34:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:34:01,724 - INFO - 127.0.0.1 - - [30/Nov/2025 12:34:01] "GET /api/stock/10 HTTP/1.1" 200 -
+2025-11-30 12:34:05,369 - INFO - 127.0.0.1 - - [30/Nov/2025 12:34:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:34:10,340 - INFO - 127.0.0.1 - - [30/Nov/2025 12:34:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:34:15,355 - INFO - 127.0.0.1 - - [30/Nov/2025 12:34:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:34:20,350 - INFO - 127.0.0.1 - - [30/Nov/2025 12:34:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:34:25,343 - INFO - 127.0.0.1 - - [30/Nov/2025 12:34:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:34:30,343 - INFO - 127.0.0.1 - - [30/Nov/2025 12:34:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:34:35,351 - INFO - 127.0.0.1 - - [30/Nov/2025 12:34:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:34:40,354 - INFO - 127.0.0.1 - - [30/Nov/2025 12:34:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:34:45,347 - INFO - 127.0.0.1 - - [30/Nov/2025 12:34:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:34:50,341 - INFO - 127.0.0.1 - - [30/Nov/2025 12:34:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:34:55,359 - INFO - 127.0.0.1 - - [30/Nov/2025 12:34:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:35:00,337 - INFO - 127.0.0.1 - - [30/Nov/2025 12:35:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:35:05,342 - INFO - 127.0.0.1 - - [30/Nov/2025 12:35:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:35:10,334 - INFO - 127.0.0.1 - - [30/Nov/2025 12:35:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:35:15,343 - INFO - 127.0.0.1 - - [30/Nov/2025 12:35:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:35:20,347 - INFO - 127.0.0.1 - - [30/Nov/2025 12:35:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:35:25,347 - INFO - 127.0.0.1 - - [30/Nov/2025 12:35:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:35:30,338 - INFO - 127.0.0.1 - - [30/Nov/2025 12:35:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:35:35,356 - INFO - 127.0.0.1 - - [30/Nov/2025 12:35:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:35:40,352 - INFO - 127.0.0.1 - - [30/Nov/2025 12:35:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:35:45,356 - INFO - 127.0.0.1 - - [30/Nov/2025 12:35:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:35:50,334 - INFO - 127.0.0.1 - - [30/Nov/2025 12:35:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:35:55,353 - INFO - 127.0.0.1 - - [30/Nov/2025 12:35:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:36:00,346 - INFO - 127.0.0.1 - - [30/Nov/2025 12:36:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:36:05,346 - INFO - 127.0.0.1 - - [30/Nov/2025 12:36:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:36:10,343 - INFO - 127.0.0.1 - - [30/Nov/2025 12:36:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:36:15,336 - INFO - 127.0.0.1 - - [30/Nov/2025 12:36:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:36:20,347 - INFO - 127.0.0.1 - - [30/Nov/2025 12:36:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:36:25,345 - INFO - 127.0.0.1 - - [30/Nov/2025 12:36:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:36:30,346 - INFO - 127.0.0.1 - - [30/Nov/2025 12:36:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:36:31,331 - INFO - 127.0.0.1 - - [30/Nov/2025 12:36:31] "GET /api/stock/9 HTTP/1.1" 200 -
+2025-11-30 12:36:35,336 - INFO - 127.0.0.1 - - [30/Nov/2025 12:36:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:36:37,974 - INFO - 127.0.0.1 - - [30/Nov/2025 12:36:37] "GET /api/stock/1 HTTP/1.1" 200 -
+2025-11-30 12:36:40,344 - INFO - 127.0.0.1 - - [30/Nov/2025 12:36:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:36:45,345 - INFO - 127.0.0.1 - - [30/Nov/2025 12:36:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:36:50,337 - INFO - 127.0.0.1 - - [30/Nov/2025 12:36:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:36:55,338 - INFO - 127.0.0.1 - - [30/Nov/2025 12:36:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:37:00,346 - INFO - 127.0.0.1 - - [30/Nov/2025 12:37:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:37:05,353 - INFO - 127.0.0.1 - - [30/Nov/2025 12:37:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:37:10,338 - INFO - 127.0.0.1 - - [30/Nov/2025 12:37:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:37:15,370 - INFO - 127.0.0.1 - - [30/Nov/2025 12:37:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:37:20,343 - INFO - 127.0.0.1 - - [30/Nov/2025 12:37:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:37:25,359 - INFO - 127.0.0.1 - - [30/Nov/2025 12:37:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:37:30,341 - INFO - 127.0.0.1 - - [30/Nov/2025 12:37:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:37:35,356 - INFO - 127.0.0.1 - - [30/Nov/2025 12:37:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:37:40,350 - INFO - 127.0.0.1 - - [30/Nov/2025 12:37:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:37:45,343 - INFO - 127.0.0.1 - - [30/Nov/2025 12:37:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:37:50,346 - INFO - 127.0.0.1 - - [30/Nov/2025 12:37:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:37:55,341 - INFO - 127.0.0.1 - - [30/Nov/2025 12:37:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:38:00,369 - INFO - 127.0.0.1 - - [30/Nov/2025 12:38:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:38:05,342 - INFO - 127.0.0.1 - - [30/Nov/2025 12:38:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:38:11,264 - INFO - 127.0.0.1 - - [30/Nov/2025 12:38:11] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:38:16,266 - INFO - 127.0.0.1 - - [30/Nov/2025 12:38:16] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:38:21,303 - INFO - 127.0.0.1 - - [30/Nov/2025 12:38:21] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:38:26,310 - INFO - 127.0.0.1 - - [30/Nov/2025 12:38:26] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:38:31,273 - INFO - 127.0.0.1 - - [30/Nov/2025 12:38:31] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:38:36,260 - INFO - 127.0.0.1 - - [30/Nov/2025 12:38:36] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:38:41,262 - INFO - 127.0.0.1 - - [30/Nov/2025 12:38:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:38:46,259 - INFO - 127.0.0.1 - - [30/Nov/2025 12:38:46] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:38:51,269 - INFO - 127.0.0.1 - - [30/Nov/2025 12:38:51] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:38:56,262 - INFO - 127.0.0.1 - - [30/Nov/2025 12:38:56] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:39:01,264 - INFO - 127.0.0.1 - - [30/Nov/2025 12:39:01] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:39:06,269 - INFO - 127.0.0.1 - - [30/Nov/2025 12:39:06] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:39:41,262 - INFO - 127.0.0.1 - - [30/Nov/2025 12:39:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:40:41,263 - INFO - 127.0.0.1 - - [30/Nov/2025 12:40:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:40:49,439 - INFO - 127.0.0.1 - - [30/Nov/2025 12:40:49] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:40:50,395 - INFO - 127.0.0.1 - - [30/Nov/2025 12:40:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:40:51,494 - ERROR - Exception on /api/transfer/3/approve [POST]
+Traceback (most recent call last):
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ~^^^^^^^^^^^^^^^^^
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Stock rotation\server.py", line 940, in handle_transfer_action
+    result, status = queue_write(update_transfer_logic)
+    ^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 1)
+2025-11-30 12:40:51,549 - INFO - 127.0.0.1 - - [30/Nov/2025 12:40:51] "[35m[1mPOST /api/transfer/3/approve HTTP/1.1[0m" 500 -
+2025-11-30 12:40:55,344 - INFO - 127.0.0.1 - - [30/Nov/2025 12:40:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:41:00,356 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:41:03,943 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:03] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:41:03,978 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:03] "GET /api/stock/all HTTP/1.1" 200 -
+2025-11-30 12:41:05,345 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:41:10,343 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:41:13,951 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:13] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:41:14,011 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:14] "GET /api/stock/all HTTP/1.1" 200 -
+2025-11-30 12:41:15,021 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:15] "GET /api/dashboard/1 HTTP/1.1" 200 -
+2025-11-30 12:41:15,336 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:41:17,987 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:17] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:41:18,158 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:18] "GET /api/transfers/1 HTTP/1.1" 200 -
+2025-11-30 12:41:18,170 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:18] "GET /api/stock/all HTTP/1.1" 200 -
+2025-11-30 12:41:18,427 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:18] "GET /api/stock/1 HTTP/1.1" 200 -
+2025-11-30 12:41:18,433 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:18] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:41:20,340 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:41:25,346 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:41:31,258 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:31] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:41:36,260 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:36] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:41:41,268 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:41:46,271 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:46] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:41:51,262 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:51] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:41:56,265 - INFO - 127.0.0.1 - - [30/Nov/2025 12:41:56] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:42:01,266 - INFO - 127.0.0.1 - - [30/Nov/2025 12:42:01] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:42:06,263 - INFO - 127.0.0.1 - - [30/Nov/2025 12:42:06] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:42:11,272 - INFO - 127.0.0.1 - - [30/Nov/2025 12:42:11] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:42:16,268 - INFO - 127.0.0.1 - - [30/Nov/2025 12:42:16] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:42:21,265 - INFO - 127.0.0.1 - - [30/Nov/2025 12:42:21] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:42:26,260 - INFO - 127.0.0.1 - - [30/Nov/2025 12:42:26] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:42:41,270 - INFO - 127.0.0.1 - - [30/Nov/2025 12:42:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:43:41,270 - INFO - 127.0.0.1 - - [30/Nov/2025 12:43:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:44:41,258 - INFO - 127.0.0.1 - - [30/Nov/2025 12:44:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:45:37,487 - INFO - 127.0.0.1 - - [30/Nov/2025 12:45:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:45:40,341 - INFO - 127.0.0.1 - - [30/Nov/2025 12:45:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:45:43,674 - ERROR - Exception on /api/transfer/4/complete [POST]
+Traceback (most recent call last):
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ~^^^^^^^^^^^^^^^^^
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Stock rotation\server.py", line 940, in handle_transfer_action
+    result, status = queue_write(update_transfer_logic)
+    ^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 1)
+2025-11-30 12:45:43,690 - INFO - 127.0.0.1 - - [30/Nov/2025 12:45:43] "[35m[1mPOST /api/transfer/4/complete HTTP/1.1[0m" 500 -
+2025-11-30 12:45:45,357 - INFO - 127.0.0.1 - - [30/Nov/2025 12:45:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:45:50,350 - INFO - 127.0.0.1 - - [30/Nov/2025 12:45:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:45:50,734 - INFO - 127.0.0.1 - - [30/Nov/2025 12:45:50] "GET /api/dashboard/1 HTTP/1.1" 200 -
+2025-11-30 12:45:53,221 - INFO - 127.0.0.1 - - [30/Nov/2025 12:45:53] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:45:53,280 - INFO - 127.0.0.1 - - [30/Nov/2025 12:45:53] "GET /api/transfers/1 HTTP/1.1" 200 -
+2025-11-30 12:45:53,284 - INFO - 127.0.0.1 - - [30/Nov/2025 12:45:53] "GET /api/locations HTTP/1.1" 200 -
+2025-11-30 12:45:53,304 - INFO - 127.0.0.1 - - [30/Nov/2025 12:45:53] "GET /api/stock/1 HTTP/1.1" 200 -
+2025-11-30 12:45:53,309 - INFO - 127.0.0.1 - - [30/Nov/2025 12:45:53] "GET /api/stock/all HTTP/1.1" 200 -
+2025-11-30 12:45:55,365 - INFO - 127.0.0.1 - - [30/Nov/2025 12:45:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:46:00,341 - INFO - 127.0.0.1 - - [30/Nov/2025 12:46:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:46:05,345 - INFO - 127.0.0.1 - - [30/Nov/2025 12:46:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:46:11,269 - INFO - 127.0.0.1 - - [30/Nov/2025 12:46:11] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:46:16,273 - INFO - 127.0.0.1 - - [30/Nov/2025 12:46:16] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:46:21,268 - INFO - 127.0.0.1 - - [30/Nov/2025 12:46:21] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:46:26,273 - INFO - 127.0.0.1 - - [30/Nov/2025 12:46:26] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:46:31,268 - INFO - 127.0.0.1 - - [30/Nov/2025 12:46:31] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:46:36,264 - INFO - 127.0.0.1 - - [30/Nov/2025 12:46:36] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:46:41,268 - INFO - 127.0.0.1 - - [30/Nov/2025 12:46:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:46:46,267 - INFO - 127.0.0.1 - - [30/Nov/2025 12:46:46] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:46:51,274 - INFO - 127.0.0.1 - - [30/Nov/2025 12:46:51] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:46:56,265 - INFO - 127.0.0.1 - - [30/Nov/2025 12:46:56] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:47:01,267 - INFO - 127.0.0.1 - - [30/Nov/2025 12:47:01] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:47:06,270 - INFO - 127.0.0.1 - - [30/Nov/2025 12:47:06] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:47:41,259 - INFO - 127.0.0.1 - - [30/Nov/2025 12:47:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:48:41,305 - INFO - 127.0.0.1 - - [30/Nov/2025 12:48:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:49:41,265 - INFO - 127.0.0.1 - - [30/Nov/2025 12:49:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:50:41,272 - INFO - 127.0.0.1 - - [30/Nov/2025 12:50:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:51:41,273 - INFO - 127.0.0.1 - - [30/Nov/2025 12:51:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:52:41,262 - INFO - 127.0.0.1 - - [30/Nov/2025 12:52:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:53:41,267 - INFO - 127.0.0.1 - - [30/Nov/2025 12:53:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:54:41,270 - INFO - 127.0.0.1 - - [30/Nov/2025 12:54:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 12:55:41,268 - INFO - 127.0.0.1 - - [30/Nov/2025 12:55:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-11-30 13:00:41,332 - WARNING - Heartbeat timeout - shutting down

@@ -186,34 +186,12 @@ export default function NetworkMap({ onSelectLocation, fromLocationId, toLocatio
 
     // Main render - network map with hub-and-spoke layout
     return (
-        <div className="bg-sand-50 p-8 rounded-3xl overflow-hidden relative min-h-[500px]">
+        <div className="bg-sand-50 p-8 rounded-3xl overflow-hidden relative min-h-[500px] flex flex-col">
             {/* Decorative background pattern */}
             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#8A2A2B_1px,transparent_1px)] [background-size:16px_16px]" />
 
-            {/* View Mode Toggle - Bottom Right */}
-            <div className="absolute bottom-4 right-4 z-20 bg-white/90 backdrop-blur rounded-lg shadow-sm border border-gray-200 p-1 flex gap-1">
-                <button
-                    onClick={() => setViewMode('expiry')}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${viewMode === 'expiry'
-                        ? 'bg-maroon-100 text-maroon-800 shadow-sm'
-                        : 'text-gray-600 hover:bg-gray-50'
-                        }`}
-                >
-                    Expiry Status
-                </button>
-                <button
-                    onClick={() => setViewMode('level')}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${viewMode === 'level'
-                        ? 'bg-maroon-100 text-maroon-800 shadow-sm'
-                        : 'text-gray-600 hover:bg-gray-50'
-                        }`}
-                >
-                    Stock Levels
-                </button>
-            </div>
-
             {/* Main grid layout - one column per hub */}
-            <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 mt-8">
+            <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 mt-8 flex-grow">
                 {hubs.map(hub => (
                     <div key={hub.id} className="bg-white/50 backdrop-blur-sm rounded-3xl p-6 border border-white/20">
                         {/* Render hub at the top */}
@@ -239,36 +217,61 @@ export default function NetworkMap({ onSelectLocation, fromLocationId, toLocatio
                 ))}
             </div>
 
-            {/* Legend - Bottom Left */}
-            <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 px-4 py-3 z-20">
-                <div className="flex items-center gap-4">
-                    {viewMode === 'expiry' ? (
-                        <>
-                            <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                                <span className="text-xs font-medium text-gray-700">&gt;90d</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-amber-500" />
-                                <span className="text-xs font-medium text-gray-700">30-90d</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-red-500" />
-                                <span className="text-xs font-medium text-gray-700">&lt;30d</span>
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                                <span className="text-xs font-medium text-gray-700">Adequate Stock</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-red-500" />
-                                <span className="text-xs font-medium text-gray-700">Low Stock</span>
-                            </div>
-                        </>
-                    )}
+            {/* Controls Footer - Integrated Layout */}
+            <div className="relative z-20 flex items-center justify-between mt-8 pt-4 border-t border-maroon-100/50">
+                {/* Legend - Left */}
+                <div className="flex items-center gap-6 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/40 shadow-sm">
+                    <div className="flex items-center gap-4">
+                        {viewMode === 'expiry' ? (
+                            <>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                                    <span className="text-xs font-medium text-gray-700">&gt;90d</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-amber-500" />
+                                    <span className="text-xs font-medium text-gray-700">30-90d</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-red-500" />
+                                    <span className="text-xs font-medium text-gray-700">&lt;30d</span>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                                    <span className="text-xs font-medium text-gray-700">Adequate Stock</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-red-500" />
+                                    <span className="text-xs font-medium text-gray-700">Low Stock</span>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                {/* View Mode Toggle - Right */}
+                <div className="bg-white/90 backdrop-blur rounded-lg shadow-sm border border-gray-200 p-1 flex gap-1">
+                    <button
+                        onClick={() => setViewMode('expiry')}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${viewMode === 'expiry'
+                            ? 'bg-maroon-100 text-maroon-800 shadow-sm'
+                            : 'text-gray-600 hover:bg-gray-50'
+                            }`}
+                    >
+                        Expiry Status
+                    </button>
+                    <button
+                        onClick={() => setViewMode('level')}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${viewMode === 'level'
+                            ? 'bg-maroon-100 text-maroon-800 shadow-sm'
+                            : 'text-gray-600 hover:bg-gray-50'
+                            }`}
+                    >
+                        Stock Levels
+                    </button>
                 </div>
             </div>
         </div>

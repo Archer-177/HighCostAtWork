@@ -17,10 +17,10 @@ export default function Login() {
     const result = await login(formData.username, formData.password)
 
     if (result.success) {
-      success('Welcome back!', 'Login successful')
+      success('Welcome back!', 'Log in successful')
       navigate('/')
     } else {
-      error('Login Failed', result.error || 'Invalid credentials')
+      error('Log In Failed', result.error || 'Invalid credentials')
     }
   }
 
@@ -138,7 +138,7 @@ export default function Login() {
                 </span>
               ) : (
                 <>
-                  <span className="relative z-10">Login</span>
+                  <span className="relative z-10">Log In</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-maroon-700 to-maroon-900 
                                 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                 </>
