@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database
+*.db
+*.sqlite3
+sys_data.dat
+
+# Logs
+debug_log.txt
+*.log
+
+# Build artifacts
+dist/
+build/
+*.spec
+
+# Environment variables
+.env
+.venv
+env/
+venv/
