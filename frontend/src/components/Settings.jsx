@@ -450,6 +450,7 @@ function UsersManagement({ users, onAdd, onEdit, onDelete }) {
               <th className="text-left py-3 px-6 font-semibold text-gray-700">Location</th>
               <th className="text-left py-3 px-6 font-semibold text-gray-700">Email</th>
               <th className="text-center py-3 px-6 font-semibold text-gray-700">Can Delegate</th>
+              <th className="text-center py-3 px-6 font-semibold text-gray-700">Supervisor</th>
               <th className="text-right py-3 px-6 font-semibold text-gray-700">Actions</th>
             </tr>
           </thead>
@@ -466,6 +467,13 @@ function UsersManagement({ users, onAdd, onEdit, onDelete }) {
                 <td className="py-3 px-6">{user.email || '-'}</td>
                 <td className="text-center py-3 px-6">
                   {user.can_delegate ? (
+                    <Check className="w-5 h-5 text-green-600 mx-auto" />
+                  ) : (
+                    <X className="w-5 h-5 text-gray-300 mx-auto" />
+                  )}
+                </td>
+                <td className="text-center py-3 px-6">
+                  {user.is_supervisor ? (
                     <Check className="w-5 h-5 text-green-600 mx-auto" />
                   ) : (
                     <X className="w-5 h-5 text-gray-300 mx-auto" />
@@ -615,7 +623,7 @@ function Modal({ type, item, locations, onClose, onSuccess }) {
           setFormData({ name: '', type: 'WARD', parent_hub_id: '' })
           break
         case 'user':
-          setFormData({ username: '', password: '', role: 'NURSE', location_id: '', email: '', can_delegate: false })
+          setFormData({ username: '', password: '', role: 'NURSE', location_id: '', email: '', can_delegate: false, is_supervisor: false })
           break
       }
     }
@@ -851,6 +859,19 @@ function Modal({ type, item, locations, onClose, onSuccess }) {
                 />
                 <label htmlFor="can_delegate" className="text-sm text-gray-700">
                   Can delegate tasks (e.g. signing)
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <input
+                  type="checkbox"
+                  id="is_supervisor"
+                  checked={formData.is_supervisor || false}
+                  onChange={(e) => setFormData({ ...formData, is_supervisor: e.target.checked })}
+                  className="w-4 h-4 text-maroon-600 rounded border-gray-300 focus:ring-maroon-500"
+                />
+                <label htmlFor="is_supervisor" className="text-sm text-gray-700">
+                  Site Supervisor (Admin access for site)
                 </label>
               </div>
             </>

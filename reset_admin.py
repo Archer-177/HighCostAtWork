@@ -14,7 +14,7 @@ def reset_admin():
     
     # Reset admin password
     password_hash = generate_password_hash('admin123')
-    cursor.execute("UPDATE users SET password_hash = ? WHERE username = 'admin'", (password_hash,))
+    cursor.execute("UPDATE users SET password_hash = ?, is_supervisor = 1 WHERE username = 'admin'", (password_hash,))
     
     if cursor.rowcount == 0:
         print("Admin user not found!")

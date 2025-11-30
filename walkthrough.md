@@ -56,3 +56,24 @@
 1.  **Create Transfer** from **Port Augusta Hub** to **Port Augusta ED** (Ward).
 2.  **Verify**:
     - Transfer is immediately **COMPLETED** and appears in History.
+
+## Site Supervisor Role Verification
+
+### Overview
+A new **Site Supervisor** permission has been added. Only users with this flag (and Pharmacist role) can access **Settings** and **Min Stock Levels**.
+
+### Verification Steps
+1.  **Login** as an existing Admin/Supervisor (e.g. `admin`).
+2.  Go to **Settings** -> **Users**.
+3.  **Create/Edit User**:
+    - Create a new Pharmacist user (e.g. `supervisor_user`).
+    - Check the **"Site Supervisor"** checkbox.
+    - Save.
+4.  **Logout** and **Login** as the new `supervisor_user`.
+5.  **Verify**:
+    - **Settings** and **Min Stock Levels** appear in the side menu.
+    - You can access these pages.
+6.  **Logout** and **Login** as a regular Pharmacist (without the flag).
+7.  **Verify**:
+    - **Settings** and **Min Stock Levels** are **HIDDEN** from the side menu.
+

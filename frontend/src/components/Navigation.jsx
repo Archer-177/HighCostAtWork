@@ -9,7 +9,7 @@ import { useAuth } from '../contexts/AuthContext'
 
 export default function Navigation() {
   const navigate = useNavigate()
-  const { user, logout, canReceiveStock, canTransferStock, canViewReports, canManageSettings } = useAuth()
+  const { user, logout, canReceiveStock, canTransferStock, canViewReports, canManageSettings, canViewStockLevels } = useAuth()
 
   const handleLogout = () => {
     logout()
@@ -45,7 +45,7 @@ export default function Navigation() {
       path: '/stock-levels',
       label: 'Min Stock Levels',
       icon: Package,
-      show: user?.role === 'PHARMACIST'
+      show: canViewStockLevels
     },
     {
       path: '/settings',

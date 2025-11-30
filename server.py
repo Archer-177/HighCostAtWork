@@ -83,6 +83,7 @@ def init_db():
                 role TEXT NOT NULL CHECK(role IN ('PHARMACIST', 'PHARMACY_TECH', 'NURSE')),
                 location_id INTEGER NOT NULL,
                 can_delegate BOOLEAN DEFAULT 0,
+                is_supervisor BOOLEAN DEFAULT 0,
                 email TEXT,
                 is_active BOOLEAN DEFAULT 1,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -166,6 +167,12 @@ def init_db():
         except sqlite3.OperationalError:
             pass  # Column already exists
 
+        # Add is_supervisor column to users table if it doesn't exist
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN is_supervisor BOOLEAN DEFAULT 0")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
+
         
         # Stock transfers
         cursor.execute('''
@@ -237,8 +244,8 @@ def init_db():
             
             # Insert default admin user (password: admin123)
             cursor.execute("""
-                INSERT INTO users (username, password_hash, role, location_id, can_delegate, email) 
-                VALUES ('admin', ?, 'PHARMACIST', ?, 1, 'admin@funlhn.health')
+                INSERT INTO users (username, password_hash, role, location_id, can_delegate, is_supervisor, email) 
+                VALUES ('admin', ?, 'PHARMACIST', ?, 1, 1, 'admin@funlhn.health')
             """, (generate_password_hash('admin123'), pa_hub_id))
 
         # --- POPULATE SAMPLE STOCK & LEVELS (If missing) ---
@@ -350,7 +357,9 @@ def login():
                         'location_name': user['location_name'],
                         'location_type': user['location_type'],
                         'parent_hub_id': user['parent_hub_id'],
+                        'parent_hub_id': user['parent_hub_id'],
                         'can_delegate': bool(user['can_delegate']),
+                        'is_supervisor': bool(user['is_supervisor']) if 'is_supervisor' in user.keys() else False,
                         'email': user['email']
                     }
                 })
@@ -1001,6 +1010,7 @@ def handle_users():
     role = data.get('role')
     location_id = data.get('location_id')
     can_delegate = data.get('can_delegate', 0)
+    is_supervisor = data.get('is_supervisor', 0)
     email = data.get('email')
 
     if not all([username, password, role, location_id]):
@@ -1014,9 +1024,9 @@ def handle_users():
 
         try:
             conn.execute("""
-                INSERT INTO users (username, password_hash, role, location_id, can_delegate, email)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (username, generate_password_hash(password), role, location_id, can_delegate, email))
+                INSERT INTO users (username, password_hash, role, location_id, can_delegate, is_supervisor, email)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (username, generate_password_hash(password), role, location_id, can_delegate, is_supervisor, email))
             conn.commit()
             return jsonify({"success": True}), 201
         except sqlite3.IntegrityError:
@@ -1037,7 +1047,9 @@ def handle_user_detail(user_id):
     role = data.get('role')
     location_id = data.get('location_id')
     email = data.get('email')
+    email = data.get('email')
     can_delegate = data.get('can_delegate', 0)
+    is_supervisor = data.get('is_supervisor', 0)
     password = data.get('password') # Optional
 
     # Validate location_id
@@ -1054,15 +1066,15 @@ def handle_user_detail(user_id):
             if password:
                 conn.execute("""
                     UPDATE users 
-                    SET username = ?, role = ?, location_id = ?, email = ?, can_delegate = ?, password_hash = ?, version = version + 1
+                    SET username = ?, role = ?, location_id = ?, email = ?, can_delegate = ?, is_supervisor = ?, password_hash = ?, version = version + 1
                     WHERE id = ?
-                """, (username, role, location_id, email, can_delegate, generate_password_hash(password), user_id))
+                """, (username, role, location_id, email, can_delegate, is_supervisor, generate_password_hash(password), user_id))
             else:
                 conn.execute("""
                     UPDATE users 
-                    SET username = ?, role = ?, location_id = ?, email = ?, can_delegate = ?, version = version + 1
+                    SET username = ?, role = ?, location_id = ?, email = ?, can_delegate = ?, is_supervisor = ?, version = version + 1
                     WHERE id = ?
-                """, (username, role, location_id, email, can_delegate, user_id))
+                """, (username, role, location_id, email, can_delegate, is_supervisor, user_id))
             
             conn.commit()
             return jsonify({"success": True})

@@ -55,11 +55,13 @@ export function AuthProvider({ children }) {
     isPharmacist: user?.role === 'PHARMACIST',
     isPharmacyTech: user?.role === 'PHARMACY_TECH',
     isNurse: user?.role === 'NURSE',
+    isSupervisor: user?.role === 'PHARMACIST' && user?.is_supervisor,
     canReceiveStock: user?.role === 'PHARMACIST' || user?.role === 'PHARMACY_TECH',
     canTransferStock: user?.role === 'PHARMACIST' || user?.role === 'PHARMACY_TECH',
     canApproveTransfers: user?.role === 'PHARMACIST' && user?.can_delegate,
     canViewReports: user?.role === 'PHARMACIST' || user?.role === 'PHARMACY_TECH',
-    canManageSettings: user?.role === 'PHARMACIST'
+    canManageSettings: user?.role === 'PHARMACIST' && user?.is_supervisor,
+    canViewStockLevels: user?.role === 'PHARMACIST' && user?.is_supervisor
   }
 
   return (
