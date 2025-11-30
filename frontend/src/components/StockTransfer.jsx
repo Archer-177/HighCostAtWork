@@ -608,9 +608,11 @@ function TransferCard({ transfer, onUpdate, readonly }) {
         showError('Update Conflict', 'Data has changed. Refreshing...')
         onUpdate?.() // Auto-refresh
       } else {
+        console.error('Transfer action failed:', data)
         showError(`Failed to ${action} transfer`, data.error)
       }
     } catch (err) {
+      console.error('Transfer action network error:', err)
       showError('Connection Error', `Failed to ${action} transfer`)
     } finally {
       setLoading(false)
@@ -627,12 +629,25 @@ function TransferCard({ transfer, onUpdate, readonly }) {
   const config = statusConfig[transfer.status]
   const StatusIcon = config.icon
 
-  // Determine if user can approve THIS transfer
-  // Must be a pharmacist AND from the destination hub (if it's a hub-to-hub transfer)
-  // For now, we'll assume if it needs approval, it's a hub-to-hub transfer
+  // Logic for Hub-to-Hub transfers
+  const isHubToHub = transfer.from_location_type === 'HUB' && transfer.to_location_type === 'HUB'
+  const needsApproval = isHubToHub
+
+  // 1. APPROVE: Only for PENDING Hub-to-Hub transfers, by Pharmacist at Destination
   const canApproveThisTransfer = canApproveTransfers &&
     transfer.status === 'PENDING' &&
+    needsApproval &&
     user.location_id === transfer.to_location_id
+
+  // 2. RECEIVE: Only for IN_TRANSIT transfers, by anyone at Destination
+  // Note: Hub-to-Remote starts as IN_TRANSIT, so they can receive immediately.
+  // Hub-to-Hub becomes IN_TRANSIT after approval.
+  const canReceiveThisTransfer = transfer.status === 'IN_TRANSIT' &&
+    user.location_id === transfer.to_location_id
+
+  // 3. CANCEL: Only for PENDING transfers, by Creator or Source Location
+  const canCancelThisTransfer = transfer.status === 'PENDING' &&
+    (user.id === transfer.created_by || user.location_id === transfer.from_location_id)
 
   return (
     <motion.div
@@ -679,27 +694,25 @@ function TransferCard({ transfer, onUpdate, readonly }) {
             <button
               onClick={() => handleAction('approve')}
               disabled={loading}
-              className="px-4 py-2 bg-maroon-600 text-white rounded-lg hover:bg-maroon-700 disabled:opacity-50"
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2"
             >
+              <CheckCircle className="w-4 h-4" />
               Approve
             </button>
           )}
 
-          {/* Only show Complete/Cancel if user has permission AND it's in the right state */}
-          {/* Complete: Only if IN_TRANSIT (or PENDING if no approval needed) AND user is at destination */}
-          {(transfer.status === 'IN_TRANSIT' || (transfer.status === 'PENDING' && !transfer.needs_approval)) &&
-            user.location_id === transfer.to_location_id && (
-              <button
-                onClick={() => handleAction('complete')}
-                disabled={loading}
-                className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50"
-              >
-                Receive
-              </button>
-            )}
+          {canReceiveThisTransfer && (
+            <button
+              onClick={() => handleAction('complete')}
+              disabled={loading}
+              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 flex items-center gap-2"
+            >
+              <Package className="w-4 h-4" />
+              Receive
+            </button>
+          )}
 
-          {/* Cancel: Only if PENDING and user created it OR is at source location */}
-          {transfer.status === 'PENDING' && (user.id === transfer.created_by || user.location_id === transfer.from_location_id) && (
+          {canCancelThisTransfer && (
             <button
               onClick={() => handleAction('cancel')}
               disabled={loading}

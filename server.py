@@ -844,7 +844,9 @@ def get_transfers(location_id):
             SELECT 
                 t.*,
                 fl.name as from_location,
+                fl.type as from_location_type,
                 tl.name as to_location,
+                tl.type as to_location_type,
                 u.username as created_by_name,
                 COUNT(ti.id) as item_count
             FROM transfers t
@@ -869,7 +871,7 @@ def handle_transfer_action(transfer_id, action):
             cursor = conn.cursor()
             
             # Get transfer for version check
-            transfer = cursor.execute("SELECT version FROM transfers WHERE id = ?", (transfer_id,)).fetchone()
+            transfer = cursor.execute("SELECT * FROM transfers WHERE id = ?", (transfer_id,)).fetchone()
             if not transfer:
                 return {"error": "Transfer not found"}, 404
                 
@@ -879,18 +881,22 @@ def handle_transfer_action(transfer_id, action):
             
             if action == 'approve':
                 # Verify approver is from destination hub
-                transfer_full = cursor.execute("SELECT to_location_id FROM transfers WHERE id = ?", (transfer_id,)).fetchone()
+                # We already fetched the transfer, so we can check to_location_id directly
                 approver = cursor.execute("SELECT location_id FROM users WHERE id = ?", (user_id,)).fetchone()
                 
-                if not approver or not transfer_full or approver['location_id'] != transfer_full['to_location_id']:
+                if not approver or approver['location_id'] != transfer['to_location_id']:
                     return {"error": "Only pharmacists from the receiving hub can approve this transfer"}, 403
 
+                # STRICT CHECK: Only update if status is PENDING
                 cursor.execute("""
                     UPDATE transfers 
                     SET status = 'IN_TRANSIT', approved_by = ?, approved_at = CURRENT_TIMESTAMP, version = version + 1
                     WHERE id = ? AND status = 'PENDING'
                 """, (user_id, transfer_id))
                 
+                if cursor.rowcount == 0:
+                    return {"error": "Transfer is not in PENDING state or has already been modified"}, 400
+
                 # Update vial statuses
                 cursor.execute("""
                     UPDATE vials 
@@ -899,18 +905,15 @@ def handle_transfer_action(transfer_id, action):
                 """, (transfer_id,))
                 
             elif action == 'complete':
-                # Get transfer details
-                transfer = cursor.execute("SELECT * FROM transfers WHERE id = ?", (transfer_id,)).fetchone()
-                
-                if not transfer:
-                    return {"error": "Transfer not found"}, 404
-                    
-                # Mark transfer as completed
+                # STRICT CHECK: Only update if status is IN_TRANSIT
                 cursor.execute("""
                     UPDATE transfers 
                     SET status = 'COMPLETED', completed_at = CURRENT_TIMESTAMP, version = version + 1
                     WHERE id = ? AND status = 'IN_TRANSIT'
                 """, (transfer_id,))
+                
+                if cursor.rowcount == 0:
+                    return {"error": "Transfer is not in IN_TRANSIT state or has already been modified"}, 400
                 
                 # Move vials to destination
                 cursor.execute("""
@@ -920,12 +923,15 @@ def handle_transfer_action(transfer_id, action):
                 """, (transfer['to_location_id'], transfer_id))
                 
             elif action == 'cancel':
-                # Mark transfer as cancelled
+                # STRICT CHECK: Only update if status is PENDING
                 cursor.execute("""
                     UPDATE transfers 
                     SET status = 'CANCELLED', version = version + 1
                     WHERE id = ? AND status = 'PENDING'
                 """, (transfer_id,))
+                
+                if cursor.rowcount == 0:
+                    return {"error": "Transfer is not in PENDING state or has already been modified"}, 400
                 
                 # Release vials back to source
                 cursor.execute("""
@@ -935,7 +941,7 @@ def handle_transfer_action(transfer_id, action):
                 """, (transfer_id,))
             
             conn.commit()
-            return {"success": True}
+            return {"success": True}, 200
 
     result, status = queue_write(update_transfer_logic)
     return jsonify(result), status
