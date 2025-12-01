@@ -1215,33 +1215,8 @@ def send_low_stock_notification(stock_info):
         # This is a stub for the SMTP server. 
         # In production, use: with smtplib.SMTP("smtp.server.com", 587) as server:
         logging.info("Attempting to send email...")
-        # server.sendmail(sender_email, receiver_email, message.as_string())
-        logging.info("Email sent successfully (Simulated)")
     except Exception as e:
         logging.error(f"Failed to send email: {e}")
-
-# 11. QR CODE GENERATION ENDPOINT
-@app.route('/api/generate_labels', methods=['POST'])
-def generate_labels():
-    asset_ids = request.json.get('asset_ids', [])
-    
-    # Generate ZPL commands for Zebra printer
-    zpl_commands = []
-    for asset_id in asset_ids:
-        zpl = f"""
-^XA
-^FO50,50^BY3
-^BCN,100,Y,N,N
-^FD{asset_id}^FS
-^FO50,180^A0N,30,30^FD{asset_id}^FS
-^XZ
-        """
-        zpl_commands.append(zpl)
-    
-    return jsonify({
-        'success': True,
-        'zpl_commands': zpl_commands
-    })
 
 # 12. HEARTBEAT & MONITORING
 last_heartbeat = time.time()

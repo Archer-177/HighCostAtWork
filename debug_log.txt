@@ -5169,3 +5169,19 @@ ValueError: not enough values to unpack (expected 2, got 1)
 2025-12-02 07:25:00,026 - INFO - 127.0.0.1 - - [02/Dec/2025 07:25:00] "POST /api/heartbeat HTTP/1.1" 200 -
 2025-12-02 07:25:05,028 - INFO - 127.0.0.1 - - [02/Dec/2025 07:25:05] "POST /api/heartbeat HTTP/1.1" 200 -
 2025-12-02 07:25:41,061 - INFO - 127.0.0.1 - - [02/Dec/2025 07:25:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 07:31:59,305 - INFO - Server started on port 5000
+2025-12-02 07:31:59,543 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-12-02 07:31:59,543 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-02 07:32:00,904 - INFO - 127.0.0.1 - - [02/Dec/2025 07:32:00] "GET / HTTP/1.1" 200 -
+2025-12-02 07:32:00,970 - INFO - 127.0.0.1 - - [02/Dec/2025 07:32:00] "GET /static/index-f80a2073.css HTTP/1.1" 200 -
+2025-12-02 07:32:01,392 - INFO - 127.0.0.1 - - [02/Dec/2025 07:32:01] "GET /static/index-d1d37f76.js HTTP/1.1" 200 -
+2025-12-02 07:32:06,644 - INFO - 127.0.0.1 - - [02/Dec/2025 07:32:06] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 07:32:11,715 - INFO - 127.0.0.1 - - [02/Dec/2025 07:32:11] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 07:32:12,914 - INFO - 127.0.0.1 - - [02/Dec/2025 07:32:12] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 07:32:13,266 - INFO - 127.0.0.1 - - [02/Dec/2025 07:32:13] "GET /api/dashboard/2 HTTP/1.1" 200 -
+2025-12-02 07:32:15,620 - INFO - 127.0.0.1 - - [02/Dec/2025 07:32:15] "GET /api/drugs?t=1764622935613 HTTP/1.1" 200 -
+2025-12-02 07:32:17,392 - INFO - 127.0.0.1 - - [02/Dec/2025 07:32:17] "[33mGET /api/settings HTTP/1.1[0m" 404 -
+2025-12-02 07:32:18,239 - INFO - 127.0.0.1 - - [02/Dec/2025 07:32:18] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 07:32:23,242 - INFO - 127.0.0.1 - - [02/Dec/2025 07:32:23] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 07:32:28,235 - INFO - 127.0.0.1 - - [02/Dec/2025 07:32:28] "POST /api/heartbeat HTTP/1.1" 200 -

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Search, Filter, Save, X, ChevronDown, ChevronRight, Building2, MapPin, Heart, Edit2, Shield, User, Trash2,
-  Pill, Users, Check, AlertCircle, DollarSign, Thermometer, Hash
+  Pill, Users, Check, AlertCircle, DollarSign, Thermometer, Hash, Printer
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNotification } from '../contexts/NotificationContext'
@@ -114,8 +114,9 @@ export default function Settings() {
 
   const tabs = [
     { id: 'drugs', label: 'Medicine Catalogue', icon: Pill },
-    { id: 'locations', label: 'Locations', icon: MapPin },
-    { id: 'users', label: 'Users', icon: Users },
+    { id: 'locations', label: 'Locations', icon: Building2 },
+    { id: 'users', label: 'User Management', icon: Users },
+    { id: 'printer', label: 'Printer', icon: Printer },
     { id: 'security', label: 'Security', icon: Shield }
   ]
 
@@ -211,6 +212,17 @@ export default function Settings() {
                   onDelete={(user) => handleDeleteRequest('user', user)}
                   currentUser={user}
                 />
+              </motion.div>
+            )}
+
+            {activeTab === 'printer' && (
+              <motion.div
+                key="printer"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <PrinterSettings />
               </motion.div>
             )}
 
@@ -545,6 +557,106 @@ function UsersManagement({ users, onAdd, onEdit, onDelete, currentUser }) {
           </tbody>
         </table>
       </div>
+    </div>
+  )
+}
+
+// Printer Settings Component
+function PrinterSettings() {
+  const { success, error: showError } = useNotification()
+  const [settings, setSettings] = useState({ printer_ip: '', printer_port: '9100' })
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    fetchSettings()
+  }, [])
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/settings')
+      if (response.ok) {
+        const data = await response.json()
+        setSettings({
+          printer_ip: data.printer_ip || '',
+          printer_port: data.printer_port || '9100'
+        })
+      }
+    } catch (err) {
+      showError('Failed to load printer settings')
+    }
+  }
+
+  const handleSave = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      const response = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+      })
+
+      if (response.ok) {
+        success('Settings Saved', 'Printer configuration updated successfully')
+      } else {
+        showError('Failed to save settings')
+      }
+    } catch (err) {
+      showError('Connection Error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+          <Printer className="w-5 h-5 text-blue-600" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Zebra Printer Configuration</h2>
+          <p className="text-sm text-gray-500">Configure network printer for label generation</p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSave} className="max-w-md space-y-6">
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">Printer IP Address</label>
+          <input
+            type="text"
+            value={settings.printer_ip}
+            onChange={(e) => setSettings({ ...settings, printer_ip: e.target.value })}
+            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
+                     focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+            placeholder="e.g., 192.168.1.100"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Leave blank to disable printing.
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">Port</label>
+          <input
+            type="number"
+            value={settings.printer_port}
+            onChange={(e) => setSettings({ ...settings, printer_port: e.target.value })}
+            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
+                     focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+            placeholder="Default: 9100"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-6 py-2 bg-maroon-600 hover:bg-maroon-700 text-white 
+                   font-medium rounded-lg transition-colors flex items-center gap-2"
+        >
+          {loading ? 'Saving...' : 'Save Configuration'}
+        </button>
+      </form>
     </div>
   )
 }
