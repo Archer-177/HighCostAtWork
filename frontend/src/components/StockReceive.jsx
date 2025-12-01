@@ -7,6 +7,7 @@ import {
 import { format } from 'date-fns'
 import { useAuth } from '../contexts/AuthContext'
 import { useNotification } from '../contexts/NotificationContext'
+import QRCode from 'react-qr-code'
 
 export default function StockReceive() {
   const { user } = useAuth()
@@ -312,8 +313,13 @@ export default function StockReceive() {
                     className="label-print border-2 border-dashed border-gray-300 rounded-lg p-4 
                              bg-gray-50 flex flex-col items-center justify-center"
                   >
-                    <div className="w-20 h-20 bg-black rounded mb-2 flex items-center justify-center">
-                      <span className="text-white text-xs">QR Code</span>
+                    <div className="w-20 h-20 bg-white rounded mb-2 flex items-center justify-center">
+                      <QRCode
+                        value={assetId}
+                        size={80}
+                        level="M"
+                        viewBox={`0 0 256 256`}
+                      />
                     </div>
                     <p className="font-mono font-bold text-sm">{assetId}</p>
                   </motion.div>
