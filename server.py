@@ -217,6 +217,16 @@ def init_db():
                 FOREIGN KEY (user_id) REFERENCES users(id)
             )
         ''')
+
+        # Settings table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS settings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                printer_ip TEXT,
+                printer_port TEXT,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
         
         # Insert initial data if empty
         cursor.execute("SELECT COUNT(*) FROM locations")
@@ -1217,6 +1227,180 @@ def send_low_stock_notification(stock_info):
         logging.info("Attempting to send email...")
     except Exception as e:
         logging.error(f"Failed to send email: {e}")
+
+# 11. SETTINGS
+@app.route('/api/settings', methods=['GET', 'POST'])
+def handle_settings():
+    if request.method == 'GET':
+        with get_db() as conn:
+            # Check if settings table exists (it should be created in init_db, but for safety)
+            try:
+                settings = conn.execute("SELECT * FROM settings LIMIT 1").fetchone()
+                if settings:
+                    return jsonify(dict(settings))
+                else:
+                    return jsonify({})
+            except sqlite3.OperationalError:
+                return jsonify({})
+
+    # POST - Save settings
+    data = request.json
+    printer_ip = data.get('printer_ip')
+    printer_port = data.get('printer_port')
+    label_width = data.get('label_width', 50)
+    label_height = data.get('label_height', 25)
+    margin_top = data.get('margin_top', 0)
+    margin_right = data.get('margin_right', 0)
+
+    with get_db() as conn:
+        cursor = conn.cursor()
+        # Ensure table exists (migration for existing DBs)
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS settings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                printer_ip TEXT,
+                printer_port TEXT,
+                label_width INTEGER DEFAULT 50,
+                label_height INTEGER DEFAULT 25,
+                margin_top INTEGER DEFAULT 0,
+                margin_right INTEGER DEFAULT 0,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Check if row exists
+        existing = cursor.execute("SELECT id FROM settings LIMIT 1").fetchone()
+
+        # Migration: Add columns if they don't exist (for existing DBs)
+        try:
+            cursor.execute("ALTER TABLE settings ADD COLUMN label_width INTEGER DEFAULT 50")
+        except sqlite3.OperationalError:
+            pass
+        try:
+            cursor.execute("ALTER TABLE settings ADD COLUMN label_height INTEGER DEFAULT 25")
+        except sqlite3.OperationalError:
+            pass
+        try:
+            cursor.execute("ALTER TABLE settings ADD COLUMN margin_top INTEGER DEFAULT 0")
+        except sqlite3.OperationalError:
+            pass
+        try:
+            cursor.execute("ALTER TABLE settings ADD COLUMN margin_right INTEGER DEFAULT 0")
+        except sqlite3.OperationalError:
+            pass
+        
+        if existing:
+            cursor.execute("""
+                UPDATE settings 
+                SET printer_ip = ?, printer_port = ?, label_width = ?, label_height = ?, margin_top = ?, margin_right = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            """, (printer_ip, printer_port, label_width, label_height, margin_top, margin_right, existing['id']))
+        else:
+            cursor.execute("""
+                INSERT INTO settings (printer_ip, printer_port, label_width, label_height, margin_top, margin_right)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (printer_ip, printer_port, label_width, label_height, margin_top, margin_right))
+        
+        conn.commit()
+        return jsonify({"success": True})
+
+@app.route('/api/generate_labels', methods=['POST'])
+def generate_labels():
+    data = request.json
+    asset_ids = data.get('asset_ids', [])
+    
+    if not asset_ids:
+        return jsonify({"error": "No assets provided"}), 400
+
+    with get_db() as conn:
+        # Get printer settings
+        settings = conn.execute("SELECT * FROM settings LIMIT 1").fetchone()
+        
+        if not settings or not settings['printer_ip']:
+            return jsonify({"error": "Printer not configured"}), 400
+            
+        # Convert to dict to use .get() safely
+        settings_dict = dict(settings)
+            
+        printer_ip = settings_dict['printer_ip']
+        printer_port = int(settings_dict['printer_port'] or 9100)
+        
+        # Calculate Offsets (203 DPI = 8 dots/mm)
+        dpi = 8
+        margin_top_mm = settings_dict.get('margin_top', 0) or 0
+        margin_right_mm = settings_dict.get('margin_right', 0) or 0
+        label_width_mm = settings_dict.get('label_width', 50) or 50
+        
+        # Top Offset
+        top_offset_dots = int(margin_top_mm * dpi)
+        
+        # Left Offset (to achieve Right Margin)
+        # Content width is approx 300 dots (based on font sizes and lengths)
+        # Let's assume a safe content width of 40mm (320 dots) for the text block
+        # Left Position = (Label Width - Right Margin - Content Width)
+        # However, ZPL ^LH sets the home position. 
+        # If we want 30mm from right, we need to know where "right" is.
+        # Right Edge = Label Width.
+        # Target Right Edge of Content = Label Width - Margin Right.
+        # Target Left Edge of Content = Target Right Edge - Content Width.
+        
+        # Simplified approach: Just use ^LH (Label Home) to shift everything.
+        # But ^LH shifts from Top-Left.
+        # So we need to calculate the Left shift.
+        # Let's assume the content is left-aligned by default at x=20.
+        # If user wants it 30mm from right:
+        # x = (LabelWidth - MarginRight) * 8 - (ContentWidthDots)
+        
+        # Let's use a standard content width estimate.
+        # The longest line is likely the drug name or expiry.
+        # Let's assume the printed block is about 45mm wide (360 dots).
+        content_width_mm = 45
+        
+        # Calculate X position
+        # If margin_right is set, we override default left alignment
+        if margin_right_mm > 0:
+            x_pos = int((label_width_mm - margin_right_mm - content_width_mm) * dpi)
+            if x_pos < 0: x_pos = 0
+        else:
+            x_pos = 20 # Default left margin
+            
+        y_pos = top_offset_dots + 20 # Add base padding
+        
+        try:
+            # Connect to printer
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.settimeout(5) # 5 second timeout
+                s.connect((printer_ip, printer_port))
+                
+                for asset_id in asset_ids:
+                    # Get drug info for this asset
+                    vial = conn.execute("""
+                        SELECT v.*, d.name as drug_name, d.storage_temp 
+                        FROM vials v
+                        JOIN drugs d ON v.drug_id = d.id
+                        WHERE v.asset_id = ?
+                    """, (asset_id,)).fetchone()
+                    
+                    if vial:
+                        # Generate ZPL
+                        # Using calculated offsets
+                        zpl = f"""
+                        ^XA
+                        ^LH{x_pos},{top_offset_dots}
+                        ^FO0,20^BQN,2,4^FDQA,{asset_id}^FS
+                        ^FO120,20^A0N,30,30^FD{vial['drug_name'][:20]}^FS
+                        ^FO120,55^A0N,25,25^FDExp: {vial['expiry_date']}^FS
+                        ^FO120,85^A0N,25,25^FD{asset_id}^FS
+                        ^FO120,115^A0N,20,20^FD{vial['storage_temp']}^FS
+                        ^XZ
+                        """
+                        s.sendall(zpl.encode('utf-8'))
+                        
+            return jsonify({"success": True, "message": f"Sent {len(asset_ids)} labels to printer"})
+            
+        except Exception as e:
+            logging.error(f"Printer error: {str(e)}")
+            return jsonify({"error": f"Printer connection failed: {str(e)}"}), 500
 
 # 12. HEARTBEAT & MONITORING
 last_heartbeat = time.time()
