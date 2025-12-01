@@ -175,6 +175,7 @@ export default function Settings() {
                   onAdd={() => handleOpenModal('drug')}
                   onEdit={(drug) => handleOpenModal('drug', drug)}
                   onDelete={(drug) => handleDeleteRequest('drug', drug)}
+                  currentUser={user}
                 />
               </motion.div>
             )}
@@ -191,6 +192,7 @@ export default function Settings() {
                   onAdd={() => handleOpenModal('location')}
                   onEdit={(location) => handleOpenModal('location', location)}
                   onDelete={(location) => handleDeleteRequest('location', location)}
+                  currentUser={user}
                 />
               </motion.div>
             )}
@@ -207,6 +209,7 @@ export default function Settings() {
                   onAdd={() => handleOpenModal('user')}
                   onEdit={(user) => handleOpenModal('user', user)}
                   onDelete={(user) => handleDeleteRequest('user', user)}
+                  currentUser={user}
                 />
               </motion.div>
             )}
@@ -218,7 +221,7 @@ export default function Settings() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <SecuritySettings user={user} />
+                <SecuritySettings currentUser={user} />
               </motion.div>
             )}
           </>
@@ -231,6 +234,7 @@ export default function Settings() {
           type={modalType}
           item={editItem}
           locations={locations}
+          currentUser={user}
           onClose={handleCloseModal}
           onSuccess={() => {
             handleCloseModal()
@@ -254,21 +258,26 @@ export default function Settings() {
 }
 
 // Drugs Catalogue Component
-function DrugsCatalogue({ drugs, onAdd, onEdit, onDelete }) {
+function DrugsCatalogue({ drugs, onAdd, onEdit, onDelete, currentUser }) {
   const { success, error: showError } = useNotification()
+
+  // Only allow editing/adding drugs if the user is a pharmacist
+  const canManageDrugs = currentUser?.role === 'PHARMACIST';
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
       <div className="p-6 border-b border-gray-100 flex items-center justify-between">
         <h2 className="text-xl font-bold">Medicine Catalogue</h2>
-        <button
-          onClick={onAdd}
-          className="px-4 py-2 bg-maroon-600 hover:bg-maroon-700 text-white 
+        {canManageDrugs && (
+          <button
+            onClick={onAdd}
+            className="px-4 py-2 bg-maroon-600 hover:bg-maroon-700 text-white 
                    font-medium rounded-lg transition-colors flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Add Medicine
-        </button>
+          >
+            <Plus className="w-4 h-4" />
+            Add Medicine
+          </button>
+        )}
       </div>
 
       <div className="overflow-x-auto">
@@ -300,20 +309,24 @@ function DrugsCatalogue({ drugs, onAdd, onEdit, onDelete }) {
                   ${drug.unit_price.toFixed(2)}
                 </td>
                 <td className="text-right py-3 px-6">
-                  <div className="flex items-center justify-end gap-2">
-                    <button
-                      onClick={() => onEdit(drug)}
-                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <Edit2 className="w-4 h-4 text-gray-600" />
-                    </button>
-                    <button
-                      onClick={() => onDelete(drug)}
-                      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4 text-red-600" />
-                    </button>
-                  </div>
+                  {canManageDrugs ? (
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => onEdit(drug)}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <Edit2 className="w-4 h-4 text-gray-600" />
+                      </button>
+                      <button
+                        onClick={() => onDelete(drug)}
+                        className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4 text-red-600" />
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-gray-400 italic py-2">Read Only</span>
+                  )}
                 </td>
               </tr>
             ))}
@@ -325,7 +338,7 @@ function DrugsCatalogue({ drugs, onAdd, onEdit, onDelete }) {
 }
 
 // Locations Management Component
-function LocationsManagement({ locations, onAdd, onEdit, onDelete }) {
+function LocationsManagement({ locations, onAdd, onEdit, onDelete, currentUser }) {
   const { success, error: showError } = useNotification()
 
   const locationIcon = {
@@ -333,6 +346,9 @@ function LocationsManagement({ locations, onAdd, onEdit, onDelete }) {
     'WARD': Heart,
     'REMOTE': MapPin
   }
+
+  // Only allow managing locations if the user is a pharmacist
+  const canManageLocations = currentUser?.role === 'PHARMACIST';
 
   const handleSetMinStock = async (locationId, drugId, minStock) => {
     try {
@@ -354,19 +370,27 @@ function LocationsManagement({ locations, onAdd, onEdit, onDelete }) {
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
       <div className="p-6 border-b border-gray-100 flex items-center justify-between">
         <h2 className="text-xl font-bold">Locations</h2>
-        <button
-          onClick={onAdd}
-          className="px-4 py-2 bg-maroon-600 hover:bg-maroon-700 text-white 
+        {canManageLocations && (
+          <button
+            onClick={onAdd}
+            className="px-4 py-2 bg-maroon-600 hover:bg-maroon-700 text-white 
                    font-medium rounded-lg transition-colors flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Add Location
-        </button>
+          >
+            <Plus className="w-4 h-4" />
+            Add Location
+          </button>
+        )}
       </div>
 
       <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         {locations.map(location => {
           const Icon = locationIcon[location.type]
+          // 1. No one can edit HUBs
+          // 2. Supervisors can only edit their own hub hierarchy
+          const isHub = location.type === 'HUB'
+          const canEditLocation = !isHub && canManageLocations && (!currentUser?.is_supervisor ||
+            (location.id === currentUser.location_id || location.parent_hub_id === currentUser.location_id));
+
           return (
             <motion.div
               key={location.id}
@@ -388,22 +412,26 @@ function LocationsManagement({ locations, onAdd, onEdit, onDelete }) {
                   </div>
                 </div>
 
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => onEdit(location)}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                    title="Edit Location"
-                  >
-                    <Edit2 className="w-4 h-4 text-gray-600" />
-                  </button>
-                  <button
-                    onClick={() => onDelete(location)}
-                    className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                    title="Delete Location"
-                  >
-                    <Trash2 className="w-4 h-4 text-red-600" />
-                  </button>
-                </div>
+                {canEditLocation ? (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => onEdit(location)}
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      title="Edit Location"
+                    >
+                      <Edit2 className="w-4 h-4 text-gray-600" />
+                    </button>
+                    <button
+                      onClick={() => onDelete(location)}
+                      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Delete Location"
+                    >
+                      <Trash2 className="w-4 h-4 text-red-600" />
+                    </button>
+                  </div>
+                ) : (
+                  <span className="text-xs text-gray-400 italic py-2">Read Only</span>
+                )}
               </div>
 
               {location.parent_hub_id && (
@@ -420,25 +448,30 @@ function LocationsManagement({ locations, onAdd, onEdit, onDelete }) {
 }
 
 // Users Management Component
-function UsersManagement({ users, onAdd, onEdit, onDelete }) {
+function UsersManagement({ users, onAdd, onEdit, onDelete, currentUser }) {
   const roleColors = {
     'PHARMACIST': 'bg-purple-100 text-purple-700',
     'PHARMACY_TECH': 'bg-blue-100 text-blue-700',
     'NURSE': 'bg-green-100 text-green-700'
   }
 
+  // Only allow managing users if the current user is a pharmacist
+  const canManageUsers = currentUser?.role === 'PHARMACIST';
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
       <div className="p-6 border-b border-gray-100 flex items-center justify-between">
         <h2 className="text-xl font-bold">Users</h2>
-        <button
-          onClick={onAdd}
-          className="px-4 py-2 bg-maroon-600 hover:bg-maroon-700 text-white 
+        {canManageUsers && (
+          <button
+            onClick={onAdd}
+            className="px-4 py-2 bg-maroon-600 hover:bg-maroon-700 text-white 
                    font-medium rounded-lg transition-colors flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Add User
-        </button>
+          >
+            <Plus className="w-4 h-4" />
+            Add User
+          </button>
+        )}
       </div>
 
       <div className="overflow-x-auto">
@@ -455,50 +488,60 @@ function UsersManagement({ users, onAdd, onEdit, onDelete }) {
             </tr>
           </thead>
           <tbody>
-            {users.map(user => (
-              <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
-                <td className="py-3 px-6 font-medium">{user.username}</td>
-                <td className="py-3 px-6">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleColors[user.role]}`}>
-                    {user.role.replace('_', ' ')}
-                  </span>
-                </td>
-                <td className="py-3 px-6">{user.location_name}</td>
-                <td className="py-3 px-6">{user.email || '-'}</td>
-                <td className="text-center py-3 px-6">
-                  {user.can_delegate ? (
-                    <Check className="w-5 h-5 text-green-600 mx-auto" />
-                  ) : (
-                    <X className="w-5 h-5 text-gray-300 mx-auto" />
-                  )}
-                </td>
-                <td className="text-center py-3 px-6">
-                  {user.is_supervisor ? (
-                    <Check className="w-5 h-5 text-green-600 mx-auto" />
-                  ) : (
-                    <X className="w-5 h-5 text-gray-300 mx-auto" />
-                  )}
-                </td>
-                <td className="text-right py-3 px-6">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => onEdit(user)}
-                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                      title="Edit User"
-                    >
-                      <Edit2 className="w-4 h-4 text-gray-600" />
-                    </button>
-                    <button
-                      onClick={() => onDelete(user)}
-                      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Delete User"
-                    >
-                      <Trash2 className="w-4 h-4 text-red-600" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {users.map(user => {
+              // A supervisor can only edit/delete users at their own location or child locations
+              const canEdit = canManageUsers && (!currentUser?.is_supervisor ||
+                (user.location_id === currentUser.location_id || user.parent_hub_id === currentUser.location_id));
+
+              return (
+                <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="py-3 px-6 font-medium">{user.username}</td>
+                  <td className="py-3 px-6">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleColors[user.role]}`}>
+                      {user.role.replace('_', ' ')}
+                    </span>
+                  </td>
+                  <td className="py-3 px-6">{user.location_name}</td>
+                  <td className="py-3 px-6">{user.email || '-'}</td>
+                  <td className="text-center py-3 px-6">
+                    {user.can_delegate ? (
+                      <Check className="w-5 h-5 text-green-600 mx-auto" />
+                    ) : (
+                      <X className="w-5 h-5 text-gray-300 mx-auto" />
+                    )}
+                  </td>
+                  <td className="text-center py-3 px-6">
+                    {user.is_supervisor ? (
+                      <Check className="w-5 h-5 text-green-600 mx-auto" />
+                    ) : (
+                      <X className="w-5 h-5 text-gray-300 mx-auto" />
+                    )}
+                  </td>
+                  <td className="text-right py-3 px-6">
+                    {canEdit ? (
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => onEdit(user)}
+                          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                          title="Edit User"
+                        >
+                          <Edit2 className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <button
+                          onClick={() => onDelete(user)}
+                          className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete User"
+                        >
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-gray-400 italic py-2">Read Only</span>
+                    )}
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
@@ -507,7 +550,20 @@ function UsersManagement({ users, onAdd, onEdit, onDelete }) {
 }
 
 // Security Settings Component
-function SecuritySettings({ user }) {
+function SecuritySettings({ currentUser }) {
+  // Only allow pharmacists to view security settings
+  const canViewSecurity = currentUser?.role === 'PHARMACIST';
+
+  if (!canViewSecurity) {
+    return (
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center text-gray-600">
+        <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-4" />
+        <p className="text-lg font-semibold">Access Denied</p>
+        <p>You do not have permission to view security settings.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
@@ -605,7 +661,7 @@ function ConfirmationModal({ isOpen, title, message, onConfirm, onCancel }) {
 }
 
 // Modal Component
-function Modal({ type, item, locations, onClose, onSuccess }) {
+function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
   const { success, error: showError } = useNotification()
   const [formData, setFormData] = useState({})
   const [loading, setLoading] = useState(false)
@@ -772,8 +828,12 @@ function Modal({ type, item, locations, onClose, onSuccess }) {
                     required
                   >
                     <option value="">Select hub...</option>
-                    <option value="1">Port Augusta Hospital Pharmacy</option>
-                    <option value="2">Whyalla Hospital Pharmacy</option>
+                    {locations
+                      ?.filter(l => l.type === 'HUB')
+                      ?.filter(l => !currentUser?.is_supervisor || l.id === currentUser?.location_id)
+                      ?.map(hub => (
+                        <option key={hub.id} value={hub.id}>{hub.name}</option>
+                      ))}
                   </select>
                 </div>
               )}
@@ -832,9 +892,11 @@ function Modal({ type, item, locations, onClose, onSuccess }) {
                   required
                 >
                   <option value="">Select location...</option>
-                  {locations?.map(loc => (
-                    <option key={loc.id} value={loc.id}>{loc.name}</option>
-                  ))}
+                  {locations
+                    ?.filter(l => !currentUser?.is_supervisor || (l.id === currentUser?.location_id || l.parent_hub_id === currentUser?.location_id))
+                    ?.map(loc => (
+                      <option key={loc.id} value={loc.id}>{loc.name}</option>
+                    ))}
                 </select>
               </div>
 

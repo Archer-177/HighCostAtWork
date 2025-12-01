@@ -176,6 +176,52 @@ def run_test():
         return
     print("Status Verified: COMPLETED")
 
+    # 6. Verify Self-Approval Restriction
+    print("\n[Step 4] Verifying Self-Approval Restriction...")
+    
+    # Create transfer: Whyalla -> Port Augusta (Pull Request by PA Admin)
+    # First ensure stock at Whyalla (we just moved some there)
+    vial_at_whyalla = vial_id # The vial we just moved
+    
+    print("Creating Pull Request (Whyalla -> PA) by Admin...")
+    pull_res = create_transfer(admin, whyalla['id'], port_augusta['id'], [vial_at_whyalla])
+    
+    if not pull_res.get('success'):
+        print(f"Failed to create pull transfer: {pull_res}")
+        return
+        
+    pull_id = pull_res['transfer_id']
+    print(f"Pull Transfer Created: ID {pull_id}")
+    
+    # Admin tries to approve their own request
+    print("Admin attempting to approve own request...")
+    self_approve_res = action_transfer(pull_id, 'approve', admin)
+    
+    if self_approve_res and self_approve_res.get('success'):
+        print("ERROR: Admin was able to approve their own transfer!")
+        return
+    elif self_approve_res and "own transfer" in self_approve_res.get('error', ''):
+        print("Verified: Self-approval blocked correctly.")
+    else:
+        print(f"Unexpected response for self-approval: {self_approve_res}")
+        return
+
+    # 7. Verify Cross-Hub Approval (Pull Request)
+    # Since Admin (PA) created the pull request from Whyalla, Whyalla (the FROM location) must approve.
+    print("\n[Step 5] Verifying Cross-Hub Approval (Pull Request)...")
+    
+    # Try to approve with Admin (PA) - already failed above due to self-approval, 
+    # but let's try with another PA user if we had one. 
+    # Instead, let's verify Whyalla CAN approve.
+    
+    print("Whyalla user attempting to approve Pull Request...")
+    whyalla_approve_res = action_transfer(pull_id, 'approve', whyalla_user)
+    
+    if not whyalla_approve_res or not whyalla_approve_res.get('success'):
+        print(f"Whyalla user failed to approve Pull Request: {whyalla_approve_res}")
+        return
+    print("Verified: Whyalla user approved Pull Request (Cross-Hub Approval)")
+
     print("\n--- Test Passed Successfully ---")
 
 if __name__ == "__main__":

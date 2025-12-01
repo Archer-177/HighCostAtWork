@@ -671,10 +671,24 @@ function TransferCard({ transfer, onUpdate, readonly }) {
   const isHubToHub = transfer.from_location_type === 'HUB' && transfer.to_location_type === 'HUB'
   const needsApproval = isHubToHub
 
+  // Cross-Hub Approval Logic:
+  // If creator is at From_Loc, approval must come from To_Loc (Push)
+  // If creator is at To_Loc, approval must come from From_Loc (Pull)
+  // If creator is external, default to To_Loc
+
+  const isCreatorAtFrom = transfer.created_by_location_id === transfer.from_location_id
+  const isCreatorAtTo = transfer.created_by_location_id === transfer.to_location_id
+
+  let requiredApproverLocationId = transfer.to_location_id // Default
+  if (isCreatorAtTo) {
+    requiredApproverLocationId = transfer.from_location_id
+  }
+
   const canApproveThisTransfer = canApproveTransfers &&
     transfer.status === 'PENDING' &&
     needsApproval &&
-    user.location_id === transfer.to_location_id
+    user.location_id === requiredApproverLocationId &&
+    user.id !== transfer.created_by
 
   const canReceiveThisTransfer = transfer.status === 'IN_TRANSIT' &&
     user.location_id === transfer.to_location_id
@@ -759,9 +773,9 @@ function TransferCard({ transfer, onUpdate, readonly }) {
               <button
                 onClick={() => handleAction('cancel')}
                 disabled={loading}
-                className="px-4 py-2 text-gray-600 font-medium hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm"
+                className="px-4 py-2 text-gray-500 font-medium hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors text-sm"
               >
-                Void Transfer
+                Cancel Transfer
               </button>
             )}
 
@@ -769,11 +783,11 @@ function TransferCard({ transfer, onUpdate, readonly }) {
               <button
                 onClick={() => handleAction('approve')}
                 disabled={loading}
-                className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg shadow-sm 
-                         hover:bg-indigo-700 hover:shadow-md transition-all flex items-center gap-2"
+                className="px-6 py-2 bg-slate-800 text-white font-bold rounded-lg shadow-sm 
+                         hover:bg-slate-900 hover:shadow-md transition-all flex items-center gap-2"
               >
                 <CheckCircle className="w-4 h-4" />
-                Authorize Shipment
+                Authorise Transfer
               </button>
             )}
 
@@ -781,8 +795,8 @@ function TransferCard({ transfer, onUpdate, readonly }) {
               <button
                 onClick={() => handleAction('complete')}
                 disabled={loading}
-                className="px-6 py-2 bg-emerald-600 text-white font-bold rounded-lg shadow-sm 
-                         hover:bg-emerald-700 hover:shadow-md transition-all flex items-center gap-2"
+                className="px-6 py-2 bg-blue-700 text-white font-bold rounded-lg shadow-sm 
+                         hover:bg-blue-800 hover:shadow-md transition-all flex items-center gap-2"
               >
                 <Package className="w-4 h-4" />
                 Confirm Receipt

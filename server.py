@@ -856,7 +856,9 @@ def get_transfers(location_id):
                 fl.type as from_location_type,
                 tl.name as to_location,
                 tl.type as to_location_type,
+                tl.type as to_location_type,
                 u.username as created_by_name,
+                u.location_id as created_by_location_id,
                 COUNT(ti.id) as item_count
             FROM transfers t
             JOIN locations fl ON t.from_location_id = fl.id
@@ -923,12 +925,34 @@ def handle_transfer_action(transfer_id, action):
                 return {"error": "Data has changed. Please refresh."}, 409
             
             if action == 'approve':
-                # Verify approver is from destination hub
-                # We already fetched the transfer, so we can check to_location_id directly
+                # Verify approver is from the "Other Hub" (Non-initiating hub)
+                creator = cursor.execute("SELECT location_id FROM users WHERE id = ?", (transfer['created_by'],)).fetchone()
                 approver = cursor.execute("SELECT location_id FROM users WHERE id = ?", (user_id,)).fetchone()
                 
-                if not approver or approver['location_id'] != transfer['to_location_id']:
-                    return {"error": "Only pharmacists from the receiving hub can approve this transfer"}, 403
+                if not creator or not approver:
+                     return {"error": "User data not found"}, 404
+
+                # Determine the "Other Hub"
+                # If creator is at From_Loc, approval must come from To_Loc (Push)
+                # If creator is at To_Loc, approval must come from From_Loc (Pull)
+                
+                required_approver_location = None
+                if creator['location_id'] == transfer['from_location_id']:
+                    required_approver_location = transfer['to_location_id']
+                elif creator['location_id'] == transfer['to_location_id']:
+                    required_approver_location = transfer['from_location_id']
+                else:
+                    # Creator is not at either hub (e.g. Admin at third location)? 
+                    # Fallback to receiving hub for safety, or block.
+                    # For now, let's enforce receiving hub as default if creator is external
+                    required_approver_location = transfer['to_location_id']
+
+                if approver['location_id'] != required_approver_location:
+                    return {"error": "Only pharmacists from the other hub can approve this transfer"}, 403
+
+                # Prevent self-approval
+                if user_id == transfer['created_by']:
+                    return {"error": "You cannot approve your own transfer request"}, 403
 
                 # STRICT CHECK: Only update if status is PENDING
                 cursor.execute("""
