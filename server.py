@@ -1229,13 +1229,18 @@ def send_low_stock_notification(stock_info):
         logging.error(f"Failed to send email: {e}")
 
 # 11. SETTINGS
+# 11. SETTINGS
 @app.route('/api/settings', methods=['GET', 'POST'])
 def handle_settings():
+    location_id = request.args.get('location_id')
+    
     if request.method == 'GET':
+        if not location_id:
+             return jsonify({})
+             
         with get_db() as conn:
-            # Check if settings table exists (it should be created in init_db, but for safety)
             try:
-                settings = conn.execute("SELECT * FROM settings LIMIT 1").fetchone()
+                settings = conn.execute("SELECT * FROM settings WHERE location_id = ? LIMIT 1", (location_id,)).fetchone()
                 if settings:
                     return jsonify(dict(settings))
                 else:
@@ -1251,6 +1256,10 @@ def handle_settings():
     label_height = data.get('label_height', 25)
     margin_top = data.get('margin_top', 0)
     margin_right = data.get('margin_right', 0)
+    location_id = data.get('location_id')
+
+    if not location_id:
+        return jsonify({"error": "Location ID required"}), 400
 
     with get_db() as conn:
         cursor = conn.cursor()
@@ -1258,6 +1267,7 @@ def handle_settings():
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS settings (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                location_id INTEGER,
                 printer_ip TEXT,
                 printer_port TEXT,
                 label_width INTEGER DEFAULT 50,
@@ -1267,11 +1277,12 @@ def handle_settings():
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
-        
-        # Check if row exists
-        existing = cursor.execute("SELECT id FROM settings LIMIT 1").fetchone()
 
         # Migration: Add columns if they don't exist (for existing DBs)
+        try:
+            cursor.execute("ALTER TABLE settings ADD COLUMN location_id INTEGER")
+        except sqlite3.OperationalError:
+            pass
         try:
             cursor.execute("ALTER TABLE settings ADD COLUMN label_width INTEGER DEFAULT 50")
         except sqlite3.OperationalError:
@@ -1289,6 +1300,9 @@ def handle_settings():
         except sqlite3.OperationalError:
             pass
         
+        # Check if row exists for this location
+        existing = cursor.execute("SELECT id FROM settings WHERE location_id = ?", (location_id,)).fetchone()
+
         if existing:
             cursor.execute("""
                 UPDATE settings 
@@ -1297,9 +1311,9 @@ def handle_settings():
             """, (printer_ip, printer_port, label_width, label_height, margin_top, margin_right, existing['id']))
         else:
             cursor.execute("""
-                INSERT INTO settings (printer_ip, printer_port, label_width, label_height, margin_top, margin_right)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (printer_ip, printer_port, label_width, label_height, margin_top, margin_right))
+                INSERT INTO settings (location_id, printer_ip, printer_port, label_width, label_height, margin_top, margin_right)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (location_id, printer_ip, printer_port, label_width, label_height, margin_top, margin_right))
         
         conn.commit()
         return jsonify({"success": True})
@@ -1308,19 +1322,26 @@ def handle_settings():
 def generate_labels():
     data = request.json
     asset_ids = data.get('asset_ids', [])
+    location_id = data.get('location_id')
     
     if not asset_ids:
         return jsonify({"error": "No assets provided"}), 400
+        
+    if not location_id:
+        return jsonify({"error": "Location ID required"}), 400
 
     with get_db() as conn:
-        # Get printer settings
-        settings = conn.execute("SELECT * FROM settings LIMIT 1").fetchone()
+        # Get printer settings for this location
+        settings = conn.execute("SELECT * FROM settings WHERE location_id = ? LIMIT 1", (location_id,)).fetchone()
         
-        if not settings or not settings['printer_ip']:
-            return jsonify({"error": "Printer not configured"}), 400
-            
+        if not settings:
+             return jsonify({"error": "Printer not configured for this location"}), 400
+
         # Convert to dict to use .get() safely
         settings_dict = dict(settings)
+        
+        if not settings_dict.get('printer_ip'):
+            return jsonify({"error": "Printer IP not configured"}), 400
             
         printer_ip = settings_dict['printer_ip']
         printer_port = int(settings_dict['printer_port'] or 9100)
@@ -1334,38 +1355,16 @@ def generate_labels():
         # Top Offset
         top_offset_dots = int(margin_top_mm * dpi)
         
-        # Left Offset (to achieve Right Margin)
-        # Content width is approx 300 dots (based on font sizes and lengths)
-        # Let's assume a safe content width of 40mm (320 dots) for the text block
-        # Left Position = (Label Width - Right Margin - Content Width)
-        # However, ZPL ^LH sets the home position. 
-        # If we want 30mm from right, we need to know where "right" is.
-        # Right Edge = Label Width.
-        # Target Right Edge of Content = Label Width - Margin Right.
-        # Target Left Edge of Content = Target Right Edge - Content Width.
-        
-        # Simplified approach: Just use ^LH (Label Home) to shift everything.
-        # But ^LH shifts from Top-Left.
-        # So we need to calculate the Left shift.
-        # Let's assume the content is left-aligned by default at x=20.
-        # If user wants it 30mm from right:
-        # x = (LabelWidth - MarginRight) * 8 - (ContentWidthDots)
-        
-        # Let's use a standard content width estimate.
-        # The longest line is likely the drug name or expiry.
-        # Let's assume the printed block is about 45mm wide (360 dots).
+        # Left Offset calculation
         content_width_mm = 45
         
         # Calculate X position
-        # If margin_right is set, we override default left alignment
         if margin_right_mm > 0:
             x_pos = int((label_width_mm - margin_right_mm - content_width_mm) * dpi)
             if x_pos < 0: x_pos = 0
         else:
             x_pos = 20 # Default left margin
             
-        y_pos = top_offset_dots + 20 # Add base padding
-        
         try:
             # Connect to printer
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -1383,9 +1382,10 @@ def generate_labels():
                     
                     if vial:
                         # Generate ZPL
-                        # Using calculated offsets
+                        # Using calculated offsets and ^CI28 for UTF-8 support
                         zpl = f"""
                         ^XA
+                        ^CI28
                         ^LH{x_pos},{top_offset_dots}
                         ^FO0,20^BQN,2,4^FDQA,{asset_id}^FS
                         ^FO120,20^A0N,30,30^FD{vial['drug_name'][:20]}^FS

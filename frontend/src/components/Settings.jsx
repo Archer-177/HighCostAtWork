@@ -563,9 +563,10 @@ function UsersManagement({ users, onAdd, onEdit, onDelete, currentUser }) {
 
 // Printer Settings Component
 function PrinterSettings() {
+  const { user } = useAuth()
   const { success, error: showError } = useNotification()
-  const [settings, setSettings] = useState({ 
-    printer_ip: '', 
+  const [settings, setSettings] = useState({
+    printer_ip: '',
     printer_port: '9100',
     label_width: 50,
     label_height: 25,
@@ -575,12 +576,14 @@ function PrinterSettings() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    fetchSettings()
-  }, [])
+    if (user?.location_id) {
+      fetchSettings()
+    }
+  }, [user])
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch('/api/settings')
+      const response = await fetch(`/api/settings?location_id=${user.location_id}`)
       if (response.ok) {
         const data = await response.json()
         setSettings({
@@ -604,7 +607,10 @@ function PrinterSettings() {
       const response = await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings)
+        body: JSON.stringify({
+          ...settings,
+          location_id: user.location_id
+        })
       })
 
       if (response.ok) {
@@ -668,7 +674,7 @@ function PrinterSettings() {
         {/* Label Settings */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Label Configuration</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Label Width (mm)</label>

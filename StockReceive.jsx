@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  Package, Calendar, Hash, Plus, Printer, Save, 
+import {
+  Package, Calendar, Hash, Plus, Printer, Save,
   AlertCircle, CheckCircle, ChevronDown, Pill
 } from 'lucide-react'
 import { format } from 'date-fns'
@@ -11,7 +11,7 @@ import { useNotification } from '../contexts/NotificationContext'
 export default function StockReceive() {
   const { user } = useAuth()
   const { success, error: showError } = useNotification()
-  
+
   const [drugs, setDrugs] = useState([])
   const [selectedDrug, setSelectedDrug] = useState('')
   const [batchNumber, setBatchNumber] = useState('')
@@ -39,7 +39,7 @@ export default function StockReceive() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!selectedDrug || !batchNumber || !expiryDate || quantity < 1) {
       showError('Validation Error', 'Please fill all required fields')
       return
@@ -61,7 +61,7 @@ export default function StockReceive() {
       })
 
       const data = await response.json()
-      
+
       if (response.ok) {
         success(
           'Stock Received Successfully',
@@ -69,7 +69,7 @@ export default function StockReceive() {
         )
         setGeneratedAssets(data.asset_ids)
         setShowLabels(true)
-        
+
         // Reset form
         setSelectedDrug('')
         setBatchNumber('')
@@ -86,30 +86,39 @@ export default function StockReceive() {
   }
 
   const printLabels = async () => {
+    if (generatedAssets.length === 0) return
+
+    console.log('User object:', user)
+    const payload = {
+      asset_ids: generatedAssets,
+      location_id: user?.location_id
+    }
+    console.log('Sending payload:', payload)
+
     try {
       const response = await fetch('/api/generate_labels', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ asset_ids: generatedAssets })
+        body: JSON.stringify(payload)
       })
 
-      const data = await response.json()
-      
       if (response.ok) {
-        // In a real implementation, this would send commands to the Zebra printer
-        success('Labels Sent to Printer', `${generatedAssets.length} labels queued for printing`)
+        success('Labels Sent', 'Labels sent to Zebra printer')
         setShowLabels(false)
         setGeneratedAssets([])
+      } else {
+        const data = await response.json()
+        showError('Print Error', data.error || 'Failed to send labels to printer')
       }
     } catch (err) {
-      showError('Print Error', 'Failed to send labels to printer')
+      showError('Connection Error', 'Could not connect to printer service')
     }
   }
 
   return (
     <div className="min-h-screen p-6">
       {/* Header */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
