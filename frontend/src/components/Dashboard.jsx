@@ -627,46 +627,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Elegant Notification Banner */}
-      {dashboardData?.stats?.expiring_soon > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6 bg-gradient-to-r from-red-50 via-amber-50 to-red-50 border-l-4 border-red-500 
-                     rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
-        >
-          <div className="flex items-center gap-4">
-            <div className="flex-shrink-0">
-              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-red-600" />
-              </div>
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <h4 className="font-bold text-gray-900">Stock Expiry Notice</h4>
-                <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded-full">
-                  {filteredExpiringCount}
-                </span>
-              </div>
-              <p className="text-sm text-gray-700">
-                {filteredExpiringCount === 1
-                  ? `One item is expiring within 30 days at ${locationText}`
-                  : `${filteredExpiringCount} items are expiring within 30 days at ${locationText}`
-                }. Review and consider stock rotation or transfer to optimise usage.
-              </p>
-            </div>
-            <div className="flex-shrink-0">
-              <button
-                onClick={() => { setFilterStatus('red'); setSearchTerm(''); }}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium 
-                           rounded-lg transition-colors shadow-sm"
-              >
-                View Items
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      )}
+
     </div>
   )
 }

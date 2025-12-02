@@ -161,13 +161,25 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
     { icon: Thermometer, label: 'Fridge (2-8°C)', color: 'text-blue-600' } :
     { icon: Package, label: 'Shelf (<25°C)', color: 'text-orange-600' }
 
+  const isAtLocation = item.location_id === user.location_id
+  const [showLocationWarning, setShowLocationWarning] = useState(false)
+
+  const handleActionClick = (e) => {
+    e.stopPropagation()
+    if (!isAtLocation) {
+      setShowLocationWarning(true)
+      return
+    }
+    setShowActions(!showActions)
+  }
+
   if (compact) {
     return (
       <>
         <div className="relative" ref={actionsRef}>
           {!hideActions && (
             <button
-              onClick={(e) => { e.stopPropagation(); setShowActions(!showActions); }}
+              onClick={handleActionClick}
               disabled={loading}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors relative z-10"
             >
@@ -215,6 +227,52 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
             </motion.div>
           )}
         </div>
+
+        {/* Location Warning Modal */}
+        {showLocationWarning && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={(e) => { e.stopPropagation(); setShowLocationWarning(false); }}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border-l-4 border-amber-500"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start gap-4 mb-4">
+                <div className="p-3 bg-amber-100 rounded-full">
+                  <MapPin className="w-6 h-6 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Action Not Allowed</h3>
+                  <p className="text-gray-600 mt-1">
+                    This item is located at <span className="font-bold text-gray-900">{item.location_name}</span>.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-4 mb-6 text-sm text-gray-700">
+                <p className="mb-2">
+                  You are currently logged in at <span className="font-semibold">{user.location_name}</span>.
+                </p>
+                <p>
+                  To maintain inventory accuracy, you can only perform actions on items physically located at your current site.
+                </p>
+              </div>
+
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowLocationWarning(false); }}
+                className="w-full py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-lg transition-colors"
+              >
+                Understood
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+
         {/* Reuse modal logic */}
         {showDiscardModal && (
           <motion.div
@@ -433,7 +491,7 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
             </div>
 
             <button
-              onClick={(e) => { e.stopPropagation(); setShowActions(!showActions); }}
+              onClick={handleActionClick}
               disabled={loading}
               className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-[11px]
                        rounded-md transition-all flex items-center gap-1
@@ -486,6 +544,51 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
           )}
         </div>
       </motion.div>
+
+      {/* Location Warning Modal (for non-compact view) */}
+      {showLocationWarning && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={(e) => { e.stopPropagation(); setShowLocationWarning(false); }}
+        >
+          <motion.div
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border-l-4 border-amber-500"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-4 mb-4">
+              <div className="p-3 bg-amber-100 rounded-full">
+                <MapPin className="w-6 h-6 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Action Not Allowed</h3>
+                <p className="text-gray-600 mt-1">
+                  This item is located at <span className="font-bold text-gray-900">{item.location_name}</span>.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-4 mb-6 text-sm text-gray-700">
+              <p className="mb-2">
+                You are currently logged in at <span className="font-semibold">{user.location_name}</span>.
+              </p>
+              <p>
+                To maintain inventory accuracy, you can only perform actions on items physically located at your current site.
+              </p>
+            </div>
+
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowLocationWarning(false); }}
+              className="w-full py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-lg transition-colors"
+            >
+              Understood
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
 
       {/* Discard Modal */}
       {showDiscardModal && (
