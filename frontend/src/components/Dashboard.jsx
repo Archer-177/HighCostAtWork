@@ -13,7 +13,7 @@ import QRScanner from './QRScanner'
 
 export default function Dashboard() {
   const { user } = useAuth()
-  const { error: showError } = useNotification()
+  const { success, error: showError } = useNotification()
   const [dashboardData, setDashboardData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -23,6 +23,43 @@ export default function Dashboard() {
   const [viewMode, setViewMode] = useState('grid')
   const [groupingMode, setGroupingMode] = useState('grouped')
   const [collapsedGroups, setCollapsedGroups] = useState(new Set())
+
+  const handleScan = (decodedText) => {
+    setSearchTerm(decodedText)
+    setGroupingMode('ungrouped') // Switch to list view to show result directly
+    setShowScanner(false)
+    success('Item Found', `Filtered dashboard for ${decodedText}`)
+  }
+
+  // Physical Scanner Listener
+  useEffect(() => {
+    let buffer = ''
+    let lastKeyTime = Date.now()
+
+    const handleKeyDown = (e) => {
+      const currentTime = Date.now()
+      const isInputFocused = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)
+
+      // Reset buffer if typing is too slow (manual entry vs scanner burst)
+      if (currentTime - lastKeyTime > 100) {
+        buffer = ''
+      }
+      lastKeyTime = currentTime
+
+      if (e.key === 'Enter') {
+        // Scanner sends Enter at the end
+        if (buffer.length > 3 && !isInputFocused) {
+          handleScan(buffer)
+          buffer = ''
+        }
+      } else if (e.key.length === 1) {
+        buffer += e.key
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   useEffect(() => {
     fetchDashboardData()
@@ -292,6 +329,12 @@ export default function Dashboard() {
             </button>
           </div>
 
+          {/* Scanner Ready Indicator */}
+          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg border border-gray-200" title="Scanner is active globally - no need to click search">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <span className="text-xs font-medium text-gray-600">Scanner Ready (Anywhere)</span>
+          </div>
+
           {/* QR Scanner Button */}
           <button
             onClick={() => setShowScanner(!showScanner)}
@@ -300,7 +343,7 @@ export default function Dashboard() {
                       transition-all flex items-center gap-2"
           >
             <Scan className="w-5 h-5" />
-            Scan QR
+            Scan QR (Camera)
           </button>
         </div>
 

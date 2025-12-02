@@ -12,15 +12,16 @@ export default function QRScanner({ onScan, onClose }) {
       html5QrcodeScanner.current = new Html5QrcodeScanner(
         "qr-reader",
         {
-          fps: 10,
-          qrbox: { width: 250, height: 250 },
+          fps: 20,
+          // qrbox: { width: 250, height: 250 }, // Removed to allow full-frame scanning
           rememberLastUsedCamera: true,
-          aspectRatio: 1.0
+          verbose: true
         }
       )
 
       html5QrcodeScanner.current.render(
         (decodedText) => {
+          console.log("QR Code Scanned:", decodedText)
           onScan(decodedText)
           html5QrcodeScanner.current.clear()
         },
@@ -32,7 +33,14 @@ export default function QRScanner({ onScan, onClose }) {
 
     return () => {
       if (html5QrcodeScanner.current) {
-        html5QrcodeScanner.current.clear()
+        try {
+          // Attempt to clear, but don't block unmounting
+          html5QrcodeScanner.current.clear().catch(err => {
+            console.warn("Failed to clear scanner", err)
+          })
+        } catch (e) {
+          console.warn("Error during scanner cleanup", e)
+        }
         html5QrcodeScanner.current = null
       }
     }
@@ -48,7 +56,7 @@ export default function QRScanner({ onScan, onClose }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Camera className="w-6 h-6 text-maroon-400" />
-          <h3 className="text-lg font-semibold">QR Code Scanner</h3>
+          <h3 className="text-lg font-semibold">Scan QR Code</h3>
         </div>
         <button
           onClick={onClose}
@@ -59,7 +67,13 @@ export default function QRScanner({ onScan, onClose }) {
       </div>
 
       {/* Scanner Area */}
-      <div id="qr-reader" ref={scannerRef} className="rounded-lg overflow-hidden"></div>
+      <div id="qr-reader" ref={scannerRef} className="rounded-lg overflow-hidden" style={{ maxWidth: '500px', margin: '0 auto' }}></div>
+      <style>{`
+        #qr-reader video {
+          object-fit: cover;
+          border-radius: 0.5rem;
+        }
+      `}</style>
 
       {/* Instructions */}
       <div className="mt-4 p-4 bg-gray-800/50 rounded-lg">
@@ -70,7 +84,9 @@ export default function QRScanner({ onScan, onClose }) {
             <ul className="space-y-1 text-gray-300">
               <li>• Position the QR code within the scanner frame</li>
               <li>• Ensure good lighting and steady camera</li>
-              <li>• The scanner will automatically detect valid codes</li>
+              <li className="text-white font-bold pt-2 border-t border-gray-700 mt-2">
+                • OR simply use your handheld scanner now
+              </li>
             </ul>
           </div>
         </div>

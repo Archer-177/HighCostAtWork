@@ -9,10 +9,12 @@ import { format } from 'date-fns'
 import { useAuth } from '../contexts/AuthContext'
 import { useNotification } from '../contexts/NotificationContext'
 import NetworkMap from './NetworkMap'
+import { useLocation } from 'react-router-dom'
 
 export default function StockTransfer() {
   const { user, isPharmacist } = useAuth()
   const { success, error: showError } = useNotification()
+  const location = useLocation()
 
   const [activeTab, setActiveTab] = useState('create')
   const [locations, setLocations] = useState([])
@@ -29,13 +31,21 @@ export default function StockTransfer() {
     fetchTransfers()
   }, [])
 
+  // Handle navigation from Dashboard with pre-selected item
   useEffect(() => {
-    if (user && user.location_id && !fromLocation) {
-      // Default to user's location if it's a valid source (Hub or Ward)
-      // We cast to string because select values are strings
+    if (location.state?.selectedItem) {
+      const item = location.state.selectedItem
+      setFromLocation(item.location_id.toString())
+      setSearchTerm(item.asset_id)
+      setSelectedItems([item.id])
+
+      // Clear state to prevent re-triggering on refresh
+      window.history.replaceState({}, document.title)
+    } else if (user && user.location_id && !fromLocation) {
+      // Default to user's location if no pre-selection
       setFromLocation(user.location_id.toString())
     }
-  }, [user])
+  }, [user, location.state])
 
   useEffect(() => {
     if (fromLocation) {
