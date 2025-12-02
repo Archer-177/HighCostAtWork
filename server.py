@@ -13,6 +13,11 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
+from twilio.rest import Client
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # PATH SETUP (Frozen vs Script)
 if getattr(sys, 'frozen', False):
@@ -178,6 +183,23 @@ def init_db():
             cursor.execute("ALTER TABLE users ADD COLUMN must_change_password BOOLEAN DEFAULT 0")
         except sqlite3.OperationalError:
             pass  # Column already exists
+
+        # Add reset_token and reset_token_expiry columns
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN reset_token TEXT")
+        except sqlite3.OperationalError:
+            pass
+            
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN reset_token_expiry TIMESTAMP")
+        except sqlite3.OperationalError:
+            pass
+
+        # Add mobile_number column
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN mobile_number TEXT")
+        except sqlite3.OperationalError:
+            pass
 
         
         # Stock transfers
@@ -1053,6 +1075,7 @@ def handle_users():
     can_delegate = data.get('can_delegate', 0)
     is_supervisor = data.get('is_supervisor', 0)
     email = data.get('email')
+    mobile_number = data.get('mobile_number')
 
     if not all([username, password, role, location_id]):
         return jsonify({"error": "Missing required fields"}), 400
@@ -1066,9 +1089,9 @@ def handle_users():
         try:
             # New users must change password on first login
             conn.execute("""
-                INSERT INTO users (username, password_hash, role, location_id, can_delegate, is_supervisor, email, must_change_password)
-                VALUES (?, ?, ?, ?, ?, ?, ?, 1)
-            """, (username, generate_password_hash(password), role, location_id, can_delegate, is_supervisor, email))
+                INSERT INTO users (username, password_hash, role, location_id, can_delegate, is_supervisor, email, mobile_number, must_change_password)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
+            """, (username, generate_password_hash(password), role, location_id, can_delegate, is_supervisor, email, mobile_number))
             conn.commit()
             return jsonify({"success": True}), 201
         except sqlite3.IntegrityError:
@@ -1089,6 +1112,7 @@ def handle_user_detail(user_id):
     role = data.get('role')
     location_id = data.get('location_id')
     email = data.get('email')
+    mobile_number = data.get('mobile_number')
     can_delegate = data.get('can_delegate', 0)
     is_supervisor = data.get('is_supervisor', 0)
     password = data.get('password') # Optional
@@ -1108,15 +1132,15 @@ def handle_user_detail(user_id):
                 # If password is reset by supervisor, force change on next login
                 conn.execute("""
                     UPDATE users 
-                    SET username = ?, role = ?, location_id = ?, email = ?, can_delegate = ?, is_supervisor = ?, password_hash = ?, must_change_password = 1, version = version + 1
+                    SET username = ?, role = ?, location_id = ?, email = ?, mobile_number = ?, can_delegate = ?, is_supervisor = ?, password_hash = ?, must_change_password = 1, version = version + 1
                     WHERE id = ?
-                """, (username, role, location_id, email, can_delegate, is_supervisor, generate_password_hash(password), user_id))
+                """, (username, role, location_id, email, mobile_number, can_delegate, is_supervisor, generate_password_hash(password), user_id))
             else:
                 conn.execute("""
                     UPDATE users 
-                    SET username = ?, role = ?, location_id = ?, email = ?, can_delegate = ?, is_supervisor = ?, version = version + 1
+                    SET username = ?, role = ?, location_id = ?, email = ?, mobile_number = ?, can_delegate = ?, is_supervisor = ?, version = version + 1
                     WHERE id = ?
-                """, (username, role, location_id, email, can_delegate, is_supervisor, user_id))
+                """, (username, role, location_id, email, mobile_number, can_delegate, is_supervisor, user_id))
             
             conn.commit()
             return jsonify({"success": True})
@@ -1146,6 +1170,82 @@ def change_password():
             conn.execute("""
                 UPDATE users 
                 SET password_hash = ?, must_change_password = 0, version = version + 1
+                WHERE id = ?
+            """, (generate_password_hash(new_password), user['id']))
+            conn.commit()
+            return jsonify({"success": True})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+@app.route('/api/forgot_password', methods=['POST'])
+def forgot_password():
+    data = request.json
+    username = data.get('username')
+    
+    if not username:
+        return jsonify({"error": "Username is required"}), 400
+        
+    with get_db() as conn:
+        print(f"DEBUG: Searching for user: {username}")
+        user = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+        
+        if not user:
+            print("DEBUG: User not found in database")
+        elif not user['mobile_number']:
+            print(f"DEBUG: User found (ID: {user['id']}), but NO mobile number")
+        else:
+            print(f"DEBUG: User found (ID: {user['id']}), Mobile: {user['mobile_number']}")
+
+        if not user or not user['mobile_number']:
+            # Security: Don't reveal if user exists or has mobile
+            return jsonify({"success": True, "message": "If this user exists and has a mobile number, a code has been sent."})
+            
+        # Generate 6-digit code
+        import random
+        code = str(random.randint(100000, 999999))
+        expiry = (datetime.now() + timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
+        
+        conn.execute("""
+            UPDATE users 
+            SET reset_token = ?, reset_token_expiry = ?, version = version + 1
+            WHERE id = ?
+        """, (code, expiry, user['id']))
+        conn.commit()
+        
+        # Send SMS
+        body = f"Your FUNLHN Password Reset Code is: {code}. Expires in 15 mins."
+        send_sms(user['mobile_number'], body)
+        
+        return jsonify({"success": True, "message": "If this user exists and has a mobile number, a code has been sent."})
+
+@app.route('/api/reset_password', methods=['POST'])
+def reset_password():
+    data = request.json
+    username = data.get('username')
+    code = data.get('code')
+    new_password = data.get('newPassword')
+    
+    if not all([username, code, new_password]):
+        return jsonify({"error": "Missing required fields"}), 400
+        
+    with get_db() as conn:
+        user = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+        
+        if not user:
+             return jsonify({"error": "Invalid request"}), 400
+             
+        # Verify code and expiry
+        if user['reset_token'] != code:
+            return jsonify({"error": "Invalid code"}), 400
+            
+        if datetime.strptime(user['reset_token_expiry'], '%Y-%m-%d %H:%M:%S') < datetime.now():
+            return jsonify({"error": "Code expired"}), 400
+            
+        # Update password
+        try:
+            conn.execute("""
+                UPDATE users 
+                SET password_hash = ?, reset_token = NULL, reset_token_expiry = NULL, must_change_password = 0, version = version + 1
                 WHERE id = ?
             """, (generate_password_hash(new_password), user['id']))
             conn.commit()
@@ -1233,19 +1333,71 @@ def export_pdf():
     return send_from_directory(STATIC_FOLDER, filename, as_attachment=True)
 
 # 10. NOTIFICATION SYSTEM
+def send_sms(to_number, body):
+    account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
+    auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
+    from_number = os.environ.get('TWILIO_FROM_NUMBER')
+
+    print(f"DEBUG: Twilio Config - SID: {'Set' if account_sid else 'Missing'}, Token: {'Set' if auth_token else 'Missing'}, From: {from_number}")
+
+    if not all([account_sid, auth_token, from_number]):
+        logging.info(f"--- SMS SIMULATION (Configure TWILIO env vars to send real SMS) ---\nTo: {to_number}\nBody: {body}\n--------------------------------")
+        print("DEBUG: SMS Simulation Mode (Missing Env Vars)")
+        return True
+
+    try:
+        client = Client(account_sid, auth_token)
+        message = client.messages.create(
+            body=body,
+            from_=from_number,
+            to=to_number
+        )
+        logging.info(f"SMS sent successfully to {to_number}: {message.sid}")
+        print(f"DEBUG: SMS Sent Successfully! SID: {message.sid}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send SMS: {e}")
+        print(f"DEBUG: SMS FAILED: {str(e)}")
+        return False
+
+def send_email(to_email, subject, body):
+    # Outlook / Office 365 SMTP Settings
+    SMTP_SERVER = "smtp.office365.com"
+    SMTP_PORT = 587
+    
+    # Try to get credentials from environment variables, or use placeholders
+    SENDER_EMAIL = os.environ.get('SMTP_EMAIL', "your_email@funlhn.health")
+    SENDER_PASSWORD = os.environ.get('SMTP_PASSWORD', "")
+    
+    message = MIMEMultipart("alternative")
+    message["Subject"] = subject
+    message["From"] = SENDER_EMAIL
+    message["To"] = to_email
+    
+    message.attach(MIMEText(body, "plain"))
+    
+    try:
+        if not SENDER_PASSWORD:
+            # Fallback to logging if no password configured
+            logging.info(f"--- EMAIL SIMULATION (Configure SMTP_PASSWORD to send real emails) ---\nTo: {to_email}\nSubject: {subject}\nBody:\n{body}\n--------------------------------")
+            return True
+
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SENDER_EMAIL, SENDER_PASSWORD)
+            server.sendmail(SENDER_EMAIL, to_email, message.as_string())
+            
+        logging.info(f"Email sent successfully to {to_email}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send email: {e}")
+        return False
+
 def send_low_stock_notification(stock_info):
     # Log it
     logging.info(f"LOW STOCK ALERT: {stock_info['drug_name']} at {stock_info['location_name']} - Only {stock_info['available_count']} remaining")
     
-    # Send Email
-    sender_email = "alerts@funlhn.health"
     receiver_email = "pharmacy.hub@funlhn.health"
-    # In a real deployment, these would be env vars
-    
-    message = MIMEMultipart("alternative")
-    message["Subject"] = f"LOW STOCK ALERT: {stock_info['drug_name']}"
-    message["From"] = sender_email
-    message["To"] = receiver_email
     
     text = f"""\
     Low Stock Alert
@@ -1258,14 +1410,7 @@ def send_low_stock_notification(stock_info):
     Please replenish immediately.
     """
     
-    message.attach(MIMEText(text, "plain"))
-    
-    try:
-        # This is a stub for the SMTP server. 
-        # In production, use: with smtplib.SMTP("smtp.server.com", 587) as server:
-        logging.info("Attempting to send email...")
-    except Exception as e:
-        logging.error(f"Failed to send email: {e}")
+    send_email(receiver_email, f"LOW STOCK ALERT: {stock_info['drug_name']}", text)
 
 # 11. SETTINGS
 # 11. SETTINGS

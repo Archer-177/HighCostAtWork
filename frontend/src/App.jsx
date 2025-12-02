@@ -15,6 +15,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { NotificationProvider } from './contexts/NotificationContext'
 
 import ChangePassword from './components/ChangePassword'
+import ForgotPassword from './components/ForgotPassword'
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -78,6 +79,12 @@ function App() {
               <Route path="/change-password" element={
                 <AppLayout>
                   <ChangePassword />
+                </AppLayout>
+              } />
+
+              <Route path="/forgot-password" element={
+                <AppLayout>
+                  <ForgotPassword />
                 </AppLayout>
               } />
 

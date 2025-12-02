@@ -514,7 +514,12 @@ function UsersManagement({ users, onAdd, onEdit, onDelete, currentUser }) {
                     </span>
                   </td>
                   <td className="py-3 px-6">{user.location_name}</td>
-                  <td className="py-3 px-6">{user.email || '-'}</td>
+                  <td className="py-3 px-6">
+                    <div className="flex flex-col">
+                      <span>{user.email || '-'}</span>
+                      <span className="text-xs text-gray-500">{user.mobile_number || ''}</span>
+                    </div>
+                  </td>
                   <td className="text-center py-3 px-6">
                     {user.can_delegate ? (
                       <Check className="w-5 h-5 text-green-600 mx-auto" />
@@ -867,7 +872,7 @@ function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
           setFormData({ name: '', type: 'WARD', parent_hub_id: '' })
           break
         case 'user':
-          setFormData({ username: '', password: '', role: 'NURSE', location_id: '', email: '', can_delegate: false, is_supervisor: false })
+          setFormData({ username: '', password: '', role: 'NURSE', location_id: '', email: '', mobile_number: '', can_delegate: false, is_supervisor: false })
           break
       }
     }
@@ -1096,6 +1101,18 @@ function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
                            focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Mobile Number</label>
+                <input
+                  type="tel"
+                  value={formData.mobile_number || ''}
+                  onChange={(e) => setFormData({ ...formData, mobile_number: e.target.value })}
+                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
+                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                  placeholder="+614..."
                 />
               </div>
 

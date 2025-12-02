@@ -107,9 +107,18 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Password
-              </label>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  Password
+                </label>
+                <a
+                  href="/forgot-password"
+                  onClick={(e) => { e.preventDefault(); navigate('/forgot-password'); }}
+                  className="text-sm text-maroon-600 hover:text-maroon-800 font-medium"
+                >
+                  Forgot Password?
+                </a>
+              </div>
               <div className="relative">
                 <input
                   type="password"
