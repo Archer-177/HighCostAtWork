@@ -87,23 +87,30 @@ export default function StockReceive() {
   }
 
   const printLabels = async () => {
+    if (generatedAssets.length === 0) return
+
+    const payload = {
+      asset_ids: generatedAssets,
+      location_id: user?.location_id
+    }
+
     try {
       const response = await fetch('/api/generate_labels', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ asset_ids: generatedAssets })
+        body: JSON.stringify(payload)
       })
 
-      const data = await response.json()
-
       if (response.ok) {
-        // In a real implementation, this would send commands to the Zebra printer
-        success('Labels Sent to Printer', `${generatedAssets.length} labels queued for printing`)
+        success('Labels Sent', 'Labels sent to Zebra printer')
         setShowLabels(false)
         setGeneratedAssets([])
+      } else {
+        const data = await response.json()
+        showError('Print Error', data.error || 'Failed to send labels to printer')
       }
     } catch (err) {
-      showError('Print Error', 'Failed to send labels to printer')
+      showError('Connection Error', 'Could not connect to printer service')
     }
   }
 

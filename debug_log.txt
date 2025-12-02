@@ -6353,3 +6353,28 @@ sqlite3.OperationalError: no such column: location_id
 2025-12-02 11:15:40,107 - INFO - 127.0.0.1 - - [02/Dec/2025 11:15:40] "POST /api/heartbeat HTTP/1.1" 200 -
 2025-12-02 11:15:45,106 - INFO - 127.0.0.1 - - [02/Dec/2025 11:15:45] "POST /api/heartbeat HTTP/1.1" 200 -
 2025-12-02 11:20:47,081 - WARNING - Heartbeat timeout - shutting down
+2025-12-02 12:07:00,562 - INFO - Server started on port 5000
+2025-12-02 12:07:00,747 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-12-02 12:07:00,748 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-02 12:07:00,803 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:00] "GET / HTTP/1.1" 200 -
+2025-12-02 12:07:00,812 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:00] "GET /static/index-2f76cf40.js HTTP/1.1" 200 -
+2025-12-02 12:07:00,816 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:00] "GET /static/index-2e15948c.css HTTP/1.1" 200 -
+2025-12-02 12:07:05,859 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 12:07:06,597 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:06] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 12:07:06,611 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:06] "GET /api/dashboard/1 HTTP/1.1" 200 -
+2025-12-02 12:07:11,612 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:11] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 12:07:11,769 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:11] "GET /api/drugs HTTP/1.1" 200 -
+2025-12-02 12:07:16,623 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:16] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 12:07:21,620 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:21] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 12:07:26,613 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:26] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 12:07:27,252 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:27] "POST /api/receive_stock HTTP/1.1" 200 -
+2025-12-02 12:07:28,585 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:28] "POST /api/generate_labels HTTP/1.1" 200 -
+2025-12-02 12:07:31,618 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:31] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 12:07:36,624 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:36] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 12:07:41,609 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 12:07:46,609 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:46] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 12:07:47,239 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:47] "GET /api/dashboard/1 HTTP/1.1" 200 -
+2025-12-02 12:07:52,943 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:52] "[36mGET /static/index-2e15948c.css HTTP/1.1[0m" 304 -
+2025-12-02 12:07:52,951 - INFO - 127.0.0.1 - - [02/Dec/2025 12:07:52] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-12-02 12:12:48,555 - WARNING - Heartbeat timeout - shutting down
