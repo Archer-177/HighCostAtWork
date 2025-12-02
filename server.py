@@ -1646,11 +1646,19 @@ if __name__ == '__main__':
                 break
     
     print(f"Starting server on port {port}")
-    logging.info(f"Server started on port {port}")
+    logging.info(f"Starting server on port {port}")
     
     # Open browser
     import webbrowser
     webbrowser.open(f"http://127.0.0.1:{port}")
+
+    # Close splash screen if it exists (PyInstaller)
+    try:
+        import pyi_splash
+        pyi_splash.update_text('Starting server...')
+        pyi_splash.close()
+    except ImportError:
+        pass
     
     # Run Flask app
     app.run(host='127.0.0.1', port=port, debug=False)
