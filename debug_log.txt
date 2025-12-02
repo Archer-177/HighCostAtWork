@@ -6920,3 +6920,458 @@ sqlite3.OperationalError: no such column: location_id
 2025-12-02 14:01:43,376 - INFO - 127.0.0.1 - - [02/Dec/2025 14:01:43] "POST /api/heartbeat HTTP/1.1" 200 -
 2025-12-02 14:01:48,380 - INFO - 127.0.0.1 - - [02/Dec/2025 14:01:48] "POST /api/heartbeat HTTP/1.1" 200 -
 2025-12-02 14:01:53,386 - INFO - 127.0.0.1 - - [02/Dec/2025 14:01:53] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:33:07,892 - INFO - Server started on port 5000
+2025-12-02 14:33:08,067 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-12-02 14:33:08,067 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-02 14:33:08,104 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:08] "GET / HTTP/1.1" 200 -
+2025-12-02 14:33:08,114 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:08] "GET /static/index-871e75f9.js HTTP/1.1" 200 -
+2025-12-02 14:33:08,118 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:08] "GET /static/index-b1540c91.css HTTP/1.1" 200 -
+2025-12-02 14:33:13,164 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:13] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:33:17,674 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:17] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 14:33:17,695 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:17] "GET /api/dashboard/2 HTTP/1.1" 200 -
+2025-12-02 14:33:20,931 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:20] "GET /api/drugs?t=1764648200928 HTTP/1.1" 200 -
+2025-12-02 14:33:22,697 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:33:27,593 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:27] "GET /api/settings?location_id=2 HTTP/1.1" 200 -
+2025-12-02 14:33:27,704 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:33:29,489 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:29] "GET /api/users?t=1764648209486 HTTP/1.1" 200 -
+2025-12-02 14:33:29,489 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:29] "GET /api/locations?t=1764648209486 HTTP/1.1" 200 -
+2025-12-02 14:33:32,694 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:33:37,703 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:33:42,703 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:33:47,701 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:33:52,704 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:52] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:33:57,695 - INFO - 127.0.0.1 - - [02/Dec/2025 14:33:57] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:34:02,693 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:34:07,697 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:34:12,704 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:34:17,704 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:34:22,704 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:34:27,697 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:34:32,705 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:34:37,703 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:34:42,705 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:34:45,246 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:45] "[35m[1mPOST /api/users HTTP/1.1[0m" 201 -
+2025-12-02 14:34:45,250 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:45] "GET /api/users?t=1764648285247 HTTP/1.1" 200 -
+2025-12-02 14:34:45,250 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:45] "GET /api/locations?t=1764648285247 HTTP/1.1" 200 -
+2025-12-02 14:34:47,705 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:34:54,888 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:34:57,121 - INFO - 127.0.0.1 - - [02/Dec/2025 14:34:57] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -
+2025-12-02 14:35:02,129 - INFO - 127.0.0.1 - - [02/Dec/2025 14:35:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:35:02,824 - INFO - 127.0.0.1 - - [02/Dec/2025 14:35:02] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 14:35:02,832 - INFO - 127.0.0.1 - - [02/Dec/2025 14:35:02] "GET /api/dashboard/13 HTTP/1.1" 200 -
+2025-12-02 14:35:07,838 - INFO - 127.0.0.1 - - [02/Dec/2025 14:35:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:35:12,836 - INFO - 127.0.0.1 - - [02/Dec/2025 14:35:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:35:17,834 - INFO - 127.0.0.1 - - [02/Dec/2025 14:35:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:35:22,830 - INFO - 127.0.0.1 - - [02/Dec/2025 14:35:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:35:27,831 - INFO - 127.0.0.1 - - [02/Dec/2025 14:35:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:35:32,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:35:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:35:37,837 - INFO - 127.0.0.1 - - [02/Dec/2025 14:35:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:35:42,838 - INFO - 127.0.0.1 - - [02/Dec/2025 14:35:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:35:47,837 - INFO - 127.0.0.1 - - [02/Dec/2025 14:35:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:35:52,837 - INFO - 127.0.0.1 - - [02/Dec/2025 14:35:52] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:35:57,834 - INFO - 127.0.0.1 - - [02/Dec/2025 14:35:57] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:36:02,836 - INFO - 127.0.0.1 - - [02/Dec/2025 14:36:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:36:07,838 - INFO - 127.0.0.1 - - [02/Dec/2025 14:36:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:36:12,836 - INFO - 127.0.0.1 - - [02/Dec/2025 14:36:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:36:17,838 - INFO - 127.0.0.1 - - [02/Dec/2025 14:36:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:36:22,838 - INFO - 127.0.0.1 - - [02/Dec/2025 14:36:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:36:27,832 - INFO - 127.0.0.1 - - [02/Dec/2025 14:36:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:36:32,835 - INFO - 127.0.0.1 - - [02/Dec/2025 14:36:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:36:37,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:36:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:36:42,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:36:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:36:47,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:36:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:36:52,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:36:52] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:36:57,838 - INFO - 127.0.0.1 - - [02/Dec/2025 14:36:57] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:37:02,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:37:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:37:07,833 - INFO - 127.0.0.1 - - [02/Dec/2025 14:37:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:37:12,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:37:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:37:17,832 - INFO - 127.0.0.1 - - [02/Dec/2025 14:37:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:37:22,838 - INFO - 127.0.0.1 - - [02/Dec/2025 14:37:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:37:27,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:37:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:37:32,840 - INFO - 127.0.0.1 - - [02/Dec/2025 14:37:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:37:37,837 - INFO - 127.0.0.1 - - [02/Dec/2025 14:37:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:37:42,840 - INFO - 127.0.0.1 - - [02/Dec/2025 14:37:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:37:47,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:37:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:37:52,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:37:52] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:37:57,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:37:57] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:38:02,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:38:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:38:07,838 - INFO - 127.0.0.1 - - [02/Dec/2025 14:38:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:38:12,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:38:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:38:17,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:38:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:38:22,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:38:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:38:27,838 - INFO - 127.0.0.1 - - [02/Dec/2025 14:38:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:38:32,833 - INFO - 127.0.0.1 - - [02/Dec/2025 14:38:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:38:37,839 - INFO - 127.0.0.1 - - [02/Dec/2025 14:38:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:38:42,836 - INFO - 127.0.0.1 - - [02/Dec/2025 14:38:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:38:47,840 - INFO - 127.0.0.1 - - [02/Dec/2025 14:38:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:46:51,671 - INFO - Server started on port 5000
+2025-12-02 14:46:51,832 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-12-02 14:46:51,833 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-02 14:46:51,874 - INFO - 127.0.0.1 - - [02/Dec/2025 14:46:51] "GET / HTTP/1.1" 200 -
+2025-12-02 14:46:51,884 - INFO - 127.0.0.1 - - [02/Dec/2025 14:46:51] "GET /static/index-da83be31.js HTTP/1.1" 200 -
+2025-12-02 14:46:51,888 - INFO - 127.0.0.1 - - [02/Dec/2025 14:46:51] "GET /static/index-eee0d247.css HTTP/1.1" 200 -
+2025-12-02 14:46:56,927 - INFO - 127.0.0.1 - - [02/Dec/2025 14:46:56] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:47:01,929 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:01] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:47:06,929 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:06] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:47:07,346 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:07] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 14:47:07,355 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:07] "GET /api/dashboard/13 HTTP/1.1" 200 -
+2025-12-02 14:47:16,364 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:16] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:47:21,194 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:21] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 14:47:21,204 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:21] "GET /api/dashboard/2 HTTP/1.1" 200 -
+2025-12-02 14:47:24,449 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:24] "GET /api/drugs?t=1764649044445 HTTP/1.1" 200 -
+2025-12-02 14:47:25,902 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:25] "GET /api/users?t=1764649045896 HTTP/1.1" 200 -
+2025-12-02 14:47:25,903 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:25] "GET /api/locations?t=1764649045896 HTTP/1.1" 200 -
+2025-12-02 14:47:26,215 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:26] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:47:31,216 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:31] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:47:36,215 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:36] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:47:41,205 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:47:46,215 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:46] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:47:51,216 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:51] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:47:56,214 - INFO - 127.0.0.1 - - [02/Dec/2025 14:47:56] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:48:01,205 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:01] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:48:06,207 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:06] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:48:06,492 - ERROR - Exception on /api/users [POST]
+Traceback (most recent call last):
+  File "C:\Users\jali01\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\jali01\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\jali01\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ~^^^^^^^^^^^^^^^^^
+  File "C:\Users\jali01\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\jali01\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\jali01\Dev\Stock rotation\server.py", line 1061, in handle_users
+    conn.execute("""
+    ~~~~~~~~~~~~^^^^
+        INSERT INTO users (username, password_hash, role, location_id, can_delegate, is_supervisor, email, must_change_password)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    """, (username, generate_password_hash(password), role, location_id, can_delegate, is_supervisor, email))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: table users has no column named must_change_password
+2025-12-02 14:48:06,495 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:06] "[35m[1mPOST /api/users HTTP/1.1[0m" 500 -
+2025-12-02 14:48:11,212 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:11] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:48:13,022 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:13] "[36mGET /static/index-eee0d247.css HTTP/1.1[0m" 304 -
+2025-12-02 14:48:13,029 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:13] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-12-02 14:48:16,212 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:16] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:48:21,206 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:21] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:48:22,506 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:22] "GET /api/users HTTP/1.1" 200 -
+2025-12-02 14:48:22,544 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:22] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-12-02 14:48:26,229 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:26] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:48:31,221 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:31] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:48:36,228 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:36] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:48:41,223 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:48:46,230 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:46] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:48:51,230 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:51] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:48:56,230 - INFO - 127.0.0.1 - - [02/Dec/2025 14:48:56] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:49:01,216 - INFO - 127.0.0.1 - - [02/Dec/2025 14:49:01] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:49:06,227 - INFO - 127.0.0.1 - - [02/Dec/2025 14:49:06] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:49:11,226 - INFO - 127.0.0.1 - - [02/Dec/2025 14:49:11] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:49:16,220 - INFO - 127.0.0.1 - - [02/Dec/2025 14:49:16] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:49:21,221 - INFO - 127.0.0.1 - - [02/Dec/2025 14:49:21] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:49:26,209 - INFO - 127.0.0.1 - - [02/Dec/2025 14:49:26] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:49:31,209 - INFO - 127.0.0.1 - - [02/Dec/2025 14:49:31] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:49:36,210 - INFO - 127.0.0.1 - - [02/Dec/2025 14:49:36] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:49:41,214 - INFO - 127.0.0.1 - - [02/Dec/2025 14:49:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:49:46,205 - INFO - 127.0.0.1 - - [02/Dec/2025 14:49:46] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:49:51,215 - INFO - 127.0.0.1 - - [02/Dec/2025 14:49:51] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:49:56,217 - INFO - 127.0.0.1 - - [02/Dec/2025 14:49:56] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:50:01,214 - INFO - 127.0.0.1 - - [02/Dec/2025 14:50:01] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:50:06,206 - INFO - 127.0.0.1 - - [02/Dec/2025 14:50:06] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:50:11,208 - INFO - 127.0.0.1 - - [02/Dec/2025 14:50:11] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:50:16,211 - INFO - 127.0.0.1 - - [02/Dec/2025 14:50:16] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:50:21,217 - INFO - 127.0.0.1 - - [02/Dec/2025 14:50:21] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:50:26,217 - INFO - 127.0.0.1 - - [02/Dec/2025 14:50:26] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:50:31,211 - INFO - 127.0.0.1 - - [02/Dec/2025 14:50:31] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:50:36,212 - INFO - 127.0.0.1 - - [02/Dec/2025 14:50:36] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:50:41,208 - INFO - 127.0.0.1 - - [02/Dec/2025 14:50:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:50:46,214 - INFO - 127.0.0.1 - - [02/Dec/2025 14:50:46] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:50:51,214 - INFO - 127.0.0.1 - - [02/Dec/2025 14:50:51] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:50:56,215 - INFO - 127.0.0.1 - - [02/Dec/2025 14:50:56] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:51:38,828 - INFO - Server started on port 5000
+2025-12-02 14:51:38,989 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-12-02 14:51:38,989 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-02 14:51:39,037 - INFO - 127.0.0.1 - - [02/Dec/2025 14:51:39] "GET / HTTP/1.1" 200 -
+2025-12-02 14:51:39,046 - INFO - 127.0.0.1 - - [02/Dec/2025 14:51:39] "GET /static/index-da83be31.js HTTP/1.1" 200 -
+2025-12-02 14:51:39,050 - INFO - 127.0.0.1 - - [02/Dec/2025 14:51:39] "GET /static/index-eee0d247.css HTTP/1.1" 200 -
+2025-12-02 14:51:44,101 - INFO - 127.0.0.1 - - [02/Dec/2025 14:51:44] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:51:49,068 - INFO - 127.0.0.1 - - [02/Dec/2025 14:51:49] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -
+2025-12-02 14:51:54,099 - INFO - 127.0.0.1 - - [02/Dec/2025 14:51:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:51:59,087 - INFO - 127.0.0.1 - - [02/Dec/2025 14:51:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:52:04,100 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:52:05,073 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:05] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 14:52:05,084 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:05] "GET /api/dashboard/2 HTTP/1.1" 200 -
+2025-12-02 14:52:07,038 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:07] "GET /api/drugs?t=1764649327034 HTTP/1.1" 200 -
+2025-12-02 14:52:09,025 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:09] "GET /api/users?t=1764649329019 HTTP/1.1" 200 -
+2025-12-02 14:52:09,025 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:09] "GET /api/locations?t=1764649329019 HTTP/1.1" 200 -
+2025-12-02 14:52:10,085 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:52:15,087 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:52:20,086 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:52:25,084 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:52:29,330 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:29] "[35m[1mPOST /api/users HTTP/1.1[0m" 201 -
+2025-12-02 14:52:29,336 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:29] "GET /api/users?t=1764649349331 HTTP/1.1" 200 -
+2025-12-02 14:52:29,337 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:29] "GET /api/locations?t=1764649349331 HTTP/1.1" 200 -
+2025-12-02 14:52:30,084 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:52:36,935 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:36] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:52:40,600 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:40] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 14:52:40,609 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:40] "GET /api/dashboard/14 HTTP/1.1" 200 -
+2025-12-02 14:52:45,613 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:52:49,466 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:49] "[36mGET /static/index-eee0d247.css HTTP/1.1[0m" 304 -
+2025-12-02 14:52:49,474 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:49] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-12-02 14:52:50,616 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:52:55,618 - INFO - 127.0.0.1 - - [02/Dec/2025 14:52:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:53:00,614 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:53:08,984 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:08] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:53:13,972 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:13] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:53:18,981 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:18] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:53:23,983 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:23] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:53:28,972 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:28] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:53:33,977 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:33] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:53:38,983 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:38] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:53:42,630 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:42] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 14:53:42,643 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:42] "GET /api/dashboard/2 HTTP/1.1" 200 -
+2025-12-02 14:53:46,806 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:46] "GET /api/drugs?t=1764649426801 HTTP/1.1" 200 -
+2025-12-02 14:53:47,652 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:53:49,794 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:49] "GET /api/settings?location_id=2 HTTP/1.1" 200 -
+2025-12-02 14:53:52,654 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:52] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:53:57,460 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:57] "POST /api/settings HTTP/1.1" 200 -
+2025-12-02 14:53:57,652 - INFO - 127.0.0.1 - - [02/Dec/2025 14:53:57] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:54:00,634 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:00] "GET /api/users?t=1764649440627 HTTP/1.1" 200 -
+2025-12-02 14:54:00,634 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:00] "GET /api/locations?t=1764649440627 HTTP/1.1" 200 -
+2025-12-02 14:54:02,651 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:54:07,647 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:54:12,653 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:54:17,645 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:54:22,653 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:54:27,653 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:54:32,648 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:32] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:54:36,150 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:36] "[35m[1mPOST /api/users HTTP/1.1[0m" 201 -
+2025-12-02 14:54:36,155 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:36] "GET /api/locations?t=1764649476151 HTTP/1.1" 200 -
+2025-12-02 14:54:36,155 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:36] "GET /api/users?t=1764649476151 HTTP/1.1" 200 -
+2025-12-02 14:54:37,651 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:54:42,653 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:54:47,654 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:54:52,654 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:52] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:54:57,653 - INFO - 127.0.0.1 - - [02/Dec/2025 14:54:57] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:55:02,653 - INFO - 127.0.0.1 - - [02/Dec/2025 14:55:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:55:07,651 - INFO - 127.0.0.1 - - [02/Dec/2025 14:55:07] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:55:12,649 - INFO - 127.0.0.1 - - [02/Dec/2025 14:55:12] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:55:17,653 - INFO - 127.0.0.1 - - [02/Dec/2025 14:55:17] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:55:22,651 - INFO - 127.0.0.1 - - [02/Dec/2025 14:55:22] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:55:27,643 - INFO - 127.0.0.1 - - [02/Dec/2025 14:55:27] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:55:36,910 - INFO - 127.0.0.1 - - [02/Dec/2025 14:55:36] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-12-02 14:55:37,457 - INFO - 127.0.0.1 - - [02/Dec/2025 14:55:37] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:55:42,463 - INFO - 127.0.0.1 - - [02/Dec/2025 14:55:42] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:55:47,465 - INFO - 127.0.0.1 - - [02/Dec/2025 14:55:47] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:55:48,711 - INFO - 127.0.0.1 - - [02/Dec/2025 14:55:48] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 14:55:48,724 - INFO - 127.0.0.1 - - [02/Dec/2025 14:55:48] "GET /api/dashboard/15 HTTP/1.1" 200 -
+2025-12-02 14:55:53,726 - INFO - 127.0.0.1 - - [02/Dec/2025 14:55:53] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:55:58,735 - INFO - 127.0.0.1 - - [02/Dec/2025 14:55:58] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:56:03,733 - INFO - 127.0.0.1 - - [02/Dec/2025 14:56:03] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:56:08,726 - INFO - 127.0.0.1 - - [02/Dec/2025 14:56:08] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:56:13,727 - INFO - 127.0.0.1 - - [02/Dec/2025 14:56:13] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:56:18,730 - INFO - 127.0.0.1 - - [02/Dec/2025 14:56:18] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:56:23,726 - INFO - 127.0.0.1 - - [02/Dec/2025 14:56:23] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:56:28,733 - INFO - 127.0.0.1 - - [02/Dec/2025 14:56:28] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:56:33,725 - INFO - 127.0.0.1 - - [02/Dec/2025 14:56:33] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:56:38,737 - INFO - 127.0.0.1 - - [02/Dec/2025 14:56:38] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:56:43,736 - INFO - 127.0.0.1 - - [02/Dec/2025 14:56:43] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:56:48,731 - INFO - 127.0.0.1 - - [02/Dec/2025 14:56:48] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:56:53,729 - INFO - 127.0.0.1 - - [02/Dec/2025 14:56:53] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:56:58,732 - INFO - 127.0.0.1 - - [02/Dec/2025 14:56:58] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:57:03,735 - INFO - 127.0.0.1 - - [02/Dec/2025 14:57:03] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:57:08,724 - INFO - 127.0.0.1 - - [02/Dec/2025 14:57:08] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:57:13,727 - INFO - 127.0.0.1 - - [02/Dec/2025 14:57:13] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:57:18,727 - INFO - 127.0.0.1 - - [02/Dec/2025 14:57:18] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:57:23,737 - INFO - 127.0.0.1 - - [02/Dec/2025 14:57:23] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:57:28,738 - INFO - 127.0.0.1 - - [02/Dec/2025 14:57:28] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:57:33,738 - INFO - 127.0.0.1 - - [02/Dec/2025 14:57:33] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:57:38,725 - INFO - 127.0.0.1 - - [02/Dec/2025 14:57:38] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:57:43,738 - INFO - 127.0.0.1 - - [02/Dec/2025 14:57:43] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:57:48,732 - INFO - 127.0.0.1 - - [02/Dec/2025 14:57:48] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:57:53,737 - INFO - 127.0.0.1 - - [02/Dec/2025 14:57:53] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:57:58,726 - INFO - 127.0.0.1 - - [02/Dec/2025 14:57:58] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:58:03,736 - INFO - 127.0.0.1 - - [02/Dec/2025 14:58:03] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:58:08,736 - INFO - 127.0.0.1 - - [02/Dec/2025 14:58:08] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:58:13,735 - INFO - 127.0.0.1 - - [02/Dec/2025 14:58:13] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:58:18,739 - INFO - 127.0.0.1 - - [02/Dec/2025 14:58:18] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:58:23,739 - INFO - 127.0.0.1 - - [02/Dec/2025 14:58:23] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:58:28,731 - INFO - 127.0.0.1 - - [02/Dec/2025 14:58:28] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:58:33,730 - INFO - 127.0.0.1 - - [02/Dec/2025 14:58:33] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:58:38,725 - INFO - 127.0.0.1 - - [02/Dec/2025 14:58:38] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:58:43,733 - INFO - 127.0.0.1 - - [02/Dec/2025 14:58:43] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:58:48,738 - INFO - 127.0.0.1 - - [02/Dec/2025 14:58:48] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:58:53,733 - INFO - 127.0.0.1 - - [02/Dec/2025 14:58:53] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:58:58,733 - INFO - 127.0.0.1 - - [02/Dec/2025 14:58:58] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:59:03,728 - INFO - 127.0.0.1 - - [02/Dec/2025 14:59:03] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:59:08,738 - INFO - 127.0.0.1 - - [02/Dec/2025 14:59:08] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:59:13,736 - INFO - 127.0.0.1 - - [02/Dec/2025 14:59:13] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:59:18,730 - INFO - 127.0.0.1 - - [02/Dec/2025 14:59:18] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:59:23,732 - INFO - 127.0.0.1 - - [02/Dec/2025 14:59:23] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:59:47,661 - INFO - Server started on port 5000
+2025-12-02 14:59:47,829 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-12-02 14:59:47,829 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-02 14:59:47,878 - INFO - 127.0.0.1 - - [02/Dec/2025 14:59:47] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-02 14:59:47,886 - INFO - 127.0.0.1 - - [02/Dec/2025 14:59:47] "[36mGET /static/index-da83be31.js HTTP/1.1[0m" 304 -
+2025-12-02 14:59:47,890 - INFO - 127.0.0.1 - - [02/Dec/2025 14:59:47] "[36mGET /static/index-eee0d247.css HTTP/1.1[0m" 304 -
+2025-12-02 14:59:52,938 - INFO - 127.0.0.1 - - [02/Dec/2025 14:59:52] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 14:59:57,937 - INFO - 127.0.0.1 - - [02/Dec/2025 14:59:57] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:00:02,941 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:02] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:00:03,829 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:03] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 15:00:08,843 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:08] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:00:13,857 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:13] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:00:18,852 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:18] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:00:23,850 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:23] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:00:28,844 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:28] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:00:33,856 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:33] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:00:38,857 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:38] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:00:43,858 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:43] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:00:48,852 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:48] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:00:50,028 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:50] "[31m[1mPOST /api/change_password HTTP/1.1[0m" 405 -
+2025-12-02 15:00:53,854 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:53] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:00:54,432 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:54] "[36mGET /static/index-eee0d247.css HTTP/1.1[0m" 304 -
+2025-12-02 15:00:54,442 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:54] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-12-02 15:00:58,858 - INFO - 127.0.0.1 - - [02/Dec/2025 15:00:58] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:01:03,842 - INFO - 127.0.0.1 - - [02/Dec/2025 15:01:03] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:01:08,852 - INFO - 127.0.0.1 - - [02/Dec/2025 15:01:08] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:01:13,853 - INFO - 127.0.0.1 - - [02/Dec/2025 15:01:13] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:01:18,854 - INFO - 127.0.0.1 - - [02/Dec/2025 15:01:18] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:01:23,858 - INFO - 127.0.0.1 - - [02/Dec/2025 15:01:23] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:01:28,857 - INFO - 127.0.0.1 - - [02/Dec/2025 15:01:28] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:01:33,857 - INFO - 127.0.0.1 - - [02/Dec/2025 15:01:33] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:01:38,856 - INFO - 127.0.0.1 - - [02/Dec/2025 15:01:38] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:01:43,850 - INFO - 127.0.0.1 - - [02/Dec/2025 15:01:43] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:01:48,858 - INFO - 127.0.0.1 - - [02/Dec/2025 15:01:48] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:01:53,857 - INFO - 127.0.0.1 - - [02/Dec/2025 15:01:53] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:01:58,857 - INFO - 127.0.0.1 - - [02/Dec/2025 15:01:58] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:02:03,852 - INFO - 127.0.0.1 - - [02/Dec/2025 15:02:03] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:02:08,856 - INFO - 127.0.0.1 - - [02/Dec/2025 15:02:08] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:02:13,842 - INFO - 127.0.0.1 - - [02/Dec/2025 15:02:13] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:02:18,852 - INFO - 127.0.0.1 - - [02/Dec/2025 15:02:18] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:02:23,850 - INFO - 127.0.0.1 - - [02/Dec/2025 15:02:23] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:02:28,857 - INFO - 127.0.0.1 - - [02/Dec/2025 15:02:28] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:02:33,853 - INFO - 127.0.0.1 - - [02/Dec/2025 15:02:33] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:02:38,855 - INFO - 127.0.0.1 - - [02/Dec/2025 15:02:38] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:02:43,856 - INFO - 127.0.0.1 - - [02/Dec/2025 15:02:43] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:02:48,850 - INFO - 127.0.0.1 - - [02/Dec/2025 15:02:48] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:02:53,850 - INFO - 127.0.0.1 - - [02/Dec/2025 15:02:53] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:02:58,850 - INFO - 127.0.0.1 - - [02/Dec/2025 15:02:58] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:03:03,855 - INFO - 127.0.0.1 - - [02/Dec/2025 15:03:03] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:03:08,845 - INFO - 127.0.0.1 - - [02/Dec/2025 15:03:08] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:03:13,844 - INFO - 127.0.0.1 - - [02/Dec/2025 15:03:13] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:04:06,652 - INFO - Server started on port 5000
+2025-12-02 15:04:06,804 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-12-02 15:04:06,804 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-02 15:04:06,854 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:06] "GET / HTTP/1.1" 200 -
+2025-12-02 15:04:06,864 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:06] "GET /static/index-da83be31.js HTTP/1.1" 200 -
+2025-12-02 15:04:06,867 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:06] "GET /static/index-eee0d247.css HTTP/1.1" 200 -
+2025-12-02 15:04:11,911 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:11] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:04:16,914 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:16] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:04:18,575 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:18] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 15:04:23,605 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:23] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:04:28,604 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:28] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:04:32,436 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:32] "[31m[1mPOST /api/change_password HTTP/1.1[0m" 400 -
+2025-12-02 15:04:33,605 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:33] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:04:37,845 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:37] "[36mGET /static/index-eee0d247.css HTTP/1.1[0m" 304 -
+2025-12-02 15:04:37,853 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:37] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-12-02 15:04:38,594 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:38] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:04:43,602 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:43] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:04:48,601 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:48] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:04:53,600 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:53] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:04:58,603 - INFO - 127.0.0.1 - - [02/Dec/2025 15:04:58] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:05:03,597 - INFO - 127.0.0.1 - - [02/Dec/2025 15:05:03] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:05:06,557 - INFO - 127.0.0.1 - - [02/Dec/2025 15:05:06] "[31m[1mPOST /api/change_password HTTP/1.1[0m" 400 -
+2025-12-02 15:05:08,608 - INFO - 127.0.0.1 - - [02/Dec/2025 15:05:08] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:05:13,600 - INFO - 127.0.0.1 - - [02/Dec/2025 15:05:13] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:05:18,598 - INFO - 127.0.0.1 - - [02/Dec/2025 15:05:18] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:05:23,599 - INFO - 127.0.0.1 - - [02/Dec/2025 15:05:23] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:05:28,602 - INFO - 127.0.0.1 - - [02/Dec/2025 15:05:28] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:05:33,598 - INFO - 127.0.0.1 - - [02/Dec/2025 15:05:33] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:05:38,607 - INFO - 127.0.0.1 - - [02/Dec/2025 15:05:38] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:05:43,606 - INFO - 127.0.0.1 - - [02/Dec/2025 15:05:43] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:05:48,597 - INFO - 127.0.0.1 - - [02/Dec/2025 15:05:48] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:05:53,602 - INFO - 127.0.0.1 - - [02/Dec/2025 15:05:53] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:05:58,596 - INFO - 127.0.0.1 - - [02/Dec/2025 15:05:58] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:06:03,602 - INFO - 127.0.0.1 - - [02/Dec/2025 15:06:03] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:06:08,596 - INFO - 127.0.0.1 - - [02/Dec/2025 15:06:08] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:06:13,601 - INFO - 127.0.0.1 - - [02/Dec/2025 15:06:13] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:06:18,609 - INFO - 127.0.0.1 - - [02/Dec/2025 15:06:18] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:06:23,608 - INFO - 127.0.0.1 - - [02/Dec/2025 15:06:23] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:06:28,599 - INFO - 127.0.0.1 - - [02/Dec/2025 15:06:28] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:06:33,604 - INFO - 127.0.0.1 - - [02/Dec/2025 15:06:33] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:06:38,603 - INFO - 127.0.0.1 - - [02/Dec/2025 15:06:38] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:06:43,600 - INFO - 127.0.0.1 - - [02/Dec/2025 15:06:43] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:06:48,602 - INFO - 127.0.0.1 - - [02/Dec/2025 15:06:48] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:11:13,937 - INFO - Server started on port 5000
+2025-12-02 15:11:14,105 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-12-02 15:11:14,105 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-02 15:11:14,155 - INFO - 127.0.0.1 - - [02/Dec/2025 15:11:14] "GET / HTTP/1.1" 200 -
+2025-12-02 15:11:14,164 - INFO - 127.0.0.1 - - [02/Dec/2025 15:11:14] "GET /static/index-70d544ac.js HTTP/1.1" 200 -
+2025-12-02 15:11:14,168 - INFO - 127.0.0.1 - - [02/Dec/2025 15:11:14] "GET /static/index-eee0d247.css HTTP/1.1" 200 -
+2025-12-02 15:11:19,212 - INFO - 127.0.0.1 - - [02/Dec/2025 15:11:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:11:24,211 - INFO - 127.0.0.1 - - [02/Dec/2025 15:11:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:11:29,214 - INFO - 127.0.0.1 - - [02/Dec/2025 15:11:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:11:29,450 - INFO - 127.0.0.1 - - [02/Dec/2025 15:11:29] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 15:11:34,464 - INFO - 127.0.0.1 - - [02/Dec/2025 15:11:34] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:11:39,462 - INFO - 127.0.0.1 - - [02/Dec/2025 15:11:39] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:11:44,464 - INFO - 127.0.0.1 - - [02/Dec/2025 15:11:44] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:11:49,461 - INFO - 127.0.0.1 - - [02/Dec/2025 15:11:49] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:11:54,461 - INFO - 127.0.0.1 - - [02/Dec/2025 15:11:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:11:59,460 - INFO - 127.0.0.1 - - [02/Dec/2025 15:11:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:12:04,456 - INFO - 127.0.0.1 - - [02/Dec/2025 15:12:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:12:09,464 - INFO - 127.0.0.1 - - [02/Dec/2025 15:12:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:12:14,066 - INFO - 127.0.0.1 - - [02/Dec/2025 15:12:14] "POST /api/change_password HTTP/1.1" 200 -
+2025-12-02 15:12:19,081 - INFO - 127.0.0.1 - - [02/Dec/2025 15:12:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:12:24,072 - INFO - 127.0.0.1 - - [02/Dec/2025 15:12:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:12:29,073 - INFO - 127.0.0.1 - - [02/Dec/2025 15:12:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:12:34,081 - INFO - 127.0.0.1 - - [02/Dec/2025 15:12:34] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:12:51,587 - INFO - Server started on port 5000
+2025-12-02 15:12:51,748 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-12-02 15:12:51,748 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-02 15:12:51,794 - INFO - 127.0.0.1 - - [02/Dec/2025 15:12:51] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-02 15:12:51,804 - INFO - 127.0.0.1 - - [02/Dec/2025 15:12:51] "[36mGET /static/index-70d544ac.js HTTP/1.1[0m" 304 -
+2025-12-02 15:12:51,807 - INFO - 127.0.0.1 - - [02/Dec/2025 15:12:51] "[36mGET /static/index-eee0d247.css HTTP/1.1[0m" 304 -
+2025-12-02 15:12:56,850 - INFO - 127.0.0.1 - - [02/Dec/2025 15:12:56] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:13:00,295 - INFO - 127.0.0.1 - - [02/Dec/2025 15:13:00] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 15:13:00,306 - INFO - 127.0.0.1 - - [02/Dec/2025 15:13:00] "GET /api/dashboard/2 HTTP/1.1" 200 -
+2025-12-02 15:13:09,044 - INFO - 127.0.0.1 - - [02/Dec/2025 15:13:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:13:14,047 - INFO - 127.0.0.1 - - [02/Dec/2025 15:13:14] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:13:19,045 - INFO - 127.0.0.1 - - [02/Dec/2025 15:13:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:13:24,037 - INFO - 127.0.0.1 - - [02/Dec/2025 15:13:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:13:29,046 - INFO - 127.0.0.1 - - [02/Dec/2025 15:13:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:13:34,031 - INFO - 127.0.0.1 - - [02/Dec/2025 15:13:34] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:13:39,034 - INFO - 127.0.0.1 - - [02/Dec/2025 15:13:39] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:13:44,042 - INFO - 127.0.0.1 - - [02/Dec/2025 15:13:44] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:13:49,034 - INFO - 127.0.0.1 - - [02/Dec/2025 15:13:49] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:13:54,035 - INFO - 127.0.0.1 - - [02/Dec/2025 15:13:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:14:53,766 - INFO - Server started on port 5000
+2025-12-02 15:14:53,915 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-12-02 15:14:53,915 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-02 15:14:53,966 - INFO - 127.0.0.1 - - [02/Dec/2025 15:14:53] "GET / HTTP/1.1" 200 -
+2025-12-02 15:14:53,974 - INFO - 127.0.0.1 - - [02/Dec/2025 15:14:53] "GET /static/index-aec062c1.js HTTP/1.1" 200 -
+2025-12-02 15:14:53,978 - INFO - 127.0.0.1 - - [02/Dec/2025 15:14:53] "GET /static/index-eee0d247.css HTTP/1.1" 200 -
+2025-12-02 15:14:59,027 - INFO - 127.0.0.1 - - [02/Dec/2025 15:14:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:15:02,563 - INFO - 127.0.0.1 - - [02/Dec/2025 15:15:02] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 15:15:02,576 - INFO - 127.0.0.1 - - [02/Dec/2025 15:15:02] "GET /api/dashboard/13 HTTP/1.1" 200 -
+2025-12-02 15:15:10,339 - INFO - 127.0.0.1 - - [02/Dec/2025 15:15:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:15:13,794 - INFO - 127.0.0.1 - - [02/Dec/2025 15:15:13] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 15:15:18,803 - INFO - 127.0.0.1 - - [02/Dec/2025 15:15:18] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:15:23,817 - INFO - 127.0.0.1 - - [02/Dec/2025 15:15:23] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:15:26,945 - INFO - 127.0.0.1 - - [02/Dec/2025 15:15:26] "POST /api/change_password HTTP/1.1" 200 -
+2025-12-02 15:15:31,958 - INFO - 127.0.0.1 - - [02/Dec/2025 15:15:31] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:15:36,968 - INFO - 127.0.0.1 - - [02/Dec/2025 15:15:36] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-02 15:15:41,157 - INFO - 127.0.0.1 - - [02/Dec/2025 15:15:41] "POST /api/login HTTP/1.1" 200 -
+2025-12-02 15:15:41,170 - INFO - 127.0.0.1 - - [02/Dec/2025 15:15:41] "GET /api/dashboard/14 HTTP/1.1" 200 -

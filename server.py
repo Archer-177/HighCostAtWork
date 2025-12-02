@@ -173,6 +173,12 @@ def init_db():
         except sqlite3.OperationalError:
             pass  # Column already exists
 
+        # Add must_change_password column to users table if it doesn't exist
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN must_change_password BOOLEAN DEFAULT 0")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
+
         
         # Stock transfers
         cursor.execute('''
@@ -370,7 +376,8 @@ def login():
                         'parent_hub_id': user['parent_hub_id'],
                         'can_delegate': bool(user['can_delegate']),
                         'is_supervisor': bool(user['is_supervisor']) if 'is_supervisor' in user.keys() else False,
-                        'email': user['email']
+                        'email': user['email'],
+                        'must_change_password': bool(user['must_change_password']) if 'must_change_password' in user.keys() else False
                     }
                 })
         else:
@@ -1057,9 +1064,10 @@ def handle_users():
              return jsonify({"error": "Invalid location"}), 400
 
         try:
+            # New users must change password on first login
             conn.execute("""
-                INSERT INTO users (username, password_hash, role, location_id, can_delegate, is_supervisor, email)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO users (username, password_hash, role, location_id, can_delegate, is_supervisor, email, must_change_password)
+                VALUES (?, ?, ?, ?, ?, ?, ?, 1)
             """, (username, generate_password_hash(password), role, location_id, can_delegate, is_supervisor, email))
             conn.commit()
             return jsonify({"success": True}), 201
@@ -1081,7 +1089,6 @@ def handle_user_detail(user_id):
     role = data.get('role')
     location_id = data.get('location_id')
     email = data.get('email')
-    email = data.get('email')
     can_delegate = data.get('can_delegate', 0)
     is_supervisor = data.get('is_supervisor', 0)
     password = data.get('password') # Optional
@@ -1098,9 +1105,10 @@ def handle_user_detail(user_id):
 
         try:
             if password:
+                # If password is reset by supervisor, force change on next login
                 conn.execute("""
                     UPDATE users 
-                    SET username = ?, role = ?, location_id = ?, email = ?, can_delegate = ?, is_supervisor = ?, password_hash = ?, version = version + 1
+                    SET username = ?, role = ?, location_id = ?, email = ?, can_delegate = ?, is_supervisor = ?, password_hash = ?, must_change_password = 1, version = version + 1
                     WHERE id = ?
                 """, (username, role, location_id, email, can_delegate, is_supervisor, generate_password_hash(password), user_id))
             else:
@@ -1114,6 +1122,37 @@ def handle_user_detail(user_id):
             return jsonify({"success": True})
         except sqlite3.IntegrityError:
             return jsonify({"error": "Username already exists"}), 409
+
+@app.route('/api/change_password', methods=['POST'])
+def change_password():
+    data = request.json
+    username = data.get('username')
+    old_password = data.get('oldPassword')
+    new_password = data.get('newPassword')
+
+    if not all([username, old_password, new_password]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    with get_db() as conn:
+        user = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+        
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+            
+        if not check_password_hash(user['password_hash'], old_password):
+            return jsonify({"error": "Invalid current password"}), 401
+
+        try:
+            conn.execute("""
+                UPDATE users 
+                SET password_hash = ?, must_change_password = 0, version = version + 1
+                WHERE id = ?
+            """, (generate_password_hash(new_password), user['id']))
+            conn.commit()
+            return jsonify({"success": True})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
 
 # 9. REPORTS
 @app.route('/api/reports/usage', methods=['GET'])

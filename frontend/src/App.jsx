@@ -14,10 +14,22 @@ import { HeartbeatProvider } from './contexts/HeartbeatContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { NotificationProvider } from './contexts/NotificationContext'
 
+import ChangePassword from './components/ChangePassword'
+
 // Protected Route Component
 function ProtectedRoute({ children }) {
   const { user } = useAuth()
-  return user ? children : <Navigate to="/login" replace />
+
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  // Force password change if flag is set
+  if (user.must_change_password) {
+    return <Navigate to="/change-password" replace />
+  }
+
+  return children
 }
 
 // Main App Layout
@@ -29,11 +41,11 @@ function AppLayout({ children }) {
       {/* Noise texture overlay */}
       <div className="noise-overlay" />
 
-      {/* Navigation */}
-      {user && <Navigation />}
+      {/* Navigation - Hide if user must change password */}
+      {user && !user.must_change_password && <Navigation />}
 
       {/* Main Content */}
-      <main className={`${user ? 'pl-64' : ''} transition-all duration-300`}>
+      <main className={`${user && !user.must_change_password ? 'pl-64' : ''} transition-all duration-300`}>
         <AnimatePresence mode="wait">
           {children}
         </AnimatePresence>
@@ -62,6 +74,12 @@ function App() {
               } />
 
               <Route path="/shutdown" element={<Shutdown />} />
+
+              <Route path="/change-password" element={
+                <AppLayout>
+                  <ChangePassword />
+                </AppLayout>
+              } />
 
               <Route path="/" element={
                 <ProtectedRoute>
