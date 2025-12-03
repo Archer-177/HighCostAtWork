@@ -172,6 +172,12 @@ def init_db():
         except sqlite3.OperationalError:
             pass  # Column already exists
 
+        # Add completed_by column to transfers table if it doesn't exist
+        try:
+            cursor.execute("ALTER TABLE transfers ADD COLUMN completed_by INTEGER REFERENCES users(id)")
+        except sqlite3.OperationalError:
+            pass
+
         # Add is_supervisor column to users table if it doesn't exist
         try:
             cursor.execute("ALTER TABLE users ADD COLUMN is_supervisor BOOLEAN DEFAULT 0")
@@ -198,6 +204,18 @@ def init_db():
         # Add mobile_number column
         try:
             cursor.execute("ALTER TABLE users ADD COLUMN mobile_number TEXT")
+        except sqlite3.OperationalError:
+            pass
+
+        # Add goods_receipt_number to vials
+        try:
+            cursor.execute("ALTER TABLE vials ADD COLUMN goods_receipt_number TEXT")
+        except sqlite3.OperationalError:
+            pass
+
+        # Add disposal_register_number to vials
+        try:
+            cursor.execute("ALTER TABLE vials ADD COLUMN disposal_register_number TEXT")
         except sqlite3.OperationalError:
             pass
 
@@ -395,7 +413,6 @@ def login():
                         'location_name': user['location_name'],
                         'location_type': user['location_type'],
                         'parent_hub_id': user['parent_hub_id'],
-                        'parent_hub_id': user['parent_hub_id'],
                         'can_delegate': bool(user['can_delegate']),
                         'is_supervisor': bool(user['is_supervisor']) if 'is_supervisor' in user.keys() else False,
                         'email': user['email'],
@@ -408,7 +425,7 @@ def login():
     return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
 
 # 5. STOCK OPERATIONS
-def receive_stock_logic(drug_id, batch_number, expiry_date, quantity, location_id, user_id):
+def receive_stock_logic(drug_id, batch_number, expiry_date, quantity, location_id, user_id, goods_receipt_number=None):
     with get_db() as conn:
         cursor = conn.cursor()
         
@@ -418,26 +435,27 @@ def receive_stock_logic(drug_id, batch_number, expiry_date, quantity, location_i
             return {"error": "Drug not found"}, 404
         
         # Generate unique asset IDs
+        timestamp = int(time.time())
         asset_ids = []
         for i in range(quantity):
-            asset_id = f"AST-{str(uuid.uuid4())[:8].upper()}"
+            # Format: DRUG-LOC-TIMESTAMP-SEQ
+            asset_id = f"{drug['name'][:3].upper()}-{location_id}-{timestamp}-{i+1}"
+            
             cursor.execute("""
-                INSERT INTO vials (asset_id, drug_id, batch_number, expiry_date, location_id, status)
-                VALUES (?, ?, ?, ?, ?, 'AVAILABLE')
-            """, (asset_id, drug_id, batch_number, expiry_date, location_id))
+                INSERT INTO vials (asset_id, drug_id, batch_number, expiry_date, location_id, status, goods_receipt_number, created_at)
+                VALUES (?, ?, ?, ?, ?, 'AVAILABLE', ?, ?)
+            """, (asset_id, drug_id, batch_number, expiry_date, location_id, goods_receipt_number, datetime.now()))
             asset_ids.append(asset_id)
-        
-        # Log the action
-        cursor.execute("""
-            INSERT INTO audit_log (user_id, action, details)
-            VALUES (?, 'RECEIVE_STOCK', ?)
-        """, (user_id, json.dumps({
-            'drug': drug['name'],
-            'quantity': quantity,
-            'batch': batch_number,
-            'expiry': expiry_date,
-            'asset_ids': asset_ids
-        })))
+            
+            # Log action
+            cursor.execute("""
+                INSERT INTO audit_log (user_id, action, details, timestamp)
+                VALUES (?, ?, ?, ?)
+            """, (user_id, 'RECEIVE_STOCK', json.dumps({
+                'asset_id': asset_id,
+                'location_id': location_id,
+                'goods_receipt_number': goods_receipt_number
+            }), datetime.now()))
         
         conn.commit()
         
@@ -458,12 +476,13 @@ def receive_stock():
         data['expiry_date'],
         data['quantity'],
         data['location_id'],
-        data['user_id']
+        data['user_id'],
+        data.get('goods_receipt_number')
     )
     return jsonify(result), status
 
 # 6. USE/DISCARD STOCK
-def use_stock_logic(vial_id, user_id, action, discard_reason=None, user_version=None, patient_mrn=None, clinical_notes=None):
+def use_stock_logic(vial_id, user_id, action, discard_reason=None, user_version=None, patient_mrn=None, clinical_notes=None, disposal_register_number=None):
     with get_db() as conn:
         cursor = conn.cursor()
         
@@ -483,10 +502,11 @@ def use_stock_logic(vial_id, user_id, action, discard_reason=None, user_version=
         new_status = 'USED_CLINICAL' if action == 'USE' else 'DISCARDED'
         cursor.execute("""
             UPDATE vials 
-            SET status = ?, used_at = CURRENT_TIMESTAMP, used_by = ?, 
-                discard_reason = ?, patient_mrn = ?, clinical_notes = ?, version = version + 1
+            SET status = ?, used_at = ?, used_by = ?, 
+                discard_reason = ?, patient_mrn = ?, clinical_notes = ?, 
+                disposal_register_number = ?, version = version + 1
             WHERE id = ?
-        """, (new_status, user_id, discard_reason, patient_mrn, clinical_notes, vial_id))
+        """, (new_status, datetime.now(), user_id, discard_reason, patient_mrn, clinical_notes, disposal_register_number, vial_id))
         
         # Check if stock is below minimum
         cursor.execute("""
@@ -507,13 +527,14 @@ def use_stock_logic(vial_id, user_id, action, discard_reason=None, user_version=
         
         # Log the action
         cursor.execute("""
-            INSERT INTO audit_log (user_id, action, details)
-            VALUES (?, ?, ?)
+            INSERT INTO audit_log (user_id, action, details, timestamp)
+            VALUES (?, ?, ?, ?)
         """, (user_id, action + '_STOCK', json.dumps({
             'asset_id': vial['asset_id'],
             'drug_id': vial['drug_id'],
-            'discard_reason': discard_reason
-        })))
+            'discard_reason': discard_reason,
+            'disposal_register_number': disposal_register_number
+        }), datetime.now()))
         
         conn.commit()
         
@@ -575,9 +596,9 @@ def create_transfer_logic(from_location_id, to_location_id, vial_ids, created_by
 
         # Create transfer
         cursor.execute("""
-            INSERT INTO transfers (from_location_id, to_location_id, created_by, status, completed_at)
-            VALUES (?, ?, ?, ?, ?)
-        """, (from_location_id, to_location_id, created_by, status, datetime.now() if is_immediate else None))
+            INSERT INTO transfers (from_location_id, to_location_id, created_by, status, completed_at, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (from_location_id, to_location_id, created_by, status, datetime.now() if is_immediate else None, datetime.now()))
         
         transfer_id = cursor.lastrowid
         
@@ -743,9 +764,9 @@ def handle_locations():
     with get_db() as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            INSERT INTO locations (name, type, parent_hub_id)
-            VALUES (?, ?, ?)
-        """, (data['name'], data['type'], data.get('parent_hub_id')))
+            INSERT INTO locations (name, type, parent_hub_id, created_at)
+            VALUES (?, ?, ?, ?)
+        """, (data['name'], data['type'], data.get('parent_hub_id'), datetime.now()))
         conn.commit()
         return jsonify({"success": True, "id": cursor.lastrowid})
 
@@ -761,9 +782,9 @@ def handle_drugs():
     with get_db() as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            INSERT INTO drugs (name, category, storage_temp, unit_price)
-            VALUES (?, ?, ?, ?)
-        """, (data['name'], data['category'], data['storage_temp'], data['unit_price']))
+            INSERT INTO drugs (name, category, storage_temp, unit_price, created_at)
+            VALUES (?, ?, ?, ?, ?)
+        """, (data['name'], data['category'], data['storage_temp'], data['unit_price'], datetime.now()))
         conn.commit()
         return jsonify({"success": True, "id": cursor.lastrowid})
 
@@ -996,9 +1017,9 @@ def handle_transfer_action(transfer_id, action):
                 # STRICT CHECK: Only update if status is PENDING
                 cursor.execute("""
                     UPDATE transfers 
-                    SET status = 'IN_TRANSIT', approved_by = ?, approved_at = CURRENT_TIMESTAMP, version = version + 1
+                    SET status = 'IN_TRANSIT', approved_by = ?, approved_at = ?, version = version + 1
                     WHERE id = ? AND status = 'PENDING'
-                """, (user_id, transfer_id))
+                """, (user_id, datetime.now(), transfer_id))
                 
                 if cursor.rowcount == 0:
                     return {"error": "Transfer is not in PENDING state or has already been modified"}, 400
@@ -1014,9 +1035,9 @@ def handle_transfer_action(transfer_id, action):
                 # STRICT CHECK: Only update if status is IN_TRANSIT
                 cursor.execute("""
                     UPDATE transfers 
-                    SET status = 'COMPLETED', completed_at = CURRENT_TIMESTAMP, version = version + 1
+                    SET status = 'COMPLETED', completed_at = ?, completed_by = ?, version = version + 1
                     WHERE id = ? AND status = 'IN_TRANSIT'
-                """, (transfer_id,))
+                """, (datetime.now(), user_id, transfer_id))
                 
                 if cursor.rowcount == 0:
                     return {"error": "Transfer is not in IN_TRANSIT state or has already been modified"}, 400
@@ -1058,7 +1079,7 @@ def handle_users():
     if request.method == 'GET':
         with get_db() as conn:
             users = conn.execute("""
-                SELECT u.*, l.name as location_name
+                SELECT u.*, l.name as location_name, l.parent_hub_id
                 FROM users u
                 JOIN locations l ON u.location_id = l.id
                 WHERE u.is_active = 1
@@ -1089,9 +1110,9 @@ def handle_users():
         try:
             # New users must change password on first login
             conn.execute("""
-                INSERT INTO users (username, password_hash, role, location_id, can_delegate, is_supervisor, email, mobile_number, must_change_password)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
-            """, (username, generate_password_hash(password), role, location_id, can_delegate, is_supervisor, email, mobile_number))
+                INSERT INTO users (username, password_hash, role, location_id, can_delegate, is_supervisor, email, mobile_number, must_change_password, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+            """, (username, generate_password_hash(password), role, location_id, can_delegate, is_supervisor, email, mobile_number, datetime.now()))
             conn.commit()
             return jsonify({"success": True}), 201
         except sqlite3.IntegrityError:
@@ -1624,6 +1645,172 @@ def perform_backup():
         if len(backups) > 7:
             for old_backup in backups[:-7]:
                 os.remove(old_backup)
+
+# 12. STOCK JOURNEY & SEARCH
+@app.route('/api/stock_search', methods=['GET'])
+def stock_search():
+    query = request.args.get('query', '').strip()
+    status = request.args.get('status', 'ALL')
+    
+    if not query and status == 'ALL':
+        return jsonify([])
+
+    with get_db() as conn:
+        sql = """
+            SELECT 
+                v.*, 
+                d.name as drug_name, 
+                d.category,
+                l.name as location_name,
+                l.type as location_type
+            FROM vials v
+            JOIN drugs d ON v.drug_id = d.id
+            JOIN locations l ON v.location_id = l.id
+            WHERE 1=1
+        """
+        params = []
+        
+        if query:
+            sql += """ AND (
+                v.asset_id LIKE ? OR 
+                v.batch_number LIKE ? OR 
+                d.name LIKE ?
+            )"""
+            search_term = f"%{query}%"
+            params.extend([search_term, search_term, search_term])
+            
+        if status != 'ALL':
+            sql += " AND v.status = ?"
+            params.append(status)
+            
+        sql += " ORDER BY v.created_at DESC LIMIT 50"
+        
+        results = conn.execute(sql, params).fetchall()
+        return jsonify([dict(r) for r in results])
+
+@app.route('/api/stock_journey/<asset_id>', methods=['GET'])
+def stock_journey(asset_id):
+    with get_db() as conn:
+        # 1. Get Vial Details
+        vial = conn.execute("""
+            SELECT 
+                v.*, 
+                d.name as drug_name, 
+                d.category,
+                d.storage_temp,
+                l.name as location_name,
+                l.type as location_type,
+                u.username as created_by_username
+            FROM vials v
+            JOIN drugs d ON v.drug_id = d.id
+            JOIN locations l ON v.location_id = l.id
+            LEFT JOIN users u ON u.id = (
+                SELECT user_id FROM audit_log 
+                WHERE action = 'RECEIVE_STOCK' 
+                AND details LIKE ? 
+                LIMIT 1
+            )
+            WHERE v.asset_id = ?
+        """, (f"%{asset_id}%", asset_id)).fetchone()
+        
+        if not vial:
+            return jsonify({"error": "Asset not found"}), 404
+            
+        timeline = []
+        
+        # 2. Add Creation/Receipt Event
+        timeline.append({
+            'type': 'CREATED',
+            'timestamp': vial['created_at'],
+            'title': 'Stock Received',
+            'location': vial['location_name'],
+            'user': vial['created_by_username'] or 'System',
+            'details': {
+                'Batch': vial['batch_number'],
+                'Expiry': vial['expiry_date'],
+                'Goods Receipt': vial['goods_receipt_number']
+            }
+        })
+        
+        # 3. Add Transfers
+        transfers = conn.execute("""
+            SELECT 
+                t.*,
+                fl.name as from_name,
+                tl.name as to_name,
+                u.username as user_name,
+                cu.username as completed_by_name
+            FROM transfer_items ti
+            JOIN transfers t ON ti.transfer_id = t.id
+            JOIN locations fl ON t.from_location_id = fl.id
+            JOIN locations tl ON t.to_location_id = tl.id
+            JOIN users u ON t.created_by = u.id
+            LEFT JOIN users cu ON t.completed_by = cu.id
+            JOIN vials v ON ti.vial_id = v.id
+            WHERE v.asset_id = ?
+            ORDER BY t.created_at
+        """, (asset_id,)).fetchall()
+        
+        for t in transfers:
+            timeline.append({
+                'type': 'TRANSFER_STARTED',
+                'timestamp': t['created_at'],
+                'title': 'Transfer Initiated',
+                'location': t['from_name'],
+                'user': t['user_name'],
+                'details': {
+                    'Destination': t['to_name'],
+                    'Status': t['status']
+                }
+            })
+            
+            if t['completed_at']:
+                timeline.append({
+                    'type': 'TRANSFER_COMPLETED',
+                    'timestamp': t['completed_at'],
+                    'title': 'Transfer Completed',
+                    'location': t['to_name'],
+                    'user': t['completed_by_name'] or 'System',
+                    'details': {
+                        'Source': t['from_name']
+                    }
+                })
+
+        # 4. Add Usage/Disposal
+        if vial['status'] == 'USED_CLINICAL':
+            user = conn.execute("SELECT username FROM users WHERE id = ?", (vial['used_by'],)).fetchone()
+            timeline.append({
+                'type': 'USED',
+                'timestamp': vial['used_at'],
+                'title': 'Clinical Use',
+                'location': vial['location_name'], # Current location
+                'user': user['username'] if user else 'Unknown',
+                'details': {
+                    'Patient MRN': vial['patient_mrn'],
+                    'Notes': vial['clinical_notes']
+                }
+            })
+        elif vial['status'] == 'DISCARDED':
+            user = conn.execute("SELECT username FROM users WHERE id = ?", (vial['used_by'],)).fetchone()
+            timeline.append({
+                'type': 'DISCARDED',
+                'timestamp': vial['used_at'],
+                'title': 'Stock Discarded',
+                'location': vial['location_name'],
+                'user': user['username'] if user else 'Unknown',
+                'details': {
+                    'Reason': vial['discard_reason'],
+                    'Register #': vial['disposal_register_number']
+                }
+            })
+            
+        # Sort by timestamp
+        timeline.sort(key=lambda x: x['timestamp'], reverse=True)
+        
+        return jsonify({
+            'vial': dict(vial),
+            'timeline': timeline
+        })
 
 if __name__ == '__main__':
 

@@ -17,6 +17,7 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
   const [showDiscardModal, setShowDiscardModal] = useState(false)
   const [showClinicalUseModal, setShowClinicalUseModal] = useState(false)
   const [discardReason, setDiscardReason] = useState('')
+  const [disposalRegisterNumber, setDisposalRegisterNumber] = useState('')
   const [patientMRN, setPatientMRN] = useState('')
   const [clinicalNotes, setClinicalNotes] = useState('')
   const [loading, setLoading] = useState(false)
@@ -114,8 +115,8 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
   }
 
   const handleDiscard = async () => {
-    if (!discardReason) {
-      showError('Reason Required', 'Please select a discard reason')
+    if (!discardReason || !disposalRegisterNumber) {
+      showError('Validation Error', 'Please select a reason and enter the register number')
       return
     }
 
@@ -129,7 +130,8 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
           user_id: user.id,
           action: 'DISCARD',
           discard_reason: discardReason,
-          version: item.version // Send version
+          version: item.version, // Send version
+          disposal_register_number: disposalRegisterNumber
         })
       })
 
@@ -139,6 +141,7 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
         success('Stock Discarded', `${item.drug_name} marked as discarded`)
         setShowDiscardModal(false)
         setDiscardReason('')
+        setDisposalRegisterNumber('')
         onRefresh?.()
       } else if (response.status === 409) {
         showError('Update Conflict', 'Data has changed. Refreshing...')
@@ -154,6 +157,7 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
       setShowActions(false)
       setShowDiscardModal(false)
       setDiscardReason('')
+      setDisposalRegisterNumber('')
     }
   }
 
@@ -284,7 +288,7 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
             <motion.div
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
-              className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl"
+              className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className="text-xl font-bold mb-4">Discard Medicine</h3>
@@ -310,6 +314,24 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
                 ))}
               </div>
 
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  iPharmacy Disposal Register Number *
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={disposalRegisterNumber}
+                    onChange={(e) => setDisposalRegisterNumber(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
+                             focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                    placeholder="e.g., DIS-987654"
+                    required
+                  />
+                  <Hash className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                </div>
+              </div>
+
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowDiscardModal(false)}
@@ -320,7 +342,7 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
                 </button>
                 <button
                   onClick={handleDiscard}
-                  disabled={!discardReason || loading}
+                  disabled={!discardReason || !disposalRegisterNumber || loading}
                   className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white 
                                 font-medium rounded-lg transition-colors disabled:opacity-50"
                 >
@@ -601,7 +623,7 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
           <motion.div
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
-            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl"
+            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-xl font-bold mb-4">Discard Medicine</h3>
@@ -627,6 +649,24 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
               ))}
             </div>
 
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                iPharmacy Disposal Register Number *
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={disposalRegisterNumber}
+                  onChange={(e) => setDisposalRegisterNumber(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
+                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                  placeholder="e.g., DIS-987654"
+                  required
+                />
+                <Hash className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+              </div>
+            </div>
+
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDiscardModal(false)}
@@ -637,7 +677,7 @@ export default function StockCard({ item, onRefresh, compact = false, hideAction
               </button>
               <button
                 onClick={handleDiscard}
-                disabled={!discardReason || loading}
+                disabled={!discardReason || !disposalRegisterNumber || loading}
                 className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white 
                          font-medium rounded-lg transition-colors disabled:opacity-50"
               >

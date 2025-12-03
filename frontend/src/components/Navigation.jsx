@@ -36,6 +36,12 @@ export default function Navigation() {
       show: canTransferStock
     },
     {
+      path: '/journey',
+      label: 'Stock Journey',
+      icon: MapPin,
+      show: true
+    },
+    {
       path: '/reports',
       label: 'Reports',
       icon: FileText,

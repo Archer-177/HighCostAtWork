@@ -9,6 +9,7 @@ import StockTransfer from './components/StockTransfer'
 import Reports from './components/Reports'
 import Settings from './components/Settings'
 import StockLevelsSettings from './components/StockLevelsSettings'
+import StockJourney from './components/StockJourney'
 import Navigation from './components/Navigation'
 import { HeartbeatProvider } from './contexts/HeartbeatContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
@@ -132,6 +133,14 @@ function App() {
                 <ProtectedRoute>
                   <AppLayout>
                     <StockLevelsSettings />
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+
+              <Route path="/journey" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <StockJourney />
                   </AppLayout>
                 </ProtectedRoute>
               } />

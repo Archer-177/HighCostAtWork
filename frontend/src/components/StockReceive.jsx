@@ -17,6 +17,7 @@ export default function StockReceive() {
   const [selectedDrug, setSelectedDrug] = useState('')
   const [batchNumber, setBatchNumber] = useState('')
   const [expiryDate, setExpiryDate] = useState('')
+  const [goodsReceiptNumber, setGoodsReceiptNumber] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [loading, setLoading] = useState(false)
   const [showLabels, setShowLabels] = useState(false)
@@ -41,7 +42,7 @@ export default function StockReceive() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!selectedDrug || !batchNumber || !expiryDate || quantity < 1) {
+    if (!selectedDrug || !batchNumber || !expiryDate || quantity < 1 || !goodsReceiptNumber) {
       showError('Validation Error', 'Please fill all required fields')
       return
     }
@@ -57,7 +58,8 @@ export default function StockReceive() {
           expiry_date: expiryDate,
           quantity: parseInt(quantity),
           location_id: user.location_id,
-          user_id: user.id
+          user_id: user.id,
+          goods_receipt_number: goodsReceiptNumber
         })
       })
 
@@ -75,6 +77,7 @@ export default function StockReceive() {
         setSelectedDrug('')
         setBatchNumber('')
         setExpiryDate('')
+        setGoodsReceiptNumber('')
         setQuantity(1)
       } else {
         showError('Failed to receive stock', data.error)
@@ -175,6 +178,25 @@ export default function StockReceive() {
                 </div>
               </div>
 
+              {/* Goods Receipt Number */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  iPharmacy Goods Receipt Number *
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={goodsReceiptNumber}
+                    onChange={(e) => setGoodsReceiptNumber(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl
+                             focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                    placeholder="e.g., GRN-123456"
+                    required
+                  />
+                  <Hash className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                </div>
+              </div>
+
               {/* Batch Number */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -251,7 +273,7 @@ export default function StockReceive() {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={loading || !selectedDrug || !batchNumber || !expiryDate}
+                disabled={loading || !selectedDrug || !batchNumber || !expiryDate || !goodsReceiptNumber}
                 className="w-full py-3 bg-gradient-to-r from-maroon-600 to-maroon-800 text-white 
                          font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 
                          transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none

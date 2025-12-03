@@ -359,8 +359,8 @@ function LocationsManagement({ locations, onAdd, onEdit, onDelete, currentUser }
     'REMOTE': MapPin
   }
 
-  // Only allow managing locations if the user is a pharmacist
-  const canManageLocations = currentUser?.role === 'PHARMACIST';
+  // Only allow managing locations if the user is a pharmacist OR a supervisor
+  const canManageLocations = currentUser?.role === 'PHARMACIST' || currentUser?.is_supervisor;
 
   const handleSetMinStock = async (locationId, drugId, minStock) => {
     try {
@@ -397,11 +397,23 @@ function LocationsManagement({ locations, onAdd, onEdit, onDelete, currentUser }
       <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         {locations.map(location => {
           const Icon = locationIcon[location.type]
-          // 1. No one can edit HUBs
+          // 1. No one can edit HUBs (except maybe the Hub supervisor?) -> Let's allow Hub supervisor to edit their hub.
           // 2. Supervisors can only edit their own hub hierarchy
           const isHub = location.type === 'HUB'
-          const canEditLocation = !isHub && canManageLocations && (!currentUser?.is_supervisor ||
-            (location.id === currentUser.location_id || location.parent_hub_id === currentUser.location_id));
+
+          // Logic:
+          // - Must have permission (Pharmacist or Supervisor)
+          // - If Supervisor: Must be THEIR location OR a child of THEIR location
+          // - If Pharmacist (non-supervisor): Can edit everything (unless restricted by other rules, but let's assume Pharmacists are admins)
+
+          const isMyHierarchy = currentUser?.is_supervisor && (
+            location.id === currentUser.location_id ||
+            location.parent_hub_id === currentUser.location_id
+          );
+
+          const canEditLocation = canManageLocations && (
+            !currentUser?.is_supervisor || isMyHierarchy
+          );
 
           return (
             <motion.div
@@ -467,8 +479,8 @@ function UsersManagement({ users, onAdd, onEdit, onDelete, currentUser }) {
     'NURSE': 'bg-green-100 text-green-700'
   }
 
-  // Only allow managing users if the current user is a pharmacist
-  const canManageUsers = currentUser?.role === 'PHARMACIST';
+  // Only allow managing users if the current user is a pharmacist OR a supervisor
+  const canManageUsers = currentUser?.role === 'PHARMACIST' || currentUser?.is_supervisor;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
@@ -502,8 +514,14 @@ function UsersManagement({ users, onAdd, onEdit, onDelete, currentUser }) {
           <tbody>
             {users.map(user => {
               // A supervisor can only edit/delete users at their own location or child locations
-              const canEdit = canManageUsers && (!currentUser?.is_supervisor ||
-                (user.location_id === currentUser.location_id || user.parent_hub_id === currentUser.location_id));
+              const isMyHierarchy = currentUser?.is_supervisor && (
+                user.location_id === currentUser.location_id ||
+                user.parent_hub_id === currentUser.location_id
+              );
+
+              const canEdit = canManageUsers && (
+                !currentUser?.is_supervisor || isMyHierarchy
+              );
 
               return (
                 <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
