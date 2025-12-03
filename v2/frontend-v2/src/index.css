@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --color-maroon: 138 42 43;
+    --color-ochre: 217 123 90;
+    --color-sand: 250 245 240;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-sand-50 text-gray-900 font-sans antialiased;
+  }
+
+  /* Dark mode */
+  .dark body {
+    @apply bg-gray-900 text-gray-100;
+  }
+}
+
+@layer components {
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-maroon-700 via-maroon-600 to-ochre-500 bg-clip-text text-transparent;
+  }
+
+  /* Glass morphism */
+  .glass {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-lg;
+  }
+
+  .dark .glass {
+    @apply bg-gray-800/80 border-gray-700/20;
+  }
+
+  /* Medicine card states */
+  .medicine-card-healthy {
+    @apply bg-gradient-to-br from-emerald-50 to-emerald-100/50 border-emerald-200;
+  }
+
+  .medicine-card-warning {
+    @apply bg-gradient-to-br from-amber-50 to-amber-100/50 border-amber-200;
+  }
+
+  .medicine-card-critical {
+    @apply bg-gradient-to-br from-red-50 to-red-100/50 border-red-200;
+  }
+
+  .dark .medicine-card-healthy {
+    @apply from-emerald-900/20 to-emerald-800/10 border-emerald-700/30;
+  }
+
+  .dark .medicine-card-warning {
+    @apply from-amber-900/20 to-amber-800/10 border-amber-700/30;
+  }
+
+  .dark .medicine-card-critical {
+    @apply from-red-900/20 to-red-800/10 border-red-700/30;
+  }
+
+  /* Loading spinner */
+  .spinner {
+    @apply w-12 h-12 border-4 border-gray-200 border-t-maroon-600 rounded-full animate-spin;
+  }
+
+  /* Noise overlay for texture */
+  .noise-overlay {
+    @apply fixed inset-0 pointer-events-none opacity-[0.015] z-50;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' /%3E%3C/svg%3E");
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 dark:bg-gray-600 rounded-full hover:bg-gray-500;
+  }
+
+  /* Focus visible styles */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-maroon-500 ring-offset-2;
+  }
+
+  /* Button base */
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply bg-maroon-600 text-white hover:bg-maroon-700 focus:ring-maroon-500 shadow-md hover:shadow-lg active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply bg-ochre-500 text-white hover:bg-ochre-600 focus:ring-ochre-500 shadow-md hover:shadow-lg active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:ring-gray-500;
+  }
+
+  .btn-danger {
+    @apply bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 shadow-md hover:shadow-lg active:scale-95;
+  }
+
+  /* Input styles */
+  .input {
+    @apply w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition-all;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-green {
+    @apply bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400;
+  }
+
+  .badge-amber {
+    @apply bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400;
+  }
+
+  .badge-red {
+    @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
