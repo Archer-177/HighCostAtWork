@@ -1,14 +1,20 @@
 import { useEffect, useState } from 'react'
-import { Package, CheckCircle, Clock, AlertTriangle, TrendingUp } from 'lucide-react'
+import { Package, CheckCircle, Clock, AlertTriangle, TrendingUp, MoreVertical, Syringe, Trash2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 import useAuthStore from '../store/authStore'
 import { stockAPI } from '../api/stock'
+import StockUseModal from '../components/StockUseModal'
+import StockDiscardModal from '../components/StockDiscardModal'
 
 export default function Dashboard() {
   const { user } = useAuthStore()
   const [dashboardData, setDashboardData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [selectedVial, setSelectedVial] = useState(null)
+  const [showUseModal, setShowUseModal] = useState(false)
+  const [showDiscardModal, setShowDiscardModal] = useState(false)
+  const [openMenuId, setOpenMenuId] = useState(null)
 
   useEffect(() => {
     fetchDashboardData()
@@ -25,6 +31,35 @@ export default function Dashboard() {
       setLoading(false)
     }
   }
+
+  const handleUseStock = (vial) => {
+    setSelectedVial(vial)
+    setShowUseModal(true)
+    setOpenMenuId(null)
+  }
+
+  const handleDiscardStock = (vial) => {
+    setSelectedVial(vial)
+    setShowDiscardModal(true)
+    setOpenMenuId(null)
+  }
+
+  const handleModalSuccess = () => {
+    fetchDashboardData()
+  }
+
+  const toggleMenu = (vialId) => {
+    setOpenMenuId(openMenuId === vialId ? null : vialId)
+  }
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setOpenMenuId(null)
+    if (openMenuId) {
+      document.addEventListener('click', handleClickOutside)
+      return () => document.removeEventListener('click', handleClickOutside)
+    }
+  }, [openMenuId])
 
   if (loading) {
     return (
@@ -133,7 +168,7 @@ export default function Dashboard() {
         </div>
       </motion.div>
 
-      {/* Stock List (Simple for now) */}
+      {/* Stock List with Actions */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -158,10 +193,43 @@ export default function Dashboard() {
                     {item.asset_id} • {item.location_name}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="flex items-center gap-3">
                   <span className={`badge badge-${item.status_color}`}>
                     {item.days_until_expiry} days
                   </span>
+
+                  {/* Actions Menu */}
+                  <div className="relative">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        toggleMenu(item.id)
+                      }}
+                      className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                    >
+                      <MoreVertical className="w-4 h-4" />
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {openMenuId === item.id && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
+                        <button
+                          onClick={() => handleUseStock(item)}
+                          className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-lg transition-colors"
+                        >
+                          <Syringe className="w-4 h-4 text-green-600 dark:text-green-400" />
+                          Use Stock
+                        </button>
+                        <button
+                          onClick={() => handleDiscardStock(item)}
+                          className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-lg transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+                          Discard Stock
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -172,6 +240,23 @@ export default function Dashboard() {
           </p>
         )}
       </motion.div>
+
+      {/* Modals */}
+      {showUseModal && selectedVial && (
+        <StockUseModal
+          vial={selectedVial}
+          onClose={() => setShowUseModal(false)}
+          onSuccess={handleModalSuccess}
+        />
+      )}
+
+      {showDiscardModal && selectedVial && (
+        <StockDiscardModal
+          vial={selectedVial}
+          onClose={() => setShowDiscardModal(false)}
+          onSuccess={handleModalSuccess}
+        />
+      )}
     </div>
   )
 }
