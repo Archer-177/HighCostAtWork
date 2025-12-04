@@ -214,32 +214,86 @@ def init_db():
         # Insert initial data if empty
         cursor.execute("SELECT COUNT(*) FROM locations")
         if cursor.fetchone()[0] == 0:
-            # Insert hub locations
-            cursor.execute("INSERT INTO locations (name, type) VALUES ('Port Augusta Hospital Pharmacy', 'HUB')")
-            pa_hub_id = cursor.lastrowid
-            cursor.execute("INSERT INTO locations (name, type) VALUES ('Whyalla Hospital Pharmacy', 'HUB')")
-            wh_hub_id = cursor.lastrowid
+            import json
+            import os
             
-            # Insert wards
-            cursor.execute("INSERT INTO locations (name, type, parent_hub_id) VALUES ('Port Augusta ED', 'WARD', ?)", (pa_hub_id,))
-            cursor.execute("INSERT INTO locations (name, type, parent_hub_id) VALUES ('Whyalla HDU', 'WARD', ?)", (wh_hub_id,))
-            cursor.execute("INSERT INTO locations (name, type, parent_hub_id) VALUES ('Whyalla ED', 'WARD', ?)", (wh_hub_id,))
+            # Try to load from seed_data.json in BASE_DIR (root)
+            seed_file = 'seed_data.json'
+            data = None
             
-            # Insert remote sites (all under Port Augusta)
-            remote_sites = ['Roxby Downs', 'Quorn', 'Hawker', 'Leigh Creek', 'Oodnadatta']
-            for site in remote_sites:
-                cursor.execute("INSERT INTO locations (name, type, parent_hub_id) VALUES (?, 'REMOTE', ?)", (site, pa_hub_id))
+            if os.path.exists(seed_file):
+                try:
+                    with open(seed_file, 'r') as f:
+                        data = json.load(f)
+                        print(f"Loading seed data from {seed_file}")
+                except Exception as e:
+                    print(f"Error loading seed data: {e}")
             
-            # Insert sample drugs
-            cursor.execute("INSERT INTO drugs (name, category, storage_temp, unit_price) VALUES ('Tenecteplase', 'Thrombolytic', '<25°C', 2500.00)")
-            cursor.execute("INSERT INTO drugs (name, category, storage_temp, unit_price) VALUES ('Red Back Spider Antivenom', 'Antivenom', '2-8°C', 850.00)")
-            cursor.execute("INSERT INTO drugs (name, category, storage_temp, unit_price) VALUES ('Brown Snake Antivenom', 'Antivenom', '2-8°C', 1200.00)")
+            if not data:
+                print("Using hardcoded fallback seed data")
+                data = {
+                    "locations": [
+                        { "name": "Port Augusta Hospital Pharmacy", "type": "HUB" },
+                        { "name": "Whyalla Hospital Pharmacy", "type": "HUB" },
+                        { "name": "Port Augusta ED", "type": "WARD", "parent_hub": "Port Augusta Hospital Pharmacy" },
+                        { "name": "Whyalla HDU", "type": "WARD", "parent_hub": "Whyalla Hospital Pharmacy" },
+                        { "name": "Whyalla ED", "type": "WARD", "parent_hub": "Whyalla Hospital Pharmacy" },
+                        { "name": "Roxby Downs", "type": "REMOTE", "parent_hub": "Port Augusta Hospital Pharmacy" },
+                        { "name": "Quorn", "type": "REMOTE", "parent_hub": "Port Augusta Hospital Pharmacy" },
+                        { "name": "Hawker", "type": "REMOTE", "parent_hub": "Port Augusta Hospital Pharmacy" },
+                        { "name": "Leigh Creek", "type": "REMOTE", "parent_hub": "Port Augusta Hospital Pharmacy" },
+                        { "name": "Oodnadatta", "type": "REMOTE", "parent_hub": "Port Augusta Hospital Pharmacy" }
+                    ],
+                    "drugs": [
+                        { "name": "Tenecteplase", "category": "Thrombolytic", "storage_temp": "<25°C", "unit_price": 2500.00 },
+                        { "name": "Red Back Spider Antivenom", "category": "Antivenom", "storage_temp": "2-8°C", "unit_price": 850.00 },
+                        { "name": "Brown Snake Antivenom", "category": "Antivenom", "storage_temp": "2-8°C", "unit_price": 1200.00 }
+                    ],
+                    "users": [
+                        {
+                            "username": "admin",
+                            "password": "admin123",
+                            "role": "PHARMACIST",
+                            "location": "Port Augusta Hospital Pharmacy",
+                            "can_delegate": True,
+                            "is_supervisor": True,
+                            "email": "admin@funlhn.health"
+                        }
+                    ]
+                }
+
+            # Process Locations
+            # First pass: Create all locations
+            loc_map = {} # name -> id
+            for loc in data['locations']:
+                cursor.execute("INSERT INTO locations (name, type) VALUES (?, ?)", (loc['name'], loc['type']))
+                loc_map[loc['name']] = cursor.lastrowid
             
-            # Insert default admin user (password: admin123)
-            cursor.execute("""
-                INSERT INTO users (username, password_hash, role, location_id, can_delegate, is_supervisor, email) 
-                VALUES ('admin', ?, 'PHARMACIST', ?, 1, 1, 'admin@funlhn.health')
-            """, (generate_password_hash('admin123'), pa_hub_id))
+            # Second pass: Update parent_hub_ids
+            for loc in data['locations']:
+                if 'parent_hub' in loc:
+                    parent_id = loc_map.get(loc['parent_hub'])
+                    if parent_id:
+                        cursor.execute("UPDATE locations SET parent_hub_id = ? WHERE id = ?", (parent_id, loc_map[loc['name']]))
+
+            # Process Drugs
+            for drug in data['drugs']:
+                cursor.execute("""
+                    INSERT INTO drugs (name, category, storage_temp, unit_price) 
+                    VALUES (?, ?, ?, ?)
+                """, (drug['name'], drug['category'], drug['storage_temp'], drug['unit_price']))
+
+            # Process Users
+            for user in data['users']:
+                loc_id = loc_map.get(user['location'])
+                if loc_id:
+                    cursor.execute("""
+                        INSERT INTO users (username, password_hash, role, location_id, can_delegate, is_supervisor, email) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, (user['username'], generate_password_hash(user['password']), user['role'], loc_id, 
+                          1 if user.get('can_delegate') else 0, 
+                          1 if user.get('is_supervisor') else 0, 
+                          user.get('email')))
 
         # --- POPULATE SAMPLE STOCK & LEVELS (If missing) ---
         cursor.execute("SELECT COUNT(*) FROM stock_levels")

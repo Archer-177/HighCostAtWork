@@ -4,7 +4,7 @@ import json
 import uuid
 from datetime import datetime, timedelta
 from ..database import get_db
-from ..utils import queue_write, send_low_stock_notification
+from ..utils import queue_write, send_low_stock_notification, get_stock_status_color
 
 bp = Blueprint('stock', __name__)
 
@@ -293,12 +293,7 @@ def get_dashboard(user_id):
         for item in stock:
             stock_dict = dict(item)
             # Determine status color
-            if stock_dict['days_until_expiry'] <= 30:
-                stock_dict['status_color'] = 'red'
-            elif stock_dict['days_until_expiry'] <= 90:
-                stock_dict['status_color'] = 'amber'
-            else:
-                stock_dict['status_color'] = 'green'
+            stock_dict['status_color'] = get_stock_status_color(stock_dict['days_until_expiry'])
             stock_list.append(stock_dict)
         
         return jsonify({
@@ -532,12 +527,7 @@ def get_transfers(location_id):
             for item in items:
                 item_dict = dict(item)
                 days = item_dict['days_until_expiry'] or 0
-                if days <= 30:
-                    item_dict['status_color'] = 'red'
-                elif days <= 90:
-                    item_dict['status_color'] = 'amber'
-                else:
-                    item_dict['status_color'] = 'green'
+                item_dict['status_color'] = get_stock_status_color(days)
                 processed_items.append(item_dict)
             
             t_dict['items'] = processed_items

@@ -1,0 +1,83 @@
+{
+    "locations": [
+        {
+            "name": "Port Augusta Hospital Pharmacy",
+            "type": "HUB"
+        },
+        {
+            "name": "Whyalla Hospital Pharmacy",
+            "type": "HUB"
+        },
+        {
+            "name": "Port Augusta ED",
+            "type": "WARD",
+            "parent_hub": "Port Augusta Hospital Pharmacy"
+        },
+        {
+            "name": "Whyalla HDU",
+            "type": "WARD",
+            "parent_hub": "Whyalla Hospital Pharmacy"
+        },
+        {
+            "name": "Whyalla ED",
+            "type": "WARD",
+            "parent_hub": "Whyalla Hospital Pharmacy"
+        },
+        {
+            "name": "Roxby Downs",
+            "type": "REMOTE",
+            "parent_hub": "Port Augusta Hospital Pharmacy"
+        },
+        {
+            "name": "Quorn",
+            "type": "REMOTE",
+            "parent_hub": "Port Augusta Hospital Pharmacy"
+        },
+        {
+            "name": "Hawker",
+            "type": "REMOTE",
+            "parent_hub": "Port Augusta Hospital Pharmacy"
+        },
+        {
+            "name": "Leigh Creek",
+            "type": "REMOTE",
+            "parent_hub": "Port Augusta Hospital Pharmacy"
+        },
+        {
+            "name": "Oodnadatta",
+            "type": "REMOTE",
+            "parent_hub": "Port Augusta Hospital Pharmacy"
+        }
+    ],
+    "drugs": [
+        {
+            "name": "Tenecteplase",
+            "category": "Thrombolytic",
+            "storage_temp": "<25°C",
+            "unit_price": 2500.00
+        },
+        {
+            "name": "Red Back Spider Antivenom",
+            "category": "Antivenom",
+            "storage_temp": "2-8°C",
+            "unit_price": 850.00
+        },
+        {
+            "name": "Brown Snake Antivenom",
+            "category": "Antivenom",
+            "storage_temp": "2-8°C",
+            "unit_price": 1200.00
+        }
+    ],
+    "users": [
+        {
+            "username": "admin",
+            "password": "admin123",
+            "role": "PHARMACIST",
+            "location": "Port Augusta Hospital Pharmacy",
+            "can_delegate": true,
+            "is_supervisor": true,
+            "email": "admin@funlhn.health"
+        }
+    ]
+}

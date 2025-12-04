@@ -148,3 +148,20 @@ def perform_backup():
         if len(backups) > 7:
             for old_backup in backups[:-7]:
                 os.remove(old_backup)
+
+def get_stock_status_color(days_until_expiry):
+    """
+    Determines the status color based on days until expiry.
+    <= 30 days: Red (Critical)
+    <= 90 days: Amber (Warning)
+    > 90 days: Green (Healthy)
+    """
+    if days_until_expiry is None:
+        return 'green' # Default to healthy if unknown
+        
+    if days_until_expiry <= 30:
+        return 'red'
+    elif days_until_expiry <= 90:
+        return 'amber'
+    else:
+        return 'green'
