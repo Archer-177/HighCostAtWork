@@ -2,7 +2,7 @@ import sqlite3
 import uuid
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash
-from .config import DB_FILE
+from .config import DB_FILE, BASE_DIR
 
 def get_db():
     conn = sqlite3.connect(DB_FILE)
@@ -218,7 +218,7 @@ def init_db():
             import os
             
             # Try to load from seed_data.json in BASE_DIR (root)
-            seed_file = 'seed_data.json'
+            seed_file = os.path.join(BASE_DIR, 'seed_data.json')
             data = None
             
             if os.path.exists(seed_file):

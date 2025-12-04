@@ -123,7 +123,13 @@ export default function StockTransfer() {
         setFromLocation('')
         setToLocation('')
         fetchTransfers()
-        setActiveTab('pending')
+
+        // Redirect based on status
+        if (data.status === 'COMPLETED') {
+          setActiveTab('history')
+        } else {
+          setActiveTab('pending')
+        }
       } else {
         showError('Failed to create transfer', data.error)
       }
@@ -151,6 +157,42 @@ export default function StockTransfer() {
     'HUB': Building2,
     'WARD': Heart,
     'REMOTE': MapPin
+  }
+
+  // Helper: Validate Transfer Path & Permissions
+  const validateTransferPath = (sourceId, targetId) => {
+    if (!sourceId || !targetId) return false
+
+    const source = locations.find(l => l.id.toString() === sourceId.toString())
+    const target = locations.find(l => l.id.toString() === targetId.toString())
+
+    if (!source || !target) return false
+    if (source.id === target.id) return false
+
+    // Rule 1: Physical Path Validation
+    let isValidPath = false
+    if (source.type === 'WARD') {
+      isValidPath = (target.type === 'WARD' && target.parent_hub_id === source.parent_hub_id) ||
+        (target.id === source.parent_hub_id)
+    } else if (source.type === 'REMOTE') {
+      isValidPath = target.type === 'REMOTE' || target.id === source.parent_hub_id
+    } else if (source.type === 'HUB') {
+      isValidPath = target.parent_hub_id === source.id || target.type === 'HUB'
+    }
+
+    if (!isValidPath) return false
+
+    // Rule 2: User Permission Validation
+    const userLoc = locations.find(l => l.id === user.location_id)
+    if (!userLoc) return false
+
+    const userHubId = userLoc.type === 'HUB' ? userLoc.id : userLoc.parent_hub_id
+    const sourceHubId = source.type === 'HUB' ? source.id : source.parent_hub_id
+    const destHubId = target.type === 'HUB' ? target.id : target.parent_hub_id
+
+    const isUserHubInvolved = (sourceHubId === userHubId) || (destHubId === userHubId)
+
+    return isUserHubInvolved
   }
 
   return (
@@ -279,8 +321,10 @@ export default function StockTransfer() {
                     const source = locations.find(l => l.id.toString() === fromLocation)
                     const target = locations.find(l => l.id.toString() === locId)
 
-                    if (source && target) {
+                    if (source && target && validateTransferPath(fromLocation, locId)) {
                       setToLocation(locId)
+                    } else {
+                      showError('Invalid Transfer', 'You are not authorized to perform this transfer.')
                     }
                   }
                 }}
@@ -288,27 +332,9 @@ export default function StockTransfer() {
                 toLocationId={toLocation}
                 validTargetIds={(() => {
                   if (!fromLocation) return locations.map(l => l.id.toString())
-                  const source = locations.find(l => l.id.toString() === fromLocation)
-                  if (!source) return []
-
-                  return locations.filter(target => {
-                    if (target.id.toString() === fromLocation) return false
-
-                    // Rule 1: Ward -> Same Hospital Ward OR Parent Hub
-                    if (source.type === 'WARD') {
-                      return (target.type === 'WARD' && target.parent_hub_id === source.parent_hub_id) ||
-                        (target.id === source.parent_hub_id)
-                    }
-                    // Rule 2: Remote -> Other Remote OR Parent Hub
-                    if (source.type === 'REMOTE') {
-                      return target.type === 'REMOTE' || target.id === source.parent_hub_id
-                    }
-                    // Rule 3: Hub -> Children OR Other Hubs
-                    if (source.type === 'HUB') {
-                      return target.parent_hub_id === source.id || target.type === 'HUB'
-                    }
-                    return false
-                  }).map(l => l.id.toString())
+                  return locations
+                    .filter(target => validateTransferPath(fromLocation, target.id))
+                    .map(l => l.id.toString())
                 })()}
               />
 
@@ -358,7 +384,6 @@ export default function StockTransfer() {
                       >
                         <option value="">Select source location...</option>
                         {locations
-                          .filter(loc => loc.type === 'HUB' || (user.location_id === loc.id))
                           .map(loc => {
                             const Icon = locationIcon[loc.type]
                             return (
@@ -393,21 +418,8 @@ export default function StockTransfer() {
                         <option value="">Select destination location...</option>
                         {fromLocation && locations
                           .filter(loc => {
-                            const source = locations.find(l => l.id.toString() === fromLocation)
-                            if (!source || loc.id.toString() === fromLocation) return false
-
-                            // Apply transfer rules
-                            if (source.type === 'WARD') {
-                              return (loc.type === 'WARD' && loc.parent_hub_id === source.parent_hub_id) ||
-                                (loc.id === source.parent_hub_id)
-                            }
-                            if (source.type === 'REMOTE') {
-                              return loc.type === 'REMOTE' || loc.id === source.parent_hub_id
-                            }
-                            if (source.type === 'HUB') {
-                              return loc.parent_hub_id === source.id || loc.type === 'HUB'
-                            }
-                            return false
+                            if (loc.id.toString() === fromLocation) return false
+                            return validateTransferPath(fromLocation, loc.id)
                           })
                           .map(loc => (
                             <option key={loc.id} value={loc.id}>
@@ -541,49 +553,54 @@ export default function StockTransfer() {
           </motion.div>
         )}
 
-        {activeTab === 'pending' && (
-          <motion.div
-            key="pending"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-4"
-          >
-            {transfers.filter(t => t.status === 'PENDING' || t.status === 'IN_TRANSIT').map(transfer => (
-              <TransferCard key={transfer.id} transfer={transfer} onUpdate={fetchTransfers} />
-            ))}
 
-            {transfers.filter(t => t.status === 'PENDING' || t.status === 'IN_TRANSIT').length === 0 && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-                <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No pending transfers</p>
-              </div>
-            )}
-          </motion.div>
-        )}
+        {
+          activeTab === 'pending' && (
+            <motion.div
+              key="pending"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-4"
+            >
+              {transfers.filter(t => t.status === 'PENDING' || t.status === 'IN_TRANSIT').map(transfer => (
+                <TransferCard key={transfer.id} transfer={transfer} onUpdate={fetchTransfers} />
+              ))}
 
-        {activeTab === 'history' && (
-          <motion.div
-            key="history"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-4"
-          >
-            {transfers.filter(t => t.status === 'COMPLETED' || t.status === 'CANCELLED').map(transfer => (
-              <TransferCard key={transfer.id} transfer={transfer} readonly />
-            ))}
+              {transfers.filter(t => t.status === 'PENDING' || t.status === 'IN_TRANSIT').length === 0 && (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                  <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500">No pending transfers</p>
+                </div>
+              )}
+            </motion.div>
+          )
+        }
 
-            {transfers.filter(t => t.status === 'COMPLETED' || t.status === 'CANCELLED').length === 0 && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-                <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No transfer history</p>
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+        {
+          activeTab === 'history' && (
+            <motion.div
+              key="history"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-4"
+            >
+              {transfers.filter(t => t.status === 'COMPLETED' || t.status === 'CANCELLED').map(transfer => (
+                <TransferCard key={transfer.id} transfer={transfer} readonly />
+              ))}
+
+              {transfers.filter(t => t.status === 'COMPLETED' || t.status === 'CANCELLED').length === 0 && (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                  <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500">No transfer history</p>
+                </div>
+              )}
+            </motion.div>
+          )
+        }
+      </AnimatePresence >
+    </div >
   )
 }
 

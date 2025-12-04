@@ -152,31 +152,6 @@ export default function NetworkMap({ onSelectLocation, fromLocationId, toLocatio
                     {isFrom && <span className="absolute -bottom-7 text-[11px] font-bold bg-blue-500 text-white px-3 py-1 rounded-full shadow-md z-20">FROM</span>}
                     {isTo && <span className="absolute -bottom-7 text-[11px] font-bold bg-maroon-600 text-white px-3 py-1 rounded-full shadow-md z-20">TO</span>}
                 </motion.div>
-
-                {/* Hover Tooltip */}
-                <AnimatePresence>
-                    {isHovered && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 10 }}
-                            className="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl z-50 min-w-[180px] pointer-events-none"
-                        >
-                            <div className="font-bold mb-1">{location.name}</div>
-                            <div className="text-gray-300 space-y-0.5">
-                                <div className="flex items-center gap-1">
-                                    <div className={`w-2 h-2 rounded-full ${color}`} />
-                                    <span className="capitalize">
-                                        {viewMode === 'expiry' ? 'Expiry: ' + status :
-                                            status === 'critical' ? 'Low Stock' : 'Adequate Stock'}
-                                    </span>
-                                </div>
-                            </div>
-                            {/* Tooltip arrow */}
-                            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
-                        </motion.div>
-                    )}
-                </AnimatePresence>
             </div>
         )
     }
