@@ -18,6 +18,41 @@ bp = Blueprint('admin', __name__)
 
 
 # ============================================================================
+# HELPER FUNCTIONS
+# ============================================================================
+def can_supervisor_manage_location(supervisor_location_id: int, target_location_id: int, session) -> bool:
+    """
+    Check if supervisor can manage a target location
+
+    BUSINESS RULE: Supervisors can only manage their hub and hub children
+    - If supervisor is at a HUB, they can manage that hub and all its children
+    - If supervisor is at a WARD/REMOTE, they can only manage their own location
+
+    Returns: True if allowed, False otherwise
+    """
+    supervisor_location = session.query(Location).filter_by(id=supervisor_location_id).first()
+    target_location = session.query(Location).filter_by(id=target_location_id).first()
+
+    if not supervisor_location or not target_location:
+        return False
+
+    # If supervisor is at a HUB
+    if supervisor_location.type == 'HUB':
+        # Can manage the hub itself
+        if target_location_id == supervisor_location_id:
+            return True
+
+        # Can manage children of this hub
+        if target_location.parent_hub_id == supervisor_location_id:
+            return True
+
+        return False
+
+    # If supervisor is at WARD/REMOTE, can only manage their own location
+    return target_location_id == supervisor_location_id
+
+
+# ============================================================================
 # USER MANAGEMENT
 # ============================================================================
 @bp.route('/users', methods=['GET'])
@@ -357,6 +392,17 @@ def update_location(location_id):
         if not location:
             return jsonify({'success': False, 'error': 'Location not found'}), 404
 
+        # BUSINESS RULE: Parent hub locations cannot be edited
+        # Port Augusta Hub (ID 1) and Whyalla Hub (ID 2) are protected
+        PARENT_HUB_IDS = [1, 2]  # Port Augusta, Whyalla
+        if location_id in PARENT_HUB_IDS:
+            # Only allow minor updates, not name/type/parent_hub_id
+            if data.name is not None or data.type is not None or data.parent_hub_id is not None:
+                return jsonify({
+                    'success': False,
+                    'error': 'Parent hub locations cannot have their name, type, or parent_hub_id modified'
+                }), 403
+
         if data.name is not None:
             # Check uniqueness
             existing = session.query(Location).filter(
@@ -400,6 +446,15 @@ def delete_location(location_id):
         location = session.query(Location).filter_by(id=location_id).first()
         if not location:
             return jsonify({'success': False, 'error': 'Location not found'}), 404
+
+        # BUSINESS RULE: Parent hub locations cannot be deleted
+        # Port Augusta Hub (ID 1) and Whyalla Hub (ID 2) are protected
+        PARENT_HUB_IDS = [1, 2]  # Port Augusta, Whyalla
+        if location_id in PARENT_HUB_IDS:
+            return jsonify({
+                'success': False,
+                'error': 'Parent hub locations cannot be deleted'
+            }), 403
 
         # Check if location has users
         user_count = session.query(User).filter_by(location_id=location_id, is_active=True).count()

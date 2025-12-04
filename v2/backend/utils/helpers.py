@@ -161,36 +161,155 @@ def validate_australian_mobile(mobile: str) -> Tuple[bool, Optional[str]]:
 # ============================================================================
 # BUSINESS LOGIC UTILITIES
 # ============================================================================
-def determine_transfer_status(from_type: str, to_type: str, from_hub_id: int, to_hub_id: int) -> str:
+def can_transfer_between_locations(
+    from_type: str,
+    to_type: str,
+    from_hub_id: Optional[int],
+    to_hub_id: Optional[int],
+    from_location_id: int,
+    to_location_id: int
+) -> Tuple[bool, Optional[str]]:
+    """
+    Validate if transfer is allowed based on business rules
+
+    Returns: (is_allowed, error_message)
+
+    CORRECTED TRANSFER RULES:
+    - WARD can only transfer to:
+        ✓ Other wards in SAME parent hub
+        ✓ Their own parent hub
+        ✗ Wards in different hub
+        ✗ Remote sites
+    - REMOTE can transfer to:
+        ✓ Other remote sites
+        ✓ Their parent hub (Port Augusta only, not Whyalla)
+        ✗ Wards
+        ✗ Whyalla Hub
+    - HUB can transfer to:
+        ✓ Own child wards
+        ✓ Other hubs
+        ✓ Remote sites (Port Augusta only, not Whyalla)
+        ✗ Cross-hub wards (wards of another hub)
+    - Whyalla Hub CANNOT:
+        ✗ Transfer to remote sites
+        ✗ Receive from remote sites
+    """
+    # Same location check
+    if from_location_id == to_location_id:
+        return False, "Cannot transfer to same location"
+
+    # Port Augusta Hub ID (hardcoded - could be in settings)
+    PORT_AUGUSTA_HUB_ID = 1  # Assuming Port Augusta is ID 1
+    WHYALLA_HUB_ID = 2  # Assuming Whyalla is ID 2
+
+    # WARD transfers
+    if from_type == 'WARD':
+        # Ward → Ward (must be same parent hub)
+        if to_type == 'WARD':
+            if from_hub_id != to_hub_id:
+                return False, "Wards can only transfer to other wards in the same parent hub"
+            return True, None
+
+        # Ward → Hub (must be own parent hub)
+        elif to_type == 'HUB':
+            if to_location_id != from_hub_id:
+                return False, "Wards can only transfer to their own parent hub"
+            return True, None
+
+        # Ward → Remote (BLOCKED)
+        elif to_type == 'REMOTE':
+            return False, "Wards cannot transfer to remote sites"
+
+        return False, "Invalid transfer destination for ward"
+
+    # REMOTE transfers
+    elif from_type == 'REMOTE':
+        # Remote → Ward (BLOCKED)
+        if to_type == 'WARD':
+            return False, "Remote sites cannot transfer to wards"
+
+        # Remote → Hub (only to own parent hub, not Whyalla)
+        elif to_type == 'HUB':
+            if to_location_id == WHYALLA_HUB_ID:
+                return False, "Whyalla Hub cannot receive from remote sites"
+            if to_location_id != from_hub_id:
+                return False, "Remote sites can only transfer to their parent hub"
+            return True, None
+
+        # Remote → Remote (ALLOWED)
+        elif to_type == 'REMOTE':
+            return True, None
+
+        return False, "Invalid transfer destination for remote site"
+
+    # HUB transfers
+    elif from_type == 'HUB':
+        # Whyalla Hub → Remote (BLOCKED)
+        if from_location_id == WHYALLA_HUB_ID and to_type == 'REMOTE':
+            return False, "Whyalla Hub cannot transfer to remote sites"
+
+        # Hub → Ward (only to own child wards)
+        if to_type == 'WARD':
+            if to_hub_id != from_location_id:
+                return False, "Hubs can only transfer to their own child wards"
+            return True, None
+
+        # Hub → Remote (Port Augusta only)
+        elif to_type == 'REMOTE':
+            if from_location_id == WHYALLA_HUB_ID:
+                return False, "Whyalla Hub cannot transfer to remote sites"
+            if to_hub_id != from_location_id:
+                return False, "Hub can only transfer to its own remote sites"
+            return True, None
+
+        # Hub → Hub (ALLOWED)
+        elif to_type == 'HUB':
+            return True, None
+
+        return False, "Invalid transfer destination for hub"
+
+    return False, "Invalid location type"
+
+
+def determine_transfer_status(
+    from_type: str,
+    to_type: str,
+    from_hub_id: Optional[int],
+    to_hub_id: Optional[int]
+) -> str:
     """
     Determine initial transfer status based on location types
 
-    Rules:
-    - Hub -> Own Ward: COMPLETED (immediate)
-    - Hub -> Hub (different): PENDING (needs approval)
-    - Hub -> Remote: IN_TRANSIT
-    - Ward -> Ward (same hub): COMPLETED (immediate)
-    - Other: IN_TRANSIT
+    CORRECTED STATUS RULES:
+    - Ward → Ward (same hub): COMPLETED (immediate, same hospital)
+    - Ward → Parent Hub: PENDING_APPROVAL
+    - Remote → Remote: PENDING_APPROVAL (will go to IN_TRANSIT after approval)
+    - Remote → Parent Hub: PENDING_APPROVAL (will go to IN_TRANSIT after approval)
+    - Hub → Own Ward: PENDING_APPROVAL
+    - Hub → Remote: PENDING_APPROVAL (will go to IN_TRANSIT after approval)
+    - Hub → Hub: PENDING_APPROVAL (will go to IN_TRANSIT after approval)
     """
-    # Hub to its own ward - immediate
-    if from_type == 'HUB' and to_type == 'WARD' and from_hub_id == to_hub_id:
+    # Ward → Ward (same hub) = COMPLETED (immediate, same hospital)
+    if from_type == 'WARD' and to_type == 'WARD' and from_hub_id == to_hub_id:
         return 'COMPLETED'
 
-    # Hub to different hub - needs approval
-    if from_type == 'HUB' and to_type == 'HUB' and from_hub_id != to_hub_id:
-        return 'PENDING'
-
-    # All other transfers go to IN_TRANSIT
-    return 'IN_TRANSIT'
+    # All other valid transfers start as PENDING_APPROVAL
+    return 'PENDING_APPROVAL'
 
 
-def requires_approval(from_type: str, to_type: str, from_hub_id: int, to_hub_id: int) -> bool:
-    """Check if transfer requires approval"""
-    return (
-        from_type == 'HUB' and
-        to_type == 'HUB' and
-        from_hub_id != to_hub_id
-    )
+def requires_approval(from_type: str, to_type: str, from_hub_id: Optional[int], to_hub_id: Optional[int]) -> bool:
+    """
+    Check if transfer requires approval
+
+    Only Ward → Ward (same hub) does NOT require approval (immediate)
+    All other transfers require approval
+    """
+    # Ward to ward in same hub - no approval needed
+    if from_type == 'WARD' and to_type == 'WARD' and from_hub_id == to_hub_id:
+        return False
+
+    # Everything else requires approval
+    return True
 
 
 def can_user_approve_transfer(

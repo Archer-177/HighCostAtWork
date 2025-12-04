@@ -14,7 +14,7 @@ from models.database import (
 from models.schemas import TransferCreate, TransferAction, TransferStatus, VialStatus
 from utils.helpers import (
     determine_transfer_status, requires_approval, can_user_approve_transfer,
-    get_adelaide_now
+    can_transfer_between_locations, get_adelaide_now
 )
 
 
@@ -51,8 +51,26 @@ class TransferService:
             if not from_location or not to_location:
                 return False, {"error": "Invalid location(s)"}
 
-            if from_location.id == to_location.id:
-                return False, {"error": "Cannot transfer to same location"}
+            # Determine hub IDs for validation
+            from_hub_id = from_location.parent_hub_id or (
+                from_location.id if from_location.type == 'HUB' else None
+            )
+            to_hub_id = to_location.parent_hub_id or (
+                to_location.id if to_location.type == 'HUB' else None
+            )
+
+            # Validate transfer is allowed by business rules
+            can_transfer, error_msg = can_transfer_between_locations(
+                from_location.type,
+                to_location.type,
+                from_hub_id,
+                to_hub_id,
+                from_location.id,
+                to_location.id
+            )
+
+            if not can_transfer:
+                return False, {"error": error_msg}
 
             # Check if all vials are available and at from_location
             vials = self.db.query(Vial).filter(
@@ -65,14 +83,6 @@ class TransferService:
 
             if len(vials) != len(data.vial_ids):
                 return False, {"error": "Some vials are not available at source location"}
-
-            # Determine initial status
-            from_hub_id = from_location.parent_hub_id or (
-                from_location.id if from_location.type == 'HUB' else None
-            )
-            to_hub_id = to_location.parent_hub_id or (
-                to_location.id if to_location.type == 'HUB' else None
-            )
 
             initial_status = determine_transfer_status(
                 from_location.type,
@@ -113,15 +123,14 @@ class TransferService:
                 )
                 self.db.add(transfer_item)
 
-                # Update vial status
+                # Update vial status based on initial status
                 vial = self.db.query(Vial).filter_by(id=vial_id).first()
                 if initial_status == TransferStatus.COMPLETED:
-                    # Immediate transfer - move to destination
+                    # Immediate transfer (Ward → Ward same hub) - move to destination
                     vial.location_id = data.to_location_id
                     vial.status = VialStatus.AVAILABLE
-                elif initial_status == TransferStatus.IN_TRANSIT:
-                    vial.status = VialStatus.IN_TRANSIT
-                # If PENDING, leave vials as AVAILABLE at source
+                # If PENDING_APPROVAL, leave vials as AVAILABLE at source
+                # They will be updated when transfer is approved
 
                 vial.version += 1
 
@@ -166,9 +175,9 @@ class TransferService:
         """
         Approve a pending transfer
 
-        Only pharmacists from the "other hub" can approve
-        Changes status from PENDING -> IN_TRANSIT
-        Updates vial status
+        Only pharmacists with can_delegate can approve
+        Changes status from PENDING_APPROVAL -> IN_TRANSIT
+        Updates vial status to IN_TRANSIT
         """
         try:
             # Get transfer with optimistic lock
@@ -184,7 +193,7 @@ class TransferService:
                 }
 
             # Status check
-            if transfer.status != TransferStatus.PENDING:
+            if transfer.status != TransferStatus.PENDING_APPROVAL:
                 return False, {"error": f"Transfer is {transfer.status}, cannot approve"}
 
             # Get user info
