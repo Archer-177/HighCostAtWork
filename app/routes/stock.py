@@ -535,112 +535,115 @@ def get_transfers(location_id):
             
         return jsonify(transfer_list)
 
+def handle_transfer_action_logic(transfer_id, action, user_id, user_version):
+    with get_db() as conn:
+        cursor = conn.cursor()
+        
+        # Get transfer for version check
+        transfer = cursor.execute("SELECT * FROM transfers WHERE id = ?", (transfer_id,)).fetchone()
+        if not transfer:
+            return {"error": "Transfer not found"}, 404
+            
+        # Optimistic Locking Check
+        if user_version is not None and transfer['version'] != user_version:
+            return {"error": "Data has changed. Please refresh."}, 409
+        
+        if action == 'approve':
+            # Verify approver is from the "Other Hub" (Non-initiating hub)
+            creator = cursor.execute("SELECT location_id FROM users WHERE id = ?", (transfer['created_by'],)).fetchone()
+            approver = cursor.execute("SELECT location_id FROM users WHERE id = ?", (user_id,)).fetchone()
+            
+            if not creator or not approver:
+                    return {"error": "User data not found"}, 404
+
+            # Determine the "Other Hub"
+            # If creator is at From_Loc, approval must come from To_Loc (Push)
+            # If creator is at To_Loc, approval must come from From_Loc (Pull)
+            
+            required_approver_location = None
+            if creator['location_id'] == transfer['from_location_id']:
+                required_approver_location = transfer['to_location_id']
+            elif creator['location_id'] == transfer['to_location_id']:
+                required_approver_location = transfer['from_location_id']
+            else:
+                # Creator is not at either hub (e.g. Admin at third location)? 
+                # Fallback to receiving hub for safety, or block.
+                # For now, let's enforce receiving hub as default if creator is external
+                required_approver_location = transfer['to_location_id']
+
+            if approver['location_id'] != required_approver_location:
+                return {"error": "Only pharmacists from the other hub can approve this transfer"}, 403
+
+            # Prevent self-approval
+            if user_id == transfer['created_by']:
+                return {"error": "You cannot approve your own transfer request"}, 403
+
+            # STRICT CHECK: Only update if status is PENDING
+            cursor.execute("""
+                UPDATE transfers 
+                SET status = 'IN_TRANSIT', approved_by = ?, approved_at = ?, version = version + 1
+                WHERE id = ? AND status = 'PENDING'
+            """, (user_id, datetime.now(), transfer_id))
+            
+            if cursor.rowcount == 0:
+                return {"error": "Transfer is not in PENDING state or has already been modified"}, 400
+
+            # Update vial statuses
+            cursor.execute("""
+                UPDATE vials 
+                SET status = 'IN_TRANSIT', version = version + 1
+                WHERE id IN (SELECT vial_id FROM transfer_items WHERE transfer_id = ?)
+            """, (transfer_id,))
+            
+        elif action == 'complete':
+            # STRICT CHECK: Only update if status is IN_TRANSIT
+            cursor.execute("""
+                UPDATE transfers 
+                SET status = 'COMPLETED', completed_at = ?, completed_by = ?, version = version + 1
+                WHERE id = ? AND status = 'IN_TRANSIT'
+            """, (datetime.now(), user_id, transfer_id))
+            
+            if cursor.rowcount == 0:
+                return {"error": "Transfer is not in IN_TRANSIT state or has already been modified"}, 400
+            
+            # Move vials to destination
+            cursor.execute("""
+                UPDATE vials 
+                SET status = 'AVAILABLE', location_id = ?, version = version + 1
+                WHERE id IN (SELECT vial_id FROM transfer_items WHERE transfer_id = ?)
+            """, (transfer['to_location_id'], transfer_id))
+            
+        elif action == 'cancel':
+            # STRICT CHECK: Only update if status is PENDING
+            cursor.execute("""
+                UPDATE transfers 
+                SET status = 'CANCELLED', version = version + 1
+                WHERE id = ? AND status = 'PENDING'
+            """, (transfer_id,))
+            
+            if cursor.rowcount == 0:
+                return {"error": "Transfer is not in PENDING state or has already been modified"}, 400
+            
+            # Release vials back to source
+            cursor.execute("""
+                UPDATE vials 
+                SET status = 'AVAILABLE', version = version + 1
+                WHERE id IN (SELECT vial_id FROM transfer_items WHERE transfer_id = ?)
+            """, (transfer_id,))
+        
+        conn.commit()
+        return {"success": True}, 200
+
 @bp.route('/api/transfer/<int:transfer_id>/<string:action>', methods=['POST'])
 def handle_transfer_action(transfer_id, action):
     data = request.json
-    user_id = data.get('user_id')
-    user_version = data.get('version')
-    
-    def update_transfer_logic():
-        with get_db() as conn:
-            cursor = conn.cursor()
-            
-            # Get transfer for version check
-            transfer = cursor.execute("SELECT * FROM transfers WHERE id = ?", (transfer_id,)).fetchone()
-            if not transfer:
-                return {"error": "Transfer not found"}, 404
-                
-            # Optimistic Locking Check
-            if user_version is not None and transfer['version'] != user_version:
-                return {"error": "Data has changed. Please refresh."}, 409
-            
-            if action == 'approve':
-                # Verify approver is from the "Other Hub" (Non-initiating hub)
-                creator = cursor.execute("SELECT location_id FROM users WHERE id = ?", (transfer['created_by'],)).fetchone()
-                approver = cursor.execute("SELECT location_id FROM users WHERE id = ?", (user_id,)).fetchone()
-                
-                if not creator or not approver:
-                     return {"error": "User data not found"}, 404
-
-                # Determine the "Other Hub"
-                # If creator is at From_Loc, approval must come from To_Loc (Push)
-                # If creator is at To_Loc, approval must come from From_Loc (Pull)
-                
-                required_approver_location = None
-                if creator['location_id'] == transfer['from_location_id']:
-                    required_approver_location = transfer['to_location_id']
-                elif creator['location_id'] == transfer['to_location_id']:
-                    required_approver_location = transfer['from_location_id']
-                else:
-                    # Creator is not at either hub (e.g. Admin at third location)? 
-                    # Fallback to receiving hub for safety, or block.
-                    # For now, let's enforce receiving hub as default if creator is external
-                    required_approver_location = transfer['to_location_id']
-
-                if approver['location_id'] != required_approver_location:
-                    return {"error": "Only pharmacists from the other hub can approve this transfer"}, 403
-
-                # Prevent self-approval
-                if user_id == transfer['created_by']:
-                    return {"error": "You cannot approve your own transfer request"}, 403
-
-                # STRICT CHECK: Only update if status is PENDING
-                cursor.execute("""
-                    UPDATE transfers 
-                    SET status = 'IN_TRANSIT', approved_by = ?, approved_at = ?, version = version + 1
-                    WHERE id = ? AND status = 'PENDING'
-                """, (user_id, datetime.now(), transfer_id))
-                
-                if cursor.rowcount == 0:
-                    return {"error": "Transfer is not in PENDING state or has already been modified"}, 400
-
-                # Update vial statuses
-                cursor.execute("""
-                    UPDATE vials 
-                    SET status = 'IN_TRANSIT', version = version + 1
-                    WHERE id IN (SELECT vial_id FROM transfer_items WHERE transfer_id = ?)
-                """, (transfer_id,))
-                
-            elif action == 'complete':
-                # STRICT CHECK: Only update if status is IN_TRANSIT
-                cursor.execute("""
-                    UPDATE transfers 
-                    SET status = 'COMPLETED', completed_at = ?, completed_by = ?, version = version + 1
-                    WHERE id = ? AND status = 'IN_TRANSIT'
-                """, (datetime.now(), user_id, transfer_id))
-                
-                if cursor.rowcount == 0:
-                    return {"error": "Transfer is not in IN_TRANSIT state or has already been modified"}, 400
-                
-                # Move vials to destination
-                cursor.execute("""
-                    UPDATE vials 
-                    SET status = 'AVAILABLE', location_id = ?, version = version + 1
-                    WHERE id IN (SELECT vial_id FROM transfer_items WHERE transfer_id = ?)
-                """, (transfer['to_location_id'], transfer_id))
-                
-            elif action == 'cancel':
-                # STRICT CHECK: Only update if status is PENDING
-                cursor.execute("""
-                    UPDATE transfers 
-                    SET status = 'CANCELLED', version = version + 1
-                    WHERE id = ? AND status = 'PENDING'
-                """, (transfer_id,))
-                
-                if cursor.rowcount == 0:
-                    return {"error": "Transfer is not in PENDING state or has already been modified"}, 400
-                
-                # Release vials back to source
-                cursor.execute("""
-                    UPDATE vials 
-                    SET status = 'AVAILABLE', version = version + 1
-                    WHERE id IN (SELECT vial_id FROM transfer_items WHERE transfer_id = ?)
-                """, (transfer_id,))
-            
-            conn.commit()
-            return {"success": True}, 200
-
-    result, status = queue_write(update_transfer_logic)
+    result, status = queue_write(
+        handle_transfer_action_logic,
+        transfer_id,
+        action,
+        data.get('user_id'),
+        data.get('version')
+    )
     return jsonify(result), status
 
 @bp.route('/api/stock_search', methods=['GET'])

@@ -11,6 +11,11 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from twilio.rest import Client
 from .config import LOG_FILE, DB_FILE, BACKUP_DIR
+import socket
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
 
 # Configure logging
 logging.basicConfig(filename=LOG_FILE, level=logging.INFO,
@@ -165,3 +170,64 @@ def get_stock_status_color(days_until_expiry):
         return 'amber'
     else:
         return 'green'
+
+def print_zpl(printer_ip, printer_port, zpl_data):
+    """
+    Sends ZPL data to a network printer.
+    """
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(5)
+            s.connect((printer_ip, printer_port))
+            s.sendall(zpl_data.encode('utf-8'))
+        return True, "Success"
+    except Exception as e:
+        logging.error(f"Printer error: {str(e)}")
+        return False, str(e)
+
+def generate_usage_pdf(filepath, report_data, stats):
+    """
+    Generates a PDF usage report using ReportLab.
+    """
+    try:
+        doc = SimpleDocTemplate(filepath, pagesize=letter)
+        elements = []
+        styles = getSampleStyleSheet()
+        
+        # Title
+        elements.append(Paragraph("Medicine Usage & Wastage Report", styles['Title']))
+        elements.append(Spacer(1, 12))
+        
+        # Stats
+        elements.append(Paragraph(f"Total Clinical Value: ${stats.get('totalClinicalValue', 0):,.2f}", styles['Normal']))
+        elements.append(Paragraph(f"Total Wastage Value: ${stats.get('totalWastageValue', 0):,.2f}", styles['Normal']))
+        elements.append(Spacer(1, 12))
+        
+        # Table Data
+        table_data = [['Location', 'Drug', 'Clinical Use', 'Wastage', 'Wastage Value']]
+        for row in report_data:
+            table_data.append([
+                row['location_name'],
+                row['drug_name'],
+                str(row['clinical_use']),
+                str(row['wastage']),
+                f"${row['wastage_value']:,.2f}"
+            ])
+        
+        t = Table(table_data)
+        t.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ]))
+        elements.append(t)
+        
+        doc.build(elements)
+        return True
+    except Exception as e:
+        logging.error(f"PDF Generation error: {str(e)}")
+        return False

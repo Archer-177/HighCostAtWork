@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-import socket
 import logging
 from ..database import get_db
+from ..utils import print_zpl
 
 bp = Blueprint('settings', __name__)
 
@@ -142,37 +142,42 @@ def generate_labels():
             x_pos = 20 # Default left margin
             
         try:
-            # Connect to printer
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                s.settimeout(5) # 5 second timeout
-                s.connect((printer_ip, printer_port))
+            # Generate ZPL for all assets
+            zpl_data = ""
+            for asset_id in asset_ids:
+                # Get drug info for this asset
+                vial = conn.execute("""
+                    SELECT v.*, d.name as drug_name, d.storage_temp 
+                    FROM vials v
+                    JOIN drugs d ON v.drug_id = d.id
+                    WHERE v.asset_id = ?
+                """, (asset_id,)).fetchone()
                 
-                for asset_id in asset_ids:
-                    # Get drug info for this asset
-                    vial = conn.execute("""
-                        SELECT v.*, d.name as drug_name, d.storage_temp 
-                        FROM vials v
-                        JOIN drugs d ON v.drug_id = d.id
-                        WHERE v.asset_id = ?
-                    """, (asset_id,)).fetchone()
-                    
-                    if vial:
-                        # Generate ZPL
-                        # Using calculated offsets and ^CI28 for UTF-8 support
-                        zpl = f"""
-                        ^XA
-                        ^CI28
-                        ^LH{x_pos},{top_offset_dots}
-                        ^FO0,20^BQN,2,4^FDQA,{asset_id}^FS
-                        ^FO120,20^A0N,30,30^FD{vial['drug_name'][:20]}^FS
-                        ^FO120,55^A0N,25,25^FDExp: {vial['expiry_date']}^FS
-                        ^FO120,85^A0N,25,25^FD{asset_id}^FS
-                        ^FO120,115^A0N,20,20^FD{vial['storage_temp']}^FS
-                        ^XZ
-                        """
-                        s.sendall(zpl.encode('utf-8'))
-                        
-            return jsonify({"success": True, "message": f"Sent {len(asset_ids)} labels to printer"})
+                if vial:
+                    # Generate ZPL
+                    # Using calculated offsets and ^CI28 for UTF-8 support
+                    zpl_data += f"""
+                    ^XA
+                    ^CI28
+                    ^LH{x_pos},{top_offset_dots}
+                    ^FO0,20^BQN,2,4^FDQA,{asset_id}^FS
+                    ^FO120,20^A0N,30,30^FD{vial['drug_name'][:20]}^FS
+                    ^FO120,55^A0N,25,25^FDExp: {vial['expiry_date']}^FS
+                    ^FO120,85^A0N,25,25^FD{asset_id}^FS
+                    ^FO120,115^A0N,20,20^FD{vial['storage_temp']}^FS
+                    ^XZ
+                    """
+
+            if not zpl_data:
+                 return jsonify({"error": "No valid assets found to print"}), 400
+
+            # Connect to printer
+            success, message = print_zpl(printer_ip, printer_port, zpl_data)
+            
+            if success:
+                return jsonify({"success": True, "message": f"Sent {len(asset_ids)} labels to printer"})
+            else:
+                return jsonify({"error": f"Printer connection failed: {message}"}), 500
             
         except Exception as e:
             logging.error(f"Printer error: {str(e)}")

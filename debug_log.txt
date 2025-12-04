@@ -9344,3 +9344,77 @@ Body: Your FUNLHN Password Reset Code is: 416394. Expires in 15 mins.
 2025-12-04 12:53:41,303 - INFO - 127.0.0.1 - - [04/Dec/2025 12:53:41] "POST /api/heartbeat HTTP/1.1" 200 -
 2025-12-04 12:53:46,303 - INFO - 127.0.0.1 - - [04/Dec/2025 12:53:46] "POST /api/heartbeat HTTP/1.1" 200 -
 2025-12-04 12:53:51,301 - INFO - 127.0.0.1 - - [04/Dec/2025 12:53:51] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:33:28,147 - INFO - Starting server on port 5000
+2025-12-04 13:33:28,317 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-12-04 13:33:28,317 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-04 13:33:28,368 - INFO - 127.0.0.1 - - [04/Dec/2025 13:33:28] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-04 13:33:28,388 - INFO - 127.0.0.1 - - [04/Dec/2025 13:33:28] "[36mGET /static/index-66abff71.css HTTP/1.1[0m" 304 -
+2025-12-04 13:33:28,499 - INFO - 127.0.0.1 - - [04/Dec/2025 13:33:28] "[36mGET /static/index-c7390532.js HTTP/1.1[0m" 304 -
+2025-12-04 13:33:33,548 - INFO - 127.0.0.1 - - [04/Dec/2025 13:33:33] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:33:38,547 - INFO - 127.0.0.1 - - [04/Dec/2025 13:33:38] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:33:43,547 - INFO - 127.0.0.1 - - [04/Dec/2025 13:33:43] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:33:48,548 - INFO - 127.0.0.1 - - [04/Dec/2025 13:33:48] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:33:53,547 - INFO - 127.0.0.1 - - [04/Dec/2025 13:33:53] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:33:58,547 - INFO - 127.0.0.1 - - [04/Dec/2025 13:33:58] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:34:03,548 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:03] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:34:08,549 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:08] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:34:13,548 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:13] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:34:18,547 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:18] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:34:23,547 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:23] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:34:28,547 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:28] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:34:33,548 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:33] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:34:38,547 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:38] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:34:43,548 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:43] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:34:45,948 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:45] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -
+2025-12-04 13:34:50,990 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:50] "POST /api/login HTTP/1.1" 200 -
+2025-12-04 13:34:51,012 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:51] "GET /api/dashboard/2 HTTP/1.1" 200 -
+2025-12-04 13:34:53,948 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:53] "GET /api/drugs?t=1764817493943 HTTP/1.1" 200 -
+2025-12-04 13:34:55,162 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:55] "GET /api/settings?location_id=2 HTTP/1.1" 200 -
+2025-12-04 13:34:56,012 - INFO - 127.0.0.1 - - [04/Dec/2025 13:34:56] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:35:01,015 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:01] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:35:01,490 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:01] "GET /api/dashboard/2 HTTP/1.1" 200 -
+2025-12-04 13:35:03,693 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:03] "GET /api/drugs HTTP/1.1" 200 -
+2025-12-04 13:35:06,012 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:06] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:35:11,013 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:11] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:35:16,014 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:16] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:35:21,014 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:21] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:35:26,014 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:26] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:35:31,011 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:31] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:35:34,863 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:34] "POST /api/receive_stock HTTP/1.1" 200 -
+2025-12-04 13:35:36,010 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:36] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:35:36,780 - ERROR - Printer error: name 'zpl_data' is not defined
+2025-12-04 13:35:36,780 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:36] "[35m[1mPOST /api/generate_labels HTTP/1.1[0m" 500 -
+2025-12-04 13:35:41,014 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:35:44,052 - ERROR - Printer error: name 'zpl_data' is not defined
+2025-12-04 13:35:44,052 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:44] "[35m[1mPOST /api/generate_labels HTTP/1.1[0m" 500 -
+2025-12-04 13:35:46,015 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:46] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:35:51,012 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:51] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:35:56,015 - INFO - 127.0.0.1 - - [04/Dec/2025 13:35:56] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:36:01,012 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:01] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:36:06,013 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:06] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:36:11,015 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:11] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:36:16,012 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:16] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:36:21,015 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:21] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:36:26,013 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:26] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:36:31,014 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:31] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:36:31,512 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:31] "[36mGET /static/index-66abff71.css HTTP/1.1[0m" 304 -
+2025-12-04 13:36:31,519 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:31] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-12-04 13:36:36,015 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:36] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:36:41,015 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:36:43,262 - ERROR - Printer error: name 'zpl_data' is not defined
+2025-12-04 13:36:43,263 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:43] "[35m[1mPOST /api/generate_labels HTTP/1.1[0m" 500 -
+2025-12-04 13:36:46,015 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:46] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:36:51,014 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:51] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:36:56,015 - INFO - 127.0.0.1 - - [04/Dec/2025 13:36:56] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:37:01,014 - INFO - 127.0.0.1 - - [04/Dec/2025 13:37:01] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:37:06,012 - INFO - 127.0.0.1 - - [04/Dec/2025 13:37:06] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:37:11,013 - INFO - 127.0.0.1 - - [04/Dec/2025 13:37:11] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:37:16,015 - INFO - 127.0.0.1 - - [04/Dec/2025 13:37:16] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:37:21,014 - INFO - 127.0.0.1 - - [04/Dec/2025 13:37:21] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:37:26,016 - INFO - 127.0.0.1 - - [04/Dec/2025 13:37:26] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:37:31,015 - INFO - 127.0.0.1 - - [04/Dec/2025 13:37:31] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:37:36,015 - INFO - 127.0.0.1 - - [04/Dec/2025 13:37:36] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:37:41,016 - INFO - 127.0.0.1 - - [04/Dec/2025 13:37:41] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:37:46,016 - INFO - 127.0.0.1 - - [04/Dec/2025 13:37:46] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-04 13:42:46,144 - WARNING - Heartbeat timeout - shutting down

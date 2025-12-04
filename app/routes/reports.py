@@ -1,12 +1,9 @@
 from flask import Blueprint, request, jsonify, send_from_directory
 from datetime import datetime, timedelta
 import os
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib.styles import getSampleStyleSheet
 from ..database import get_db
 from ..config import STATIC_FOLDER
+from ..utils import generate_usage_pdf
 
 bp = Blueprint('reports', __name__)
 
@@ -48,42 +45,9 @@ def export_pdf():
     filename = f"report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
     filepath = os.path.join(STATIC_FOLDER, filename)
     
-    doc = SimpleDocTemplate(filepath, pagesize=letter)
-    elements = []
-    styles = getSampleStyleSheet()
-    
-    # Title
-    elements.append(Paragraph("Medicine Usage & Wastage Report", styles['Title']))
-    elements.append(Spacer(1, 12))
-    
-    # Stats
-    elements.append(Paragraph(f"Total Clinical Value: ${stats.get('totalClinicalValue', 0):,.2f}", styles['Normal']))
-    elements.append(Paragraph(f"Total Wastage Value: ${stats.get('totalWastageValue', 0):,.2f}", styles['Normal']))
-    elements.append(Spacer(1, 12))
-    
-    # Table Data
-    table_data = [['Location', 'Drug', 'Clinical Use', 'Wastage', 'Wastage Value']]
-    for row in report_data:
-        table_data.append([
-            row['location_name'],
-            row['drug_name'],
-            str(row['clinical_use']),
-            str(row['wastage']),
-            f"${row['wastage_value']:,.2f}"
-        ])
-    
-    t = Table(table_data)
-    t.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-    ]))
-    elements.append(t)
-    
-    doc.build(elements)
+    if generate_usage_pdf(filepath, report_data, stats):
+        return send_from_directory(STATIC_FOLDER, filename, as_attachment=True)
+    else:
+        return jsonify({"error": "Failed to generate PDF"}), 500
     
     return send_from_directory(STATIC_FOLDER, filename, as_attachment=True)
