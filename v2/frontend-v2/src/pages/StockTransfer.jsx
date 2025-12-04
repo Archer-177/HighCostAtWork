@@ -19,7 +19,7 @@ import toast from 'react-hot-toast'
 
 export default function StockTransfer() {
   const user = useAuthStore((state) => state.user)
-  const [activeTab, setActiveTab] = useState('create') // 'create' or 'view'
+  const [activeTab, setActiveTab] = useState('create') // 'create', 'view', or 'map'
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -60,10 +60,25 @@ export default function StockTransfer() {
             <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-maroon dark:bg-ochre" />
           )}
         </button>
+        <button
+          onClick={() => setActiveTab('map')}
+          className={`px-6 py-3 font-semibold transition-colors relative ${
+            activeTab === 'map'
+              ? 'text-maroon dark:text-ochre'
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+          }`}
+        >
+          Network Map
+          {activeTab === 'map' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-maroon dark:bg-ochre" />
+          )}
+        </button>
       </div>
 
       {/* Content */}
-      {activeTab === 'create' ? <CreateTransfer /> : <ViewTransfers />}
+      {activeTab === 'create' && <CreateTransfer />}
+      {activeTab === 'view' && <ViewTransfers />}
+      {activeTab === 'map' && <NetworkMap setActiveTab={setActiveTab} />}
     </div>
   )
 }
@@ -738,6 +753,529 @@ function ViewTransfers() {
               )}
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ============================================================================
+// NETWORK MAP COMPONENT
+// ============================================================================
+function NetworkMap({ setActiveTab }) {
+  const user = useAuthStore((state) => state.user)
+  const [locations, setLocations] = useState([])
+  const [stockLevels, setStockLevels] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [selectedLocation, setSelectedLocation] = useState(null)
+  const [hoveredLocation, setHoveredLocation] = useState(null)
+
+  useEffect(() => {
+    loadMapData()
+  }, [])
+
+  const loadMapData = async () => {
+    try {
+      const locationsData = await adminAPI.getLocations()
+      setLocations(locationsData || [])
+
+      // Load stock data for each location
+      const stockPromises = (locationsData || []).map(async (loc) => {
+        try {
+          const stock = await stockAPI.searchStock({
+            location_id: loc.id,
+            status: 'AVAILABLE'
+          })
+          return { locationId: loc.id, stock: stock || [] }
+        } catch {
+          return { locationId: loc.id, stock: [] }
+        }
+      })
+
+      const stockResults = await Promise.all(stockPromises)
+      const stockMap = {}
+      stockResults.forEach(({ locationId, stock }) => {
+        // Calculate health based on expiry
+        const healthy = stock.filter((v) => v.status_color === 'green').length
+        const warning = stock.filter((v) => v.status_color === 'amber').length
+        const critical = stock.filter((v) => v.status_color === 'red').length
+        const total = stock.length
+
+        stockMap[locationId] = {
+          total,
+          healthy,
+          warning,
+          critical,
+          healthScore:
+            total === 0 ? 0 : ((healthy + warning * 0.5) / total) * 100
+        }
+      })
+      setStockLevels(stockMap)
+    } catch (error) {
+      toast.error('Failed to load network map data')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Separate locations by hub
+  const portAugustaHub = locations.find((loc) => loc.id === 1)
+  const whyallaHub = locations.find((loc) => loc.id === 2)
+  const portAugustaChildren = locations.filter(
+    (loc) => loc.parent_hub_id === 1 && loc.id !== 1
+  )
+  const whyallaChildren = locations.filter(
+    (loc) => loc.parent_hub_id === 2 && loc.id !== 2
+  )
+
+  // Check if transfer is valid between two locations
+  const canTransferBetween = (fromId, toId) => {
+    if (fromId === toId) return false
+
+    const from = locations.find((l) => l.id === fromId)
+    const to = locations.find((l) => l.id === toId)
+    if (!from || !to) return false
+
+    // WARD transfers
+    if (from.type === 'WARD') {
+      if (to.type === 'WARD' && to.parent_hub_id === from.parent_hub_id)
+        return true
+      if (to.type === 'HUB' && to.id === from.parent_hub_id) return true
+      return false
+    }
+
+    // REMOTE transfers
+    if (from.type === 'REMOTE') {
+      if (to.type === 'REMOTE') return true
+      if (to.type === 'HUB' && to.id === from.parent_hub_id && to.id !== 2)
+        return true
+      return false
+    }
+
+    // HUB transfers
+    if (from.type === 'HUB') {
+      if (to.type === 'WARD' && to.parent_hub_id === from.id) return true
+      if (to.type === 'HUB') return true
+      if (to.type === 'REMOTE' && from.id !== 2 && to.parent_hub_id === from.id)
+        return true
+      return false
+    }
+
+    return false
+  }
+
+  // Get node color based on stock health
+  const getNodeColor = (locationId) => {
+    const stock = stockLevels[locationId]
+    if (!stock || stock.total === 0) return 'bg-gray-300 dark:bg-gray-600'
+    if (stock.critical > 0) return 'bg-red-500'
+    if (stock.warning > 0) return 'bg-amber-500'
+    return 'bg-green-500'
+  }
+
+  // Get node border for current user location
+  const getNodeBorder = (locationId) => {
+    if (locationId === user.location_id) return 'ring-4 ring-maroon dark:ring-ochre'
+    if (hoveredLocation === locationId) return 'ring-2 ring-gray-400'
+    return ''
+  }
+
+  const LocationNode = ({ location, x, y, isHub = false }) => {
+    const stock = stockLevels[location.id] || { total: 0 }
+    const isSelected = selectedLocation?.id === location.id
+    const isHovered = hoveredLocation === location.id
+    const isCurrent = location.id === user.location_id
+
+    return (
+      <g
+        className="cursor-pointer transition-all"
+        onClick={() => setSelectedLocation(location)}
+        onMouseEnter={() => setHoveredLocation(location.id)}
+        onMouseLeave={() => setHoveredLocation(null)}
+      >
+        {/* Connection lines (drawn before node for z-index) */}
+        {isHovered &&
+          locations.map((otherLoc) => {
+            if (canTransferBetween(location.id, otherLoc.id)) {
+              const otherNode = getLocationPosition(otherLoc.id)
+              if (otherNode) {
+                return (
+                  <line
+                    key={`line-${location.id}-${otherLoc.id}`}
+                    x1={x}
+                    y1={y}
+                    x2={otherNode.x}
+                    y2={otherNode.y}
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeDasharray="5,5"
+                    className="text-maroon dark:text-ochre opacity-50"
+                  />
+                )
+              }
+            }
+            return null
+          })}
+
+        {/* Node circle */}
+        <circle
+          cx={x}
+          cy={y}
+          r={isHub ? 40 : 30}
+          className={`${getNodeColor(location.id)} ${getNodeBorder(
+            location.id
+          )} transition-all ${isHovered ? 'scale-110' : ''}`}
+          style={{
+            filter: isSelected
+              ? 'drop-shadow(0 10px 20px rgba(138, 42, 43, 0.5))'
+              : isHovered
+              ? 'drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3))'
+              : 'none',
+            transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+            transformOrigin: `${x}px ${y}px`
+          }}
+        />
+
+        {/* Hub icon (if hub) */}
+        {isHub && (
+          <text
+            x={x}
+            y={y - 5}
+            textAnchor="middle"
+            className="fill-white text-xl font-bold pointer-events-none"
+          >
+            ⚕
+          </text>
+        )}
+
+        {/* Stock count */}
+        <text
+          x={x}
+          y={isHub ? y + 10 : y + 5}
+          textAnchor="middle"
+          className="fill-white text-xs font-bold pointer-events-none"
+        >
+          {stock.total}
+        </text>
+
+        {/* Location name */}
+        <text
+          x={x}
+          y={y + (isHub ? 60 : 50)}
+          textAnchor="middle"
+          className="fill-gray-900 dark:fill-gray-100 text-sm font-medium pointer-events-none"
+        >
+          {location.name.length > 20
+            ? location.name.substring(0, 17) + '...'
+            : location.name}
+        </text>
+
+        {/* Current location indicator */}
+        {isCurrent && (
+          <text
+            x={x}
+            y={y - (isHub ? 50 : 40)}
+            textAnchor="middle"
+            className="fill-maroon dark:fill-ochre text-xs font-bold pointer-events-none"
+          >
+            ● YOU
+          </text>
+        )}
+
+        {/* Type badge */}
+        <text
+          x={x}
+          y={y + (isHub ? 75 : 65)}
+          textAnchor="middle"
+          className="fill-gray-500 dark:fill-gray-400 text-xs pointer-events-none"
+        >
+          {location.type}
+        </text>
+      </g>
+    )
+  }
+
+  const getLocationPosition = (locationId) => {
+    const positions = calculatePositions()
+    return positions[locationId]
+  }
+
+  const calculatePositions = () => {
+    const positions = {}
+    const svgWidth = 1200
+    const svgHeight = 800
+
+    // Port Augusta Hub (left side)
+    if (portAugustaHub) {
+      positions[portAugustaHub.id] = { x: 250, y: svgHeight / 2 }
+
+      // Arrange children in a circle around hub
+      portAugustaChildren.forEach((child, idx) => {
+        const angle =
+          (idx / portAugustaChildren.length) * 2 * Math.PI - Math.PI / 2
+        const radius = 200
+        positions[child.id] = {
+          x: 250 + Math.cos(angle) * radius,
+          y: svgHeight / 2 + Math.sin(angle) * radius
+        }
+      })
+    }
+
+    // Whyalla Hub (right side)
+    if (whyallaHub) {
+      positions[whyallaHub.id] = { x: 950, y: svgHeight / 2 }
+
+      // Arrange children in a circle around hub
+      whyallaChildren.forEach((child, idx) => {
+        const angle =
+          (idx / whyallaChildren.length) * 2 * Math.PI - Math.PI / 2
+        const radius = 200
+        positions[child.id] = {
+          x: 950 + Math.cos(angle) * radius,
+          y: svgHeight / 2 + Math.sin(angle) * radius
+        }
+      })
+    }
+
+    return positions
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-maroon"></div>
+      </div>
+    )
+  }
+
+  const positions = calculatePositions()
+
+  return (
+    <div className="space-y-6">
+      {/* Legend */}
+      <div className="card">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-green-500"></div>
+              <span className="text-sm">Healthy Stock</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-amber-500"></div>
+              <span className="text-sm">Warning (30-90 days)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-red-500"></div>
+              <span className="text-sm">Critical (&lt;30 days)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+              <span className="text-sm">No Stock</span>
+            </div>
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            Hover over a location to see valid transfer routes • Click for details
+          </div>
+        </div>
+      </div>
+
+      {/* Network Map */}
+      <div className="card overflow-x-auto">
+        <svg
+          viewBox="0 0 1200 800"
+          className="w-full"
+          style={{ minHeight: '600px' }}
+        >
+          {/* Hub connection line */}
+          {portAugustaHub && whyallaHub && (
+            <line
+              x1={positions[portAugustaHub.id]?.x}
+              y1={positions[portAugustaHub.id]?.y}
+              x2={positions[whyallaHub.id]?.x}
+              y2={positions[whyallaHub.id]?.y}
+              stroke="currentColor"
+              strokeWidth="3"
+              className="text-gray-300 dark:text-gray-600"
+            />
+          )}
+
+          {/* Hub to children connection lines */}
+          {portAugustaHub &&
+            portAugustaChildren.map((child) => (
+              <line
+                key={`pa-line-${child.id}`}
+                x1={positions[portAugustaHub.id]?.x}
+                y1={positions[portAugustaHub.id]?.y}
+                x2={positions[child.id]?.x}
+                y2={positions[child.id]?.y}
+                stroke="currentColor"
+                strokeWidth="2"
+                className="text-gray-200 dark:text-gray-700"
+              />
+            ))}
+
+          {whyallaHub &&
+            whyallaChildren.map((child) => (
+              <line
+                key={`wh-line-${child.id}`}
+                x1={positions[whyallaHub.id]?.x}
+                y1={positions[whyallaHub.id]?.y}
+                x2={positions[child.id]?.x}
+                y2={positions[child.id]?.y}
+                stroke="currentColor"
+                strokeWidth="2"
+                className="text-gray-200 dark:text-gray-700"
+              />
+            ))}
+
+          {/* Location nodes */}
+          {portAugustaHub && (
+            <LocationNode
+              location={portAugustaHub}
+              x={positions[portAugustaHub.id]?.x}
+              y={positions[portAugustaHub.id]?.y}
+              isHub={true}
+            />
+          )}
+
+          {whyallaHub && (
+            <LocationNode
+              location={whyallaHub}
+              x={positions[whyallaHub.id]?.x}
+              y={positions[whyallaHub.id]?.y}
+              isHub={true}
+            />
+          )}
+
+          {portAugustaChildren.map(
+            (child) =>
+              positions[child.id] && (
+                <LocationNode
+                  key={child.id}
+                  location={child}
+                  x={positions[child.id].x}
+                  y={positions[child.id].y}
+                />
+              )
+          )}
+
+          {whyallaChildren.map(
+            (child) =>
+              positions[child.id] && (
+                <LocationNode
+                  key={child.id}
+                  location={child}
+                  x={positions[child.id].x}
+                  y={positions[child.id].y}
+                />
+              )
+          )}
+        </svg>
+      </div>
+
+      {/* Location Details Panel */}
+      {selectedLocation && (
+        <div className="card">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h3 className="text-xl font-semibold mb-1">
+                {selectedLocation.name}
+              </h3>
+              <div className="flex items-center gap-2">
+                <span className="badge">{selectedLocation.type}</span>
+                {selectedLocation.id === user.location_id && (
+                  <span className="badge badge-maroon">Your Location</span>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={() => setSelectedLocation(null)}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              <XCircle className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Stock Summary */}
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                {stockLevels[selectedLocation.id]?.total || 0}
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                Total Vials
+              </div>
+            </div>
+            <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <div className="text-2xl font-bold text-green-700 dark:text-green-400">
+                {stockLevels[selectedLocation.id]?.healthy || 0}
+              </div>
+              <div className="text-xs text-green-600 dark:text-green-400">
+                Healthy
+              </div>
+            </div>
+            <div className="text-center p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
+              <div className="text-2xl font-bold text-amber-700 dark:text-amber-400">
+                {stockLevels[selectedLocation.id]?.warning || 0}
+              </div>
+              <div className="text-xs text-amber-600 dark:text-amber-400">
+                Warning
+              </div>
+            </div>
+            <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+              <div className="text-2xl font-bold text-red-700 dark:text-red-400">
+                {stockLevels[selectedLocation.id]?.critical || 0}
+              </div>
+              <div className="text-xs text-red-600 dark:text-red-400">
+                Critical
+              </div>
+            </div>
+          </div>
+
+          {/* Transfer Options */}
+          <div>
+            <h4 className="font-semibold mb-3">Valid Transfer Destinations</h4>
+            <div className="grid grid-cols-2 gap-2">
+              {locations
+                .filter((loc) =>
+                  canTransferBetween(selectedLocation.id, loc.id)
+                )
+                .map((loc) => (
+                  <div
+                    key={loc.id}
+                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                  >
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm">{loc.name}</span>
+                    </div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {loc.type}
+                    </span>
+                  </div>
+                ))}
+            </div>
+            {locations.filter((loc) =>
+              canTransferBetween(selectedLocation.id, loc.id)
+            ).length === 0 && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                No valid transfer destinations from this location
+              </p>
+            )}
+          </div>
+
+          {/* Create Transfer Button */}
+          {selectedLocation.id === user.location_id && (
+            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setActiveTab('create')}
+                className="btn-primary w-full flex items-center justify-center gap-2"
+              >
+                <Truck className="w-5 h-5" />
+                Create Transfer from This Location
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
