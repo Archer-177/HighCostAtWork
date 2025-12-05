@@ -649,7 +649,10 @@ function AssetTag({ item }) {
 
 // Transfer Manifest Component (formerly TransferCard)
 function TransferCard({ transfer, onUpdate, readonly }) {
-  const { user, canApproveTransfers } = useAuth()
+  const { user } = useAppStore()
+  // const { user, canApproveTransfers } = useAuth()
+  const isPharmacist = user?.role === 'PHARMACIST'
+  const canApproveTransfers = isPharmacist // Derived from user role
   const { success, error: showError } = useNotification()
   const [loading, setLoading] = useState(false)
 

@@ -2,7 +2,9 @@ import React, { createContext, useContext, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAppStore from '../stores/appStore';
 
-// ... (other imports)
+const WARN_TIME = 13 * 60 * 1000 // 13 minutes
+const SOFT_LOGOUT = 14 * 60 * 1000 // 14 minutes
+const HARD_LOGOUT = 15 * 60 * 1000 // 15 minutes
 
 const HeartbeatContext = createContext()
 
