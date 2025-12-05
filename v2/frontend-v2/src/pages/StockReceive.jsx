@@ -20,7 +20,8 @@ export default function StockReceive() {
       batch_number: '',
       expiry_date: '',
       quantity: 1,
-      cost_per_unit: ''
+      cost_per_unit: '',
+      goods_receipt_number: ''
     }
   ])
 
@@ -48,7 +49,8 @@ export default function StockReceive() {
         batch_number: '',
         expiry_date: '',
         quantity: 1,
-        cost_per_unit: ''
+        cost_per_unit: '',
+        goods_receipt_number: ''
       }
     ])
   }
@@ -106,6 +108,11 @@ export default function StockReceive() {
           setSubmitting(false)
           return
         }
+        if (!vial.goods_receipt_number) {
+          toast.error(`Row ${i + 1}: Please enter iPharmacy Goods Receipt Number`)
+          setSubmitting(false)
+          return
+        }
       }
 
       // Submit to backend
@@ -117,7 +124,8 @@ export default function StockReceive() {
           batch_number: v.batch_number,
           expiry_date: v.expiry_date,
           quantity: parseInt(v.quantity),
-          cost_per_unit: v.cost_per_unit ? parseFloat(v.cost_per_unit) : null
+          cost_per_unit: v.cost_per_unit ? parseFloat(v.cost_per_unit) : null,
+          goods_receipt_number: v.goods_receipt_number
         }))
       })
 
@@ -273,85 +281,105 @@ export default function StockReceive() {
             {vials.map((vial, index) => (
               <div
                 key={index}
-                className="grid grid-cols-12 gap-4 items-start p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+                className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
               >
-                {/* Drug Selection */}
-                <div className="col-span-3">
-                  <select
-                    value={vial.drug_id}
-                    onChange={(e) => updateVial(index, 'drug_id', e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
-                    required
-                  >
-                    <option value="">Select drug...</option>
-                    {drugs.map((drug) => (
-                      <option key={drug.id} value={drug.id}>
-                        {drug.name} ({drug.category})
-                      </option>
-                    ))}
-                  </select>
+                <div className="grid grid-cols-12 gap-4 items-start mb-3">
+                  {/* Drug Selection */}
+                  <div className="col-span-3">
+                    <select
+                      value={vial.drug_id}
+                      onChange={(e) => updateVial(index, 'drug_id', e.target.value)}
+                      className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
+                      required
+                    >
+                      <option value="">Select drug...</option>
+                      {drugs.map((drug) => (
+                        <option key={drug.id} value={drug.id}>
+                          {drug.name} ({drug.category})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Batch Number */}
+                  <div className="col-span-2">
+                    <input
+                      type="text"
+                      value={vial.batch_number}
+                      onChange={(e) => updateVial(index, 'batch_number', e.target.value)}
+                      placeholder="e.g., BT2024001"
+                      className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  {/* Expiry Date */}
+                  <div className="col-span-2">
+                    <input
+                      type="date"
+                      value={vial.expiry_date}
+                      onChange={(e) => updateVial(index, 'expiry_date', e.target.value)}
+                      min={getTodayDate()}
+                      className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  {/* Quantity */}
+                  <div className="col-span-2">
+                    <input
+                      type="number"
+                      value={vial.quantity}
+                      onChange={(e) => updateVial(index, 'quantity', e.target.value)}
+                      min="1"
+                      max="1000"
+                      className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  {/* Cost per Unit */}
+                  <div className="col-span-2">
+                    <input
+                      type="number"
+                      value={vial.cost_per_unit}
+                      onChange={(e) => updateVial(index, 'cost_per_unit', e.target.value)}
+                      step="0.01"
+                      min="0"
+                      placeholder="Optional"
+                      className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
+                    />
+                  </div>
+
+                  {/* Remove Button */}
+                  <div className="col-span-1 flex items-center justify-center">
+                    <button
+                      type="button"
+                      onClick={() => removeVialRow(index)}
+                      className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      title="Remove row"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
 
-                {/* Batch Number */}
-                <div className="col-span-2">
-                  <input
-                    type="text"
-                    value={vial.batch_number}
-                    onChange={(e) => updateVial(index, 'batch_number', e.target.value)}
-                    placeholder="e.g., BT2024001"
-                    className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
-                    required
-                  />
-                </div>
-
-                {/* Expiry Date */}
-                <div className="col-span-2">
-                  <input
-                    type="date"
-                    value={vial.expiry_date}
-                    onChange={(e) => updateVial(index, 'expiry_date', e.target.value)}
-                    min={getTodayDate()}
-                    className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
-                    required
-                  />
-                </div>
-
-                {/* Quantity */}
-                <div className="col-span-2">
-                  <input
-                    type="number"
-                    value={vial.quantity}
-                    onChange={(e) => updateVial(index, 'quantity', e.target.value)}
-                    min="1"
-                    max="1000"
-                    className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
-                    required
-                  />
-                </div>
-
-                {/* Cost per Unit */}
-                <div className="col-span-2">
-                  <input
-                    type="number"
-                    value={vial.cost_per_unit}
-                    onChange={(e) => updateVial(index, 'cost_per_unit', e.target.value)}
-                    step="0.01"
-                    min="0"
-                    placeholder="Optional"
-                    className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
-                  />
-                </div>
-
-                {/* Remove Button */}
-                <div className="col-span-1 flex items-center justify-center">
-                  <button
-                    type="button"
-                    onClick={() => removeVialRow(index)}
-                    className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                    title="Remove row"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
+                {/* iPharmacy Goods Receipt Number - Full Width Below */}
+                <div className="grid grid-cols-12 gap-4">
+                  <div className="col-span-11">
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      iPharmacy Goods Receipt Number <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={vial.goods_receipt_number}
+                      onChange={(e) => updateVial(index, 'goods_receipt_number', e.target.value)}
+                      placeholder="e.g., GR2024-12345"
+                      className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
+                      required
+                    />
+                  </div>
+                  <div className="col-span-1"></div>
                 </div>
               </div>
             ))}

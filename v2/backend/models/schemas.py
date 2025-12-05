@@ -199,7 +199,7 @@ class VialBase(BaseSchema):
 
 class VialCreate(VialBase):
     quantity: int = Field(..., gt=0, le=1000)
-    goods_receipt_number: Optional[str] = Field(None, max_length=100)
+    goods_receipt_number: str = Field(..., min_length=1, max_length=100)
 
 
 class VialUpdate(BaseSchema):

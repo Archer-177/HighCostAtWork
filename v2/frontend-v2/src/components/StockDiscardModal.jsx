@@ -20,6 +20,7 @@ export default function StockDiscardModal({ vial, onClose, onSuccess }) {
   const user = useAuthStore((state) => state.user)
   const [reason, setReason] = useState('')
   const [notes, setNotes] = useState('')
+  const [disposalNumber, setDisposalNumber] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   const handleSubmit = async (e) => {
@@ -36,16 +37,21 @@ export default function StockDiscardModal({ vial, onClose, onSuccess }) {
       return
     }
 
+    if (!disposalNumber) {
+      toast.error('Please enter iPharmacy Disposal Number')
+      return
+    }
+
     setSubmitting(true)
 
     try {
-      const response = await stockAPI.discardStock({
-        vial_id: vial.id,
-        version: vial.version || 1,
-        user_id: user.id,
+      const response = await stockAPI.discardStock(
+        vial.id,
+        user.id,
+        vial.version || 1,
         reason,
-        notes: notes || undefined
-      })
+        disposalNumber
+      )
 
       if (response.success) {
         toast.success('Stock discarded successfully')
@@ -155,7 +161,7 @@ export default function StockDiscardModal({ vial, onClose, onSuccess }) {
           </div>
 
           {/* Notes */}
-          <div className="mb-6">
+          <div className="mb-4">
             <label className="block text-sm font-medium mb-2">
               Notes {reason === 'OTHER' && <span className="text-red-500">*</span>}
             </label>
@@ -175,6 +181,25 @@ export default function StockDiscardModal({ vial, onClose, onSuccess }) {
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               {notes.length}/500 characters
               {reason === 'OTHER' && ' (required)'}
+            </p>
+          </div>
+
+          {/* iPharmacy Disposal Number */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium mb-2">
+              iPharmacy Disposal Number <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={disposalNumber}
+              onChange={(e) => setDisposalNumber(e.target.value)}
+              placeholder="e.g., DN2024-12345"
+              className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
+              required
+              maxLength={100}
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Enter the disposal register number from iPharmacy
             </p>
           </div>
 
