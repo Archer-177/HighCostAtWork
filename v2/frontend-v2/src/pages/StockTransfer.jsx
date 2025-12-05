@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight,
   Package,
@@ -880,59 +881,92 @@ function NetworkMap({ setActiveTab }) {
     return ''
   }
 
-  const LocationNode = ({ location, x, y, isHub = false }) => {
+  const LocationNode = ({ location, x, y, isHub = false, animationDelay = 0 }) => {
     const stock = stockLevels[location.id] || { total: 0 }
     const isSelected = selectedLocation?.id === location.id
     const isHovered = hoveredLocation === location.id
     const isCurrent = location.id === user.location_id
 
     return (
-      <g
-        className="cursor-pointer transition-all"
+      <motion.g
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{
+          duration: 0.4,
+          delay: animationDelay,
+          type: 'spring',
+          stiffness: 200,
+          damping: 15
+        }}
+        className="cursor-pointer"
         onClick={() => setSelectedLocation(location)}
         onMouseEnter={() => setHoveredLocation(location.id)}
         onMouseLeave={() => setHoveredLocation(null)}
       >
         {/* Connection lines (drawn before node for z-index) */}
-        {isHovered &&
-          locations.map((otherLoc) => {
-            if (canTransferBetween(location.id, otherLoc.id)) {
-              const otherNode = getLocationPosition(otherLoc.id)
-              if (otherNode) {
-                return (
-                  <line
-                    key={`line-${location.id}-${otherLoc.id}`}
-                    x1={x}
-                    y1={y}
-                    x2={otherNode.x}
-                    y2={otherNode.y}
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeDasharray="5,5"
-                    className="text-maroon dark:text-ochre opacity-50"
-                  />
-                )
+        <AnimatePresence>
+          {isHovered &&
+            locations.map((otherLoc) => {
+              if (canTransferBetween(location.id, otherLoc.id)) {
+                const otherNode = getLocationPosition(otherLoc.id)
+                if (otherNode) {
+                  return (
+                    <motion.line
+                      key={`line-${location.id}-${otherLoc.id}`}
+                      x1={x}
+                      y1={y}
+                      x2={otherNode.x}
+                      y2={otherNode.y}
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeDasharray="5,5"
+                      className="text-maroon dark:text-ochre opacity-50"
+                      initial={{ pathLength: 0, opacity: 0 }}
+                      animate={{ pathLength: 1, opacity: 0.5 }}
+                      exit={{ pathLength: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  )
+                }
               }
-            }
-            return null
-          })}
+              return null
+            })}
+        </AnimatePresence>
+
+        {/* Pulse ring for current location */}
+        {isCurrent && (
+          <motion.circle
+            cx={x}
+            cy={y}
+            r={isHub ? 45 : 35}
+            className="fill-none stroke-maroon dark:stroke-ochre"
+            strokeWidth="2"
+            initial={{ opacity: 0.8, scale: 1 }}
+            animate={{
+              opacity: [0.8, 0.3, 0.8],
+              scale: [1, 1.2, 1]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: 'easeInOut'
+            }}
+          />
+        )}
 
         {/* Node circle */}
-        <circle
+        <motion.circle
           cx={x}
           cy={y}
           r={isHub ? 40 : 30}
-          className={`${getNodeColor(location.id)} ${getNodeBorder(
-            location.id
-          )} transition-all ${isHovered ? 'scale-110' : ''}`}
+          className={`${getNodeColor(location.id)} ${getNodeBorder(location.id)}`}
+          whileHover={{ scale: 1.1 }}
           style={{
             filter: isSelected
               ? 'drop-shadow(0 10px 20px rgba(138, 42, 43, 0.5))'
               : isHovered
               ? 'drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3))'
-              : 'none',
-            transform: isHovered ? 'scale(1.1)' : 'scale(1)',
-            transformOrigin: `${x}px ${y}px`
+              : 'none'
           }}
         />
 
@@ -991,7 +1025,7 @@ function NetworkMap({ setActiveTab }) {
         >
           {location.type}
         </text>
-      </g>
+      </motion.g>
     )
   }
 
@@ -1051,36 +1085,76 @@ function NetworkMap({ setActiveTab }) {
   const positions = calculatePositions()
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-6"
+    >
       {/* Legend */}
-      <div className="card">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="card"
+      >
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.3 }}
+              className="flex items-center gap-2"
+            >
               <div className="w-4 h-4 rounded-full bg-green-500"></div>
               <span className="text-sm">Healthy Stock</span>
-            </div>
-            <div className="flex items-center gap-2">
+            </motion.div>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.4 }}
+              className="flex items-center gap-2"
+            >
               <div className="w-4 h-4 rounded-full bg-amber-500"></div>
               <span className="text-sm">Warning (30-90 days)</span>
-            </div>
-            <div className="flex items-center gap-2">
+            </motion.div>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.5 }}
+              className="flex items-center gap-2"
+            >
               <div className="w-4 h-4 rounded-full bg-red-500"></div>
               <span className="text-sm">Critical (&lt;30 days)</span>
-            </div>
-            <div className="flex items-center gap-2">
+            </motion.div>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.6 }}
+              className="flex items-center gap-2"
+            >
               <div className="w-4 h-4 rounded-full bg-gray-300 dark:bg-gray-600"></div>
               <span className="text-sm">No Stock</span>
-            </div>
+            </motion.div>
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.7 }}
+            className="text-sm text-gray-600 dark:text-gray-400"
+          >
             Hover over a location to see valid transfer routes • Click for details
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Network Map */}
-      <div className="card overflow-x-auto">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="card overflow-x-auto"
+      >
         <svg
           viewBox="0 0 1200 800"
           className="w-full"
@@ -1088,7 +1162,7 @@ function NetworkMap({ setActiveTab }) {
         >
           {/* Hub connection line */}
           {portAugustaHub && whyallaHub && (
-            <line
+            <motion.line
               x1={positions[portAugustaHub.id]?.x}
               y1={positions[portAugustaHub.id]?.y}
               x2={positions[whyallaHub.id]?.x}
@@ -1096,13 +1170,16 @@ function NetworkMap({ setActiveTab }) {
               stroke="currentColor"
               strokeWidth="3"
               className="text-gray-300 dark:text-gray-600"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: 'easeInOut' }}
             />
           )}
 
           {/* Hub to children connection lines */}
           {portAugustaHub &&
-            portAugustaChildren.map((child) => (
-              <line
+            portAugustaChildren.map((child, idx) => (
+              <motion.line
                 key={`pa-line-${child.id}`}
                 x1={positions[portAugustaHub.id]?.x}
                 y1={positions[portAugustaHub.id]?.y}
@@ -1111,12 +1188,19 @@ function NetworkMap({ setActiveTab }) {
                 stroke="currentColor"
                 strokeWidth="2"
                 className="text-gray-200 dark:text-gray-700"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{
+                  duration: 0.5,
+                  delay: 0.8 + idx * 0.1,
+                  ease: 'easeOut'
+                }}
               />
             ))}
 
           {whyallaHub &&
-            whyallaChildren.map((child) => (
-              <line
+            whyallaChildren.map((child, idx) => (
+              <motion.line
                 key={`wh-line-${child.id}`}
                 x1={positions[whyallaHub.id]?.x}
                 y1={positions[whyallaHub.id]?.y}
@@ -1125,6 +1209,13 @@ function NetworkMap({ setActiveTab }) {
                 stroke="currentColor"
                 strokeWidth="2"
                 className="text-gray-200 dark:text-gray-700"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{
+                  duration: 0.5,
+                  delay: 0.8 + idx * 0.1,
+                  ease: 'easeOut'
+                }}
               />
             ))}
 
@@ -1135,6 +1226,7 @@ function NetworkMap({ setActiveTab }) {
               x={positions[portAugustaHub.id]?.x}
               y={positions[portAugustaHub.id]?.y}
               isHub={true}
+              animationDelay={0.6}
             />
           )}
 
@@ -1144,38 +1236,47 @@ function NetworkMap({ setActiveTab }) {
               x={positions[whyallaHub.id]?.x}
               y={positions[whyallaHub.id]?.y}
               isHub={true}
+              animationDelay={0.7}
             />
           )}
 
-          {portAugustaChildren.map(
-            (child) =>
-              positions[child.id] && (
-                <LocationNode
-                  key={child.id}
-                  location={child}
-                  x={positions[child.id].x}
-                  y={positions[child.id].y}
-                />
-              )
+          {portAugustaChildren.map((child, idx) =>
+            positions[child.id] ? (
+              <LocationNode
+                key={child.id}
+                location={child}
+                x={positions[child.id].x}
+                y={positions[child.id].y}
+                animationDelay={1.0 + idx * 0.1}
+              />
+            ) : null
           )}
 
-          {whyallaChildren.map(
-            (child) =>
-              positions[child.id] && (
-                <LocationNode
-                  key={child.id}
-                  location={child}
-                  x={positions[child.id].x}
-                  y={positions[child.id].y}
-                />
-              )
+          {whyallaChildren.map((child, idx) =>
+            positions[child.id] ? (
+              <LocationNode
+                key={child.id}
+                location={child}
+                x={positions[child.id].x}
+                y={positions[child.id].y}
+                animationDelay={1.0 + portAugustaChildren.length * 0.1 + idx * 0.1}
+              />
+            ) : null
           )}
         </svg>
-      </div>
+      </motion.div>
 
       {/* Location Details Panel */}
-      {selectedLocation && (
-        <div className="card">
+      <AnimatePresence mode="wait">
+        {selectedLocation && (
+          <motion.div
+            key={selectedLocation.id}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ duration: 0.3 }}
+            className="card"
+          >
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="text-xl font-semibold mb-1">
@@ -1276,8 +1377,9 @@ function NetworkMap({ setActiveTab }) {
               </button>
             </div>
           )}
-        </div>
-      )}
-    </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   )
 }
