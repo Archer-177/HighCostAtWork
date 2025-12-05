@@ -11,7 +11,8 @@
 @layer components {
   /* Glass morphism effect */
   .glass {
-    @apply backdrop-blur-md bg-white/70 border border-white/20 shadow-xl;
+    @apply backdrop-blur-md bg-white/70 border border-white/20 shadow-xl
+           dark:bg-gray-900/70 dark:border-gray-700/30;
   }
 
   .glass-dark {
@@ -20,33 +21,40 @@
 
   /* Gradient text */
   .gradient-text {
-    @apply bg-gradient-to-r from-maroon-600 to-ochre-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-maroon-600 to-ochre-500 bg-clip-text text-transparent
+           dark:from-maroon-400 dark:to-ochre-400;
   }
 
   /* Medicine card states */
   .medicine-card-healthy {
-    @apply bg-gradient-to-br from-emerald-50 to-emerald-100/50 border-emerald-200;
+    @apply bg-gradient-to-br from-emerald-50 to-emerald-100/50 border-emerald-200
+           dark:from-emerald-900/20 dark:to-emerald-800/20 dark:border-emerald-800/50;
   }
 
   .medicine-card-warning {
-    @apply bg-gradient-to-br from-amber-50 to-amber-100/50 border-amber-300;
+    @apply bg-gradient-to-br from-amber-50 to-amber-100/50 border-amber-300
+           dark:from-amber-900/20 dark:to-amber-800/20 dark:border-amber-800/50;
   }
 
   .medicine-card-critical {
-    @apply bg-gradient-to-br from-red-50 to-red-100/50 border-red-300;
+    @apply bg-gradient-to-br from-red-50 to-red-100/50 border-red-300
+           dark:from-red-900/20 dark:to-red-800/20 dark:border-red-800/50;
   }
 
   /* Neumorphic buttons */
   .btn-neu {
-    @apply bg-sand-50 shadow-[6px_6px_12px_#d4cfc9,-6px_-6px_12px_#ffffff] transition-all duration-200;
+    @apply bg-sand-50 shadow-[6px_6px_12px_#d4cfc9,-6px_-6px_12px_#ffffff] transition-all duration-200
+           dark:bg-gray-800 dark:shadow-[6px_6px_12px_#1f2937,-6px_-6px_12px_#374151] dark:text-gray-200;
   }
 
   .btn-neu:hover {
-    @apply shadow-[3px_3px_6px_#d4cfc9,-3px_-3px_6px_#ffffff];
+    @apply shadow-[3px_3px_6px_#d4cfc9,-3px_-3px_6px_#ffffff]
+           dark:shadow-[3px_3px_6px_#1f2937,-3px_-3px_6px_#374151];
   }
 
   .btn-neu:active {
-    @apply shadow-[inset_3px_3px_6px_#d4cfc9,inset_-3px_-3px_6px_#ffffff];
+    @apply shadow-[inset_3px_3px_6px_#d4cfc9,inset_-3px_-3px_6px_#ffffff]
+           dark:shadow-[inset_3px_3px_6px_#1f2937,inset_-3px_-3px_6px_#374151];
   }
 
   /* Scanner overlay */
@@ -61,16 +69,18 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    @apply bg-sand-100 rounded-full;
+    @apply bg-sand-100 rounded-full dark:bg-gray-800;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-maroon-300 rounded-full hover:bg-maroon-400 transition-colors;
+    @apply bg-maroon-300 rounded-full hover:bg-maroon-400 transition-colors
+           dark:bg-gray-600 dark:hover:bg-gray-500;
   }
 
   /* Loading spinner */
   .spinner {
-    @apply w-12 h-12 border-4 border-sand-200 border-t-maroon-600 rounded-full;
+    @apply w-12 h-12 border-4 border-sand-200 border-t-maroon-600 rounded-full
+           dark:border-gray-700 dark:border-t-maroon-500;
     animation: spin 1s linear infinite;
   }
 

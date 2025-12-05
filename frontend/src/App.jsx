@@ -13,7 +13,9 @@ import StockJourney from './components/StockJourney'
 import Navigation from './components/Navigation'
 import { HeartbeatProvider } from './contexts/HeartbeatContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+
 import { NotificationProvider } from './contexts/NotificationContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 
 import ChangePassword from './components/ChangePassword'
 import ForgotPassword from './components/ForgotPassword'
@@ -39,7 +41,7 @@ function AppLayout({ children }) {
   const { user } = useAuth()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sand-50 via-white to-sand-100">
+    <div className="min-h-screen bg-gradient-to-br from-sand-50 via-white to-sand-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
       {/* Noise texture overlay */}
       <div className="noise-overlay" />
 
@@ -65,89 +67,91 @@ function AppLayout({ children }) {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <HeartbeatProvider>
-          <NotificationProvider>
-            <Routes>
-              <Route path="/login" element={
-                <AppLayout>
-                  <Login />
-                </AppLayout>
-              } />
-
-              <Route path="/shutdown" element={<Shutdown />} />
-
-              <Route path="/change-password" element={
-                <AppLayout>
-                  <ChangePassword />
-                </AppLayout>
-              } />
-
-              <Route path="/forgot-password" element={
-                <AppLayout>
-                  <ForgotPassword />
-                </AppLayout>
-              } />
-
-              <Route path="/" element={
-                <ProtectedRoute>
+      <ThemeProvider>
+        <AuthProvider>
+          <HeartbeatProvider>
+            <NotificationProvider>
+              <Routes>
+                <Route path="/login" element={
                   <AppLayout>
-                    <Dashboard />
+                    <Login />
                   </AppLayout>
-                </ProtectedRoute>
-              } />
+                } />
 
-              <Route path="/receive" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <StockReceive />
-                  </AppLayout>
-                </ProtectedRoute>
-              } />
+                <Route path="/shutdown" element={<Shutdown />} />
 
-              <Route path="/transfer" element={
-                <ProtectedRoute>
+                <Route path="/change-password" element={
                   <AppLayout>
-                    <StockTransfer />
+                    <ChangePassword />
                   </AppLayout>
-                </ProtectedRoute>
-              } />
+                } />
 
-              <Route path="/reports" element={
-                <ProtectedRoute>
+                <Route path="/forgot-password" element={
                   <AppLayout>
-                    <Reports />
+                    <ForgotPassword />
                   </AppLayout>
-                </ProtectedRoute>
-              } />
+                } />
 
-              <Route path="/settings" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Settings />
-                  </AppLayout>
-                </ProtectedRoute>
-              } />
+                <Route path="/" element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <Dashboard />
+                    </AppLayout>
+                  </ProtectedRoute>
+                } />
 
-              <Route path="/stock-levels" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <StockLevelsSettings />
-                  </AppLayout>
-                </ProtectedRoute>
-              } />
+                <Route path="/receive" element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <StockReceive />
+                    </AppLayout>
+                  </ProtectedRoute>
+                } />
 
-              <Route path="/journey" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <StockJourney />
-                  </AppLayout>
-                </ProtectedRoute>
-              } />
-            </Routes>
-          </NotificationProvider>
-        </HeartbeatProvider>
-      </AuthProvider>
+                <Route path="/transfer" element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <StockTransfer />
+                    </AppLayout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/reports" element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <Reports />
+                    </AppLayout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/settings" element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <Settings />
+                    </AppLayout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/stock-levels" element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <StockLevelsSettings />
+                    </AppLayout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/journey" element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <StockJourney />
+                    </AppLayout>
+                  </ProtectedRoute>
+                } />
+              </Routes>
+            </NotificationProvider>
+          </HeartbeatProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </Router>
   )
 }

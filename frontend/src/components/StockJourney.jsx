@@ -88,12 +88,12 @@ export default function StockJourney() {
     // Status Badge Helper
     const getStatusBadge = (status) => {
         const styles = {
-            'AVAILABLE': 'bg-emerald-100 text-emerald-700 border-emerald-200',
-            'USED_CLINICAL': 'bg-blue-100 text-blue-700 border-blue-200',
-            'DISCARDED': 'bg-red-100 text-red-700 border-red-200',
-            'IN_TRANSIT': 'bg-amber-100 text-amber-700 border-amber-200'
+            'AVAILABLE': 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-800',
+            'USED_CLINICAL': 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-800',
+            'DISCARDED': 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-800',
+            'IN_TRANSIT': 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-800'
         }
-        return styles[status] || 'bg-gray-100 text-gray-700 border-gray-200'
+        return styles[status] || 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
     }
 
     return (
@@ -106,7 +106,7 @@ export default function StockJourney() {
                 <h1 className="text-4xl font-display tracking-wider gradient-text mb-2">
                     Stock Journey
                 </h1>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                     Track the complete lifecycle of any medicine vial across the network
                 </p>
             </motion.div>
@@ -115,7 +115,7 @@ export default function StockJourney() {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6"
             >
                 <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
                     <div className="flex-1 relative">
@@ -125,14 +125,14 @@ export default function StockJourney() {
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search by Asset ID, Drug Name, or Batch Number..."
-                            className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl
-                       focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                            className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl
+                       focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                         />
                         {query && (
                             <button
                                 type="button"
                                 onClick={() => setQuery('')}
-                                className="absolute right-4 top-3.5 text-gray-400 hover:text-gray-600"
+                                className="absolute right-4 top-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -144,9 +144,9 @@ export default function StockJourney() {
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="w-full pl-12 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl
-                       appearance-none focus:outline-none focus:border-maroon-500 focus:bg-white 
-                       transition-all cursor-pointer"
+                            className="w-full pl-12 pr-10 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl
+                       appearance-none focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 
+                       transition-all cursor-pointer dark:text-white"
                         >
                             <option value="ALL">All Status</option>
                             <option value="AVAILABLE">Available</option>
@@ -170,8 +170,9 @@ export default function StockJourney() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Results List */}
+                {/* Results List */}
                 <div className="lg:col-span-1 space-y-4">
-                    <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                         <Search className="w-5 h-5" />
                         Search Results
                         <span className="text-sm font-normal text-gray-500">({searchResults.length})</span>
@@ -179,7 +180,7 @@ export default function StockJourney() {
 
                     <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                         {searchResults.length === 0 && !isSearching && (
-                            <div className="text-center py-8 text-gray-400 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                            <div className="text-center py-8 text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
                                 <Package className="w-8 h-8 mx-auto mb-2 opacity-50" />
                                 <p>No items found</p>
                             </div>
@@ -192,19 +193,19 @@ export default function StockJourney() {
                                 onClick={() => loadJourney(item.asset_id)}
                                 className={`p-4 rounded-xl border cursor-pointer transition-all
                   ${selectedAssetId === item.asset_id
-                                        ? 'bg-maroon-50 border-maroon-200 shadow-md ring-1 ring-maroon-200'
-                                        : 'bg-white border-gray-100 hover:border-maroon-100 hover:shadow-sm'}`}
+                                        ? 'bg-maroon-50 dark:bg-maroon-900/20 border-maroon-200 dark:border-maroon-800 shadow-md ring-1 ring-maroon-200 dark:ring-maroon-800'
+                                        : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-maroon-100 dark:hover:border-gray-600 hover:shadow-sm'}`}
                             >
                                 <div className="flex justify-between items-start mb-2">
-                                    <span className="font-mono text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                    <span className="font-mono text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
                                         {item.asset_id}
                                     </span>
                                     <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${getStatusBadge(item.status)}`}>
                                         {item.status}
                                     </span>
                                 </div>
-                                <h3 className="font-bold text-gray-900 mb-1">{item.drug_name}</h3>
-                                <div className="text-xs text-gray-600 space-y-1">
+                                <h3 className="font-bold text-gray-900 dark:text-white mb-1">{item.drug_name}</h3>
+                                <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
                                     <div className="flex items-center gap-1">
                                         <MapPin className="w-3 h-3" />
                                         {item.location_name}
@@ -221,14 +222,14 @@ export default function StockJourney() {
 
                 {/* Journey Timeline */}
                 <div className="lg:col-span-2">
-                    <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
                         <Clock className="w-5 h-5" />
                         Item Timeline
                     </h2>
 
                     {!journeyData ? (
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center text-gray-400">
-                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center text-gray-400">
+                            <div className="w-16 h-16 bg-gray-50 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <ArrowRight className="w-8 h-8 opacity-20" />
                             </div>
                             <p className="text-lg font-medium">Select an item to view its journey</p>
@@ -239,7 +240,7 @@ export default function StockJourney() {
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 relative overflow-hidden"
+                                className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 relative overflow-hidden"
                             >
                                 <div className="absolute top-0 right-0 p-6 opacity-10">
                                     <Pill className="w-32 h-32 text-maroon-900" />
@@ -247,28 +248,28 @@ export default function StockJourney() {
 
                                 <div className="relative z-10">
                                     <div className="flex items-center gap-3 mb-4">
-                                        <h2 className="text-2xl font-bold text-gray-900">{journeyData.vial.drug_name}</h2>
+                                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{journeyData.vial.drug_name}</h2>
                                         <span className={`px-3 py-1 rounded-full text-sm font-bold border ${getStatusBadge(journeyData.vial.status)}`}>
                                             {journeyData.vial.status}
                                         </span>
                                     </div>
 
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                        <div className="p-3 bg-gray-50 rounded-lg">
-                                            <span className="block text-gray-500 text-xs mb-1">Asset ID</span>
-                                            <span className="font-mono font-bold">{journeyData.vial.asset_id}</span>
+                                        <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                            <span className="block text-gray-500 dark:text-gray-400 text-xs mb-1">Asset ID</span>
+                                            <span className="font-mono font-bold dark:text-white">{journeyData.vial.asset_id}</span>
                                         </div>
-                                        <div className="p-3 bg-gray-50 rounded-lg">
-                                            <span className="block text-gray-500 text-xs mb-1">Batch Number</span>
-                                            <span className="font-mono font-bold">{journeyData.vial.batch_number}</span>
+                                        <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                            <span className="block text-gray-500 dark:text-gray-400 text-xs mb-1">Batch Number</span>
+                                            <span className="font-mono font-bold dark:text-white">{journeyData.vial.batch_number}</span>
                                         </div>
-                                        <div className="p-3 bg-gray-50 rounded-lg">
-                                            <span className="block text-gray-500 text-xs mb-1">Expiry Date</span>
-                                            <span className="font-bold">{journeyData.vial.expiry_date}</span>
+                                        <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                            <span className="block text-gray-500 dark:text-gray-400 text-xs mb-1">Expiry Date</span>
+                                            <span className="font-bold dark:text-white">{journeyData.vial.expiry_date}</span>
                                         </div>
-                                        <div className="p-3 bg-gray-50 rounded-lg">
-                                            <span className="block text-gray-500 text-xs mb-1">Storage</span>
-                                            <span className="font-bold">{journeyData.vial.storage_temp}</span>
+                                        <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                            <span className="block text-gray-500 dark:text-gray-400 text-xs mb-1">Storage</span>
+                                            <span className="font-bold dark:text-white">{journeyData.vial.storage_temp}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -276,7 +277,7 @@ export default function StockJourney() {
 
                             {/* Timeline */}
                             <div className="relative pl-8 space-y-8 before:content-[''] before:absolute before:left-3.5 
-                            before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-200">
+                            before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700">
                                 {journeyData.timeline.map((event, index) => (
                                     <motion.div
                                         key={index}
@@ -286,7 +287,7 @@ export default function StockJourney() {
                                         className="relative"
                                     >
                                         {/* Timeline Dot */}
-                                        <div className={`absolute -left-[2.35rem] w-8 h-8 rounded-full border-4 border-white shadow-sm flex items-center justify-center
+                                        <div className={`absolute -left-[2.35rem] w-8 h-8 rounded-full border-4 border-white dark:border-gray-800 shadow-sm flex items-center justify-center
                       ${event.type === 'CREATED' ? 'bg-emerald-500' :
                                                 event.type === 'USED' ? 'bg-blue-500' :
                                                     event.type === 'DISCARDED' ? 'bg-red-500' :
@@ -301,35 +302,35 @@ export default function StockJourney() {
                                         </div>
 
                                         {/* Content Card */}
-                                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+                                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 hover:shadow-md transition-shadow">
                                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
                                                 <div>
-                                                    <h3 className="font-bold text-gray-900">
+                                                    <h3 className="font-bold text-gray-900 dark:text-white">
                                                         {event.title === 'Stock Received' ? 'Stock Received from Supplier' : event.title}
                                                     </h3>
-                                                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                                                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                                                         <Clock className="w-3.5 h-3.5" />
                                                         {format(new Date(event.timestamp), 'PPpp')}
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-sm font-medium text-gray-700 bg-gray-50 px-3 py-1 rounded-full">
+                                                <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 px-3 py-1 rounded-full">
                                                     <User className="w-3.5 h-3.5" />
                                                     {event.user}
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                                            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
                                                 <MapPin className="w-4 h-4 text-gray-400" />
                                                 {event.location}
                                             </div>
 
                                             {/* Details Grid */}
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-gray-50 rounded-lg p-4 text-sm">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-gray-50 dark:bg-gray-700 rounded-lg p-4 text-sm">
                                                 {Object.entries(event.details).map(([key, value]) => (
                                                     value && (
                                                         <div key={key}>
-                                                            <span className="text-gray-500 text-xs block">{key}</span>
-                                                            <span className="font-medium text-gray-900">{value}</span>
+                                                            <span className="text-gray-500 dark:text-gray-400 text-xs block">{key}</span>
+                                                            <span className="font-medium text-gray-900 dark:text-white">{value}</span>
                                                         </div>
                                                     )
                                                 ))}

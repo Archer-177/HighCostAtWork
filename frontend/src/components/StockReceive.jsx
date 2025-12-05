@@ -128,7 +128,7 @@ export default function StockReceive() {
         <h1 className="text-4xl font-display tracking-wider gradient-text mb-2">
           Receive Stock
         </h1>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-400">
           Process incoming medicine deliveries from suppliers
         </p>
       </motion.div>
@@ -139,31 +139,31 @@ export default function StockReceive() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
         >
-          <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 bg-gradient-to-br from-maroon-500 to-maroon-700 rounded-xl 
                             flex items-center justify-center">
                 <Package className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">New Stock Entry</h2>
-                <p className="text-sm text-gray-600">Location: {user.location_name}</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">New Stock Entry</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Location: {user.location_name}</p>
               </div>
             </div>
 
             <div className="space-y-6">
               {/* Drug Selection */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Select Medicine *
                 </label>
                 <div className="relative">
                   <select
                     value={selectedDrug}
                     onChange={(e) => setSelectedDrug(e.target.value)}
-                    className="w-full pl-12 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl
-                             appearance-none focus:outline-none focus:border-maroon-500 focus:bg-white 
-                             transition-all cursor-pointer"
+                    className="w-full pl-12 pr-10 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl
+                             appearance-none focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 
+                             transition-all cursor-pointer dark:text-white"
                     required
                   >
                     <option value="">Choose a medicine...</option>
@@ -180,7 +180,7 @@ export default function StockReceive() {
 
               {/* Goods Receipt Number */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   iPharmacy Goods Receipt Number *
                 </label>
                 <div className="relative">
@@ -188,8 +188,8 @@ export default function StockReceive() {
                     type="text"
                     value={goodsReceiptNumber}
                     onChange={(e) => setGoodsReceiptNumber(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl
-                             focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl
+                             focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                     placeholder="e.g., GRN-123456"
                     required
                   />
@@ -199,7 +199,7 @@ export default function StockReceive() {
 
               {/* Batch Number */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Batch Number *
                 </label>
                 <div className="relative">
@@ -207,8 +207,8 @@ export default function StockReceive() {
                     type="text"
                     value={batchNumber}
                     onChange={(e) => setBatchNumber(e.target.value.toUpperCase())}
-                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl
-                             focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl
+                             focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                     placeholder="e.g., BATCH-2024-001"
                     required
                   />
@@ -218,7 +218,7 @@ export default function StockReceive() {
 
               {/* Expiry Date */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Expiry Date *
                 </label>
                 <div className="relative">
@@ -227,8 +227,8 @@ export default function StockReceive() {
                     value={expiryDate}
                     onChange={(e) => setExpiryDate(e.target.value)}
                     min={format(new Date(), 'yyyy-MM-dd')}
-                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl
-                             focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl
+                             focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                     required
                   />
                   <Calendar className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
@@ -237,15 +237,15 @@ export default function StockReceive() {
 
               {/* Quantity */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Quantity (Boxes/Vials) *
                 </label>
                 <div className="relative">
                   <button
                     type="button"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-100 
-                             hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-100 dark:bg-gray-600
+                             hover:bg-gray-200 dark:hover:bg-gray-500 rounded-lg flex items-center justify-center transition-colors dark:text-white"
                   >
                     -
                   </button>
@@ -253,17 +253,17 @@ export default function StockReceive() {
                     type="number"
                     value={quantity}
                     onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-full px-16 py-3 bg-gray-50 border border-gray-200 rounded-xl
+                    className="w-full px-16 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl
                              text-center font-semibold text-lg focus:outline-none focus:border-maroon-500 
-                             focus:bg-white transition-all"
+                             focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                     min="1"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setQuantity(quantity + 1)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-100 
-                             hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-100 dark:bg-gray-600
+                             hover:bg-gray-200 dark:hover:bg-gray-500 rounded-lg flex items-center justify-center transition-colors dark:text-white"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -299,13 +299,13 @@ export default function StockReceive() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="mt-6 p-6 bg-blue-50 border border-blue-200 rounded-xl"
+            className="mt-6 p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl"
           >
             <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
               <div className="text-sm">
-                <p className="font-semibold text-blue-900 mb-2">Important Notes:</p>
-                <ul className="space-y-1 text-blue-800">
+                <p className="font-semibold text-blue-900 dark:text-blue-300 mb-2">Important Notes:</p>
+                <ul className="space-y-1 text-blue-800 dark:text-blue-400">
                   <li>• Each box/vial will receive a unique Asset ID</li>
                   <li>• QR code labels will be generated automatically</li>
                   <li>• Ensure batch number matches supplier documentation</li>
@@ -323,10 +323,10 @@ export default function StockReceive() {
           transition={{ delay: 0.2 }}
         >
           {showLabels && generatedAssets.length > 0 ? (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-bold text-gray-900">Generated Labels</h3>
-                <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Generated Labels</h3>
+                <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 rounded-full text-sm font-medium">
                   {generatedAssets.length} labels ready
                 </span>
               </div>
@@ -339,8 +339,8 @@ export default function StockReceive() {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.05 }}
-                    className="label-print border-2 border-dashed border-gray-300 rounded-lg p-4 
-                             bg-gray-50 flex flex-col items-center justify-center"
+                    className="label-print border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 
+                             bg-gray-50 dark:bg-gray-700 flex flex-col items-center justify-center"
                   >
                     <div className="w-20 h-20 bg-white rounded mb-2 flex items-center justify-center">
                       <QRCode
@@ -350,7 +350,7 @@ export default function StockReceive() {
                         viewBox={`0 0 256 256`}
                       />
                     </div>
-                    <p className="font-mono font-bold text-sm">{assetId}</p>
+                    <p className="font-mono font-bold text-sm dark:text-white">{assetId}</p>
                   </motion.div>
                 ))}
               </div>
@@ -366,12 +366,12 @@ export default function StockReceive() {
                 Send to Zebra Printer
               </button>
 
-              <p className="text-xs text-gray-500 mt-4 text-center">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-4 text-center">
                 Labels will be printed on 2" x 1" thermal labels optimised for medicine tracking
               </p>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 
                           flex flex-col items-center justify-center h-full text-gray-400">
               <Printer className="w-16 h-16 mb-4" />
               <p className="text-lg font-medium">No labels generated yet</p>

@@ -804,7 +804,13 @@ def stock_journey(asset_id):
             })
             
         # Sort by timestamp
-        timeline.sort(key=lambda x: x['timestamp'], reverse=True)
+        # Priority: STARTED (2) > COMPLETED (1) > Others (0)
+        # This ensures Transfer Initiated appears before Transfer Completed when timestamps are equal
+        priority = {
+            'TRANSFER_STARTED': 2,
+            'TRANSFER_COMPLETED': 1
+        }
+        timeline.sort(key=lambda x: (x['timestamp'], priority.get(x['type'], 0)), reverse=True)
         
         return jsonify({
             'vial': dict(vial),

@@ -121,7 +121,7 @@ export default function Settings() {
   ]
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen p-6 bg-sand-50 dark:bg-gray-900 text-slate-900 dark:text-white">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -131,7 +131,7 @@ export default function Settings() {
         <h1 className="text-4xl font-display tracking-wider gradient-text mb-2">
           System Settings
         </h1>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-400">
           Manage medicines, locations, users, and system configuration
         </p>
       </motion.div>
@@ -146,7 +146,7 @@ export default function Settings() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === tab.id
                 ? 'bg-maroon-600 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-50'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
             >
               <Icon className="w-4 h-4" />
@@ -277,9 +277,9 @@ function DrugsCatalogue({ drugs, onAdd, onEdit, onDelete, currentUser }) {
   const canManageDrugs = currentUser?.role === 'PHARMACIST';
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-      <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-        <h2 className="text-xl font-bold">Medicine Catalogue</h2>
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+      <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+        <h2 className="text-xl font-bold dark:text-white">Medicine Catalogue</h2>
         {canManageDrugs && (
           <button
             onClick={onAdd}
@@ -295,29 +295,29 @@ function DrugsCatalogue({ drugs, onAdd, onEdit, onDelete, currentUser }) {
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-200">
-              <th className="text-left py-3 px-6 font-semibold text-gray-700">Name</th>
-              <th className="text-left py-3 px-6 font-semibold text-gray-700">Category</th>
-              <th className="text-left py-3 px-6 font-semibold text-gray-700">Storage</th>
-              <th className="text-right py-3 px-6 font-semibold text-gray-700">Unit Price</th>
-              <th className="text-right py-3 px-6 font-semibold text-gray-700">Actions</th>
+            <tr className="border-b border-gray-200 dark:border-gray-700">
+              <th className="text-left py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Name</th>
+              <th className="text-left py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Category</th>
+              <th className="text-left py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Storage</th>
+              <th className="text-right py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Unit Price</th>
+              <th className="text-right py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Actions</th>
             </tr>
           </thead>
           <tbody>
             {drugs.map(drug => (
-              <tr key={drug.id} className="border-b border-gray-100 hover:bg-gray-50">
-                <td className="py-3 px-6 font-medium">{drug.name}</td>
-                <td className="py-3 px-6">{drug.category}</td>
+              <tr key={drug.id} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                <td className="py-3 px-6 font-medium dark:text-white">{drug.name}</td>
+                <td className="py-3 px-6 dark:text-gray-300">{drug.category}</td>
                 <td className="py-3 px-6">
                   <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${drug.storage_temp?.includes('2-8')
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'bg-orange-100 text-orange-700'
+                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                    : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
                     }`}>
                     <Thermometer className="w-3 h-3" />
                     {drug.storage_temp}
                   </span>
                 </td>
-                <td className="text-right py-3 px-6 font-mono">
+                <td className="text-right py-3 px-6 font-mono dark:text-gray-300">
                   ${drug.unit_price.toFixed(2)}
                 </td>
                 <td className="text-right py-3 px-6">
@@ -325,15 +325,15 @@ function DrugsCatalogue({ drugs, onAdd, onEdit, onDelete, currentUser }) {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => onEdit(drug)}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                       >
-                        <Edit2 className="w-4 h-4 text-gray-600" />
+                        <Edit2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                       </button>
                       <button
                         onClick={() => onDelete(drug)}
-                        className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                       >
-                        <Trash2 className="w-4 h-4 text-red-600" />
+                        <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
                       </button>
                     </div>
                   ) : (
@@ -379,9 +379,9 @@ function LocationsManagement({ locations, onAdd, onEdit, onDelete, currentUser }
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-      <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-        <h2 className="text-xl font-bold">Locations</h2>
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+      <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+        <h2 className="text-xl font-bold dark:text-white">Locations</h2>
         {canManageLocations && (
           <button
             onClick={onAdd}
@@ -419,20 +419,20 @@ function LocationsManagement({ locations, onAdd, onEdit, onDelete, currentUser }
             <motion.div
               key={location.id}
               whileHover={{ scale: 1.02 }}
-              className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all"
+              className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-md transition-all bg-white dark:bg-gray-800"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${location.type === 'HUB' ? 'bg-maroon-100' :
-                    location.type === 'WARD' ? 'bg-ochre-100' : 'bg-blue-100'
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${location.type === 'HUB' ? 'bg-maroon-100 dark:bg-maroon-900/40' :
+                    location.type === 'WARD' ? 'bg-ochre-100 dark:bg-amber-900/40' : 'bg-blue-100 dark:bg-blue-900/40'
                     }`}>
-                    <Icon className={`w-5 h-5 ${location.type === 'HUB' ? 'text-maroon-600' :
-                      location.type === 'WARD' ? 'text-ochre-600' : 'text-blue-600'
+                    <Icon className={`w-5 h-5 ${location.type === 'HUB' ? 'text-maroon-600 dark:text-maroon-400' :
+                      location.type === 'WARD' ? 'text-ochre-600 dark:text-amber-400' : 'text-blue-600 dark:text-blue-400'
                       }`} />
                   </div>
                   <div>
-                    <h3 className="font-semibold">{location.name}</h3>
-                    <p className="text-sm text-gray-600">{location.type}</p>
+                    <h3 className="font-semibold dark:text-white">{location.name}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{location.type}</p>
                   </div>
                 </div>
 
@@ -440,17 +440,17 @@ function LocationsManagement({ locations, onAdd, onEdit, onDelete, currentUser }
                   <div className="flex gap-2">
                     <button
                       onClick={() => onEdit(location)}
-                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                       title="Edit Location"
                     >
-                      <Edit2 className="w-4 h-4 text-gray-600" />
+                      <Edit2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                     </button>
                     <button
                       onClick={() => onDelete(location)}
-                      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                       title="Delete Location"
                     >
-                      <Trash2 className="w-4 h-4 text-red-600" />
+                      <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
                     </button>
                   </div>
                 ) : (
@@ -459,7 +459,7 @@ function LocationsManagement({ locations, onAdd, onEdit, onDelete, currentUser }
               </div>
 
               {location.parent_hub_id && (
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Parent Hub: {locations.find(l => l.id === location.parent_hub_id)?.name}
                 </p>
               )}
@@ -474,18 +474,18 @@ function LocationsManagement({ locations, onAdd, onEdit, onDelete, currentUser }
 // Users Management Component
 function UsersManagement({ users, onAdd, onEdit, onDelete, currentUser }) {
   const roleColors = {
-    'PHARMACIST': 'bg-purple-100 text-purple-700',
-    'PHARMACY_TECH': 'bg-blue-100 text-blue-700',
-    'NURSE': 'bg-green-100 text-green-700'
+    'PHARMACIST': 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300',
+    'PHARMACY_TECH': 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
+    'NURSE': 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
   }
 
   // Only allow managing users if the current user is a pharmacist OR a supervisor
   const canManageUsers = currentUser?.role === 'PHARMACIST' || currentUser?.is_supervisor;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-      <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-        <h2 className="text-xl font-bold">Users</h2>
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+      <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+        <h2 className="text-xl font-bold dark:text-white">Users</h2>
         {canManageUsers && (
           <button
             onClick={onAdd}
@@ -501,14 +501,14 @@ function UsersManagement({ users, onAdd, onEdit, onDelete, currentUser }) {
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-200">
-              <th className="text-left py-3 px-6 font-semibold text-gray-700">Username</th>
-              <th className="text-left py-3 px-6 font-semibold text-gray-700">Role</th>
-              <th className="text-left py-3 px-6 font-semibold text-gray-700">Location</th>
-              <th className="text-left py-3 px-6 font-semibold text-gray-700">Email</th>
-              <th className="text-center py-3 px-6 font-semibold text-gray-700">Can Delegate</th>
-              <th className="text-center py-3 px-6 font-semibold text-gray-700">Supervisor</th>
-              <th className="text-right py-3 px-6 font-semibold text-gray-700">Actions</th>
+            <tr className="border-b border-gray-200 dark:border-gray-700">
+              <th className="text-left py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Username</th>
+              <th className="text-left py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Role</th>
+              <th className="text-left py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Location</th>
+              <th className="text-left py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Email</th>
+              <th className="text-center py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Can Delegate</th>
+              <th className="text-center py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Supervisor</th>
+              <th className="text-right py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -524,32 +524,32 @@ function UsersManagement({ users, onAdd, onEdit, onDelete, currentUser }) {
               );
 
               return (
-                <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-6 font-medium">{user.username}</td>
+                <tr key={user.id} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                  <td className="py-3 px-6 font-medium dark:text-white">{user.username}</td>
                   <td className="py-3 px-6">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleColors[user.role]}`}>
                       {user.role.replace('_', ' ')}
                     </span>
                   </td>
-                  <td className="py-3 px-6">{user.location_name}</td>
+                  <td className="py-3 px-6 dark:text-gray-300">{user.location_name}</td>
                   <td className="py-3 px-6">
                     <div className="flex flex-col">
-                      <span>{user.email || '-'}</span>
-                      <span className="text-xs text-gray-500">{user.mobile_number || ''}</span>
+                      <span className="dark:text-gray-300">{user.email || '-'}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{user.mobile_number || ''}</span>
                     </div>
                   </td>
                   <td className="text-center py-3 px-6">
                     {user.can_delegate ? (
-                      <Check className="w-5 h-5 text-green-600 mx-auto" />
+                      <Check className="w-5 h-5 text-green-600 dark:text-green-400 mx-auto" />
                     ) : (
-                      <X className="w-5 h-5 text-gray-300 mx-auto" />
+                      <X className="w-5 h-5 text-gray-300 dark:text-gray-600 mx-auto" />
                     )}
                   </td>
                   <td className="text-center py-3 px-6">
                     {user.is_supervisor ? (
-                      <Check className="w-5 h-5 text-green-600 mx-auto" />
+                      <Check className="w-5 h-5 text-green-600 dark:text-green-400 mx-auto" />
                     ) : (
-                      <X className="w-5 h-5 text-gray-300 mx-auto" />
+                      <X className="w-5 h-5 text-gray-300 dark:text-gray-600 mx-auto" />
                     )}
                   </td>
                   <td className="text-right py-3 px-6">
@@ -557,17 +557,17 @@ function UsersManagement({ users, onAdd, onEdit, onDelete, currentUser }) {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => onEdit(user)}
-                          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                           title="Edit User"
                         >
-                          <Edit2 className="w-4 h-4 text-gray-600" />
+                          <Edit2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                         </button>
                         <button
                           onClick={() => onDelete(user)}
-                          className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                           title="Delete User"
                         >
-                          <Trash2 className="w-4 h-4 text-red-600" />
+                          <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
                         </button>
                       </div>
                     ) : (
@@ -649,45 +649,45 @@ function PrinterSettings() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-          <Printer className="w-5 h-5 text-blue-600" />
+        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+          <Printer className="w-5 h-5 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Zebra Printer Configuration</h2>
-          <p className="text-sm text-gray-500">Configure network printer for label generation</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Zebra Printer Configuration</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Configure network printer for label generation</p>
         </div>
       </div>
 
       <form onSubmit={handleSave} className="max-w-2xl space-y-8">
         {/* Network Settings */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Network Connection</h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 border-b dark:border-gray-700 pb-2">Network Connection</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Printer IP Address</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Printer IP Address</label>
               <input
                 type="text"
                 value={settings.printer_ip}
                 onChange={(e) => setSettings({ ...settings, printer_ip: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                         focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                         focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                 placeholder="e.g., 192.168.1.100"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Leave blank to disable printing.
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Port</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Port</label>
               <input
                 type="number"
                 value={settings.printer_port}
                 onChange={(e) => setSettings({ ...settings, printer_port: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                         focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                         focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                 placeholder="Default: 9100"
               />
             </div>
@@ -696,51 +696,52 @@ function PrinterSettings() {
 
         {/* Label Settings */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Label Configuration</h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 border-b dark:border-gray-700 pb-2">Label Configuration</h3>
+
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Label Width (mm)</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Label Width (mm)</label>
               <input
                 type="number"
                 value={settings.label_width}
                 onChange={(e) => setSettings({ ...settings, label_width: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                         focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                         focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Label Height (mm)</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Label Height (mm)</label>
               <input
                 type="number"
                 value={settings.label_height}
                 onChange={(e) => setSettings({ ...settings, label_height: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                         focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                         focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Top Margin (mm)</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Top Margin (mm)</label>
               <input
                 type="number"
                 value={settings.margin_top}
                 onChange={(e) => setSettings({ ...settings, margin_top: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                         focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                         focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                 placeholder="Offset from top"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Right Margin (mm)</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Right Margin (mm)</label>
               <input
                 type="number"
                 value={settings.margin_right}
                 onChange={(e) => setSettings({ ...settings, margin_right: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                         focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                         focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                 placeholder="Offset from right"
               />
             </div>
@@ -767,9 +768,9 @@ function SecuritySettings({ currentUser }) {
 
   if (!canViewSecurity) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center text-gray-600">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 text-center text-gray-600 dark:text-gray-400">
         <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-4" />
-        <p className="text-lg font-semibold">Access Denied</p>
+        <p className="text-lg font-semibold dark:text-white">Access Denied</p>
         <p>You do not have permission to view security settings.</p>
       </div>
     );
@@ -777,32 +778,32 @@ function SecuritySettings({ currentUser }) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-xl font-bold mb-6">Security Settings</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <h2 className="text-xl font-bold mb-6 dark:text-white">Security Settings</h2>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <div>
-              <p className="font-medium">Session Timeout</p>
-              <p className="text-sm text-gray-600">Automatic logout after inactivity</p>
+              <p className="font-medium dark:text-white">Session Timeout</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Automatic logout after inactivity</p>
             </div>
             <span className="font-mono font-medium">15 minutes</span>
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <div>
-              <p className="font-medium">Password Requirements</p>
-              <p className="text-sm text-gray-600">Minimum 8 characters, mixed case</p>
+              <p className="font-medium dark:text-white">Password Requirements</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Minimum 8 characters, mixed case</p>
             </div>
             <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-sm font-medium">
               Enforced
             </span>
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <div>
-              <p className="font-medium">Audit Logging</p>
-              <p className="text-sm text-gray-600">Track all user actions</p>
+              <p className="font-medium dark:text-white">Audit Logging</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Track all user actions</p>
             </div>
             <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-sm font-medium">
               Enabled
@@ -811,12 +812,12 @@ function SecuritySettings({ currentUser }) {
         </div>
       </div>
 
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-6">
         <div className="flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-amber-900 mb-2">Security Notice</p>
-            <p className="text-sm text-amber-800">
+            <p className="font-semibold text-amber-900 dark:text-amber-200 mb-2">Security Notice</p>
+            <p className="text-sm text-amber-800 dark:text-amber-300">
               This application runs on a shared network drive with file-based authentication.
               For enhanced security, ensure the network drive has appropriate access controls
               and regular backups are maintained.
@@ -837,24 +838,24 @@ function ConfirmationModal({ isOpen, title, message, onConfirm, onCancel }) {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
       >
         <div className="p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-              <AlertCircle className="w-5 h-5 text-red-600" />
+            <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h3>
           </div>
 
-          <p className="text-gray-600 mb-8">
+          <p className="text-gray-600 dark:text-gray-300 mb-8">
             {message}
           </p>
 
           <div className="flex gap-3 justify-end">
             <button
               onClick={onCancel}
-              className="px-4 py-2 text-gray-600 font-medium hover:bg-gray-50 rounded-lg transition-colors"
+              className="px-4 py-2 text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               Cancel
             </button>
@@ -938,10 +939,10 @@ function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
       <motion.div
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
-        className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl"
+        className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-xl font-bold mb-4">
+        <h3 className="text-xl font-bold mb-4 dark:text-white">
           {item ? 'Edit' : 'Add'} {type.charAt(0).toUpperCase() + type.slice(1)}
         </h3>
 
@@ -961,24 +962,24 @@ function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Category</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Category</label>
                 <input
                   type="text"
                   value={formData.category || ''}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Storage Temperature</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Storage Temperature</label>
                 <select
                   value={formData.storage_temp || '<25°C'}
                   onChange={(e) => setFormData({ ...formData, storage_temp: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                 >
                   <option value="<25°C">Shelf (&lt;25°C)</option>
                   <option value="2-8°C">Fridge (2-8°C)</option>
@@ -986,14 +987,14 @@ function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Unit Price (AUD)</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Unit Price (AUD)</label>
                 <input
                   type="number"
                   step="0.01"
                   value={formData.unit_price || ''}
                   onChange={(e) => setFormData({ ...formData, unit_price: parseFloat(e.target.value) })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                   required
                 />
               </div>
@@ -1015,12 +1016,12 @@ function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Type</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Type</label>
                 <select
                   value={formData.type || 'WARD'}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                 >
                   <option value="HUB">Hub Pharmacy</option>
                   <option value="WARD">Ward</option>
@@ -1030,12 +1031,12 @@ function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
 
               {formData.type !== 'HUB' && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Parent Hub</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Parent Hub</label>
                   <select
                     value={formData.parent_hub_id || ''}
                     onChange={(e) => setFormData({ ...formData, parent_hub_id: e.target.value })}
-                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                             focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                             focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                     required
                   >
                     <option value="">Select hub...</option>
@@ -1054,38 +1055,38 @@ function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
           {type === 'user' && (
             <>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Username</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Username</label>
                 <input
                   type="text"
                   value={formData.username || ''}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
                   Password {item && <span className="text-gray-400 font-normal">(Leave blank to keep current)</span>}
                 </label>
                 <input
                   type="password"
                   value={formData.password || ''}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                   required={!item}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Role</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Role</label>
                 <select
                   value={formData.role || 'NURSE'}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                 >
                   <option value="PHARMACIST">Pharmacist</option>
                   <option value="PHARMACY_TECH">Pharmacy Technician</option>
@@ -1094,12 +1095,12 @@ function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Location</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Location</label>
                 <select
                   value={formData.location_id || ''}
                   onChange={(e) => setFormData({ ...formData, location_id: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                   required
                 >
                   <option value="">Select location...</option>
@@ -1112,24 +1113,24 @@ function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Email</label>
                 <input
                   type="email"
                   value={formData.email || ''}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Mobile Number</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Mobile Number</label>
                 <input
                   type="tel"
                   value={formData.mobile_number || ''}
                   onChange={(e) => setFormData({ ...formData, mobile_number: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
                   placeholder="+614..."
                 />
               </div>
@@ -1140,9 +1141,9 @@ function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
                   id="can_delegate"
                   checked={formData.can_delegate || false}
                   onChange={(e) => setFormData({ ...formData, can_delegate: e.target.checked })}
-                  className="w-4 h-4 text-maroon-600 rounded border-gray-300 focus:ring-maroon-500"
+                  className="w-4 h-4 text-maroon-600 rounded border-gray-300 dark:border-gray-600 focus:ring-maroon-500 dark:bg-gray-700"
                 />
-                <label htmlFor="can_delegate" className="text-sm text-gray-700">
+                <label htmlFor="can_delegate" className="text-sm text-gray-700 dark:text-gray-300">
                   Can delegate tasks (e.g. signing)
                 </label>
               </div>
@@ -1153,9 +1154,9 @@ function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
                   id="is_supervisor"
                   checked={formData.is_supervisor || false}
                   onChange={(e) => setFormData({ ...formData, is_supervisor: e.target.checked })}
-                  className="w-4 h-4 text-maroon-600 rounded border-gray-300 focus:ring-maroon-500"
+                  className="w-4 h-4 text-maroon-600 rounded border-gray-300 dark:border-gray-600 focus:ring-maroon-500 dark:bg-gray-700"
                 />
-                <label htmlFor="is_supervisor" className="text-sm text-gray-700">
+                <label htmlFor="is_supervisor" className="text-sm text-gray-700 dark:text-gray-300">
                   Site Supervisor (Admin access for site)
                 </label>
               </div>
@@ -1166,7 +1167,7 @@ function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 
+              className="flex-1 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300
                        font-medium rounded-lg transition-colors"
             >
               Cancel

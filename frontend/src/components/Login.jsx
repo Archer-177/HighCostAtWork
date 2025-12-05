@@ -37,7 +37,7 @@ export default function Login() {
       {floatingIcons.map(({ Icon, delay, x, y }, index) => (
         <motion.div
           key={index}
-          className="absolute text-maroon-200/20"
+          className="absolute text-maroon-200/20 dark:text-maroon-800/20"
           style={{ left: x, top: y }}
           animate={{
             y: [0, -30, 0],
@@ -74,7 +74,7 @@ export default function Login() {
           <h1 className="text-4xl font-display tracking-wider gradient-text mb-2">
             FUNLHN MEDICINE TRACKER
           </h1>
-          <p className="text-gray-600 font-medium">
+          <p className="text-gray-600 dark:text-gray-400 font-medium">
             High-Cost Medicine Management System
           </p>
         </div>
@@ -89,7 +89,7 @@ export default function Login() {
         >
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Username
               </label>
               <div className="relative">
@@ -97,8 +97,8 @@ export default function Login() {
                   type="text"
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className="w-full pl-12 pr-4 py-3 bg-white/50 border border-gray-200 rounded-xl
-                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                  className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl
+                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-800 transition-all dark:text-white"
                   placeholder="Enter your username"
                   required
                 />
@@ -108,13 +108,13 @@ export default function Login() {
 
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Password
                 </label>
                 <a
                   href="/forgot-password"
                   onClick={(e) => { e.preventDefault(); navigate('/forgot-password'); }}
-                  className="text-sm text-maroon-600 hover:text-maroon-800 font-medium"
+                  className="text-sm text-maroon-600 dark:text-maroon-400 hover:text-maroon-800 dark:hover:text-maroon-300 font-medium"
                 >
                   Forgot Password?
                 </a>
@@ -124,8 +124,8 @@ export default function Login() {
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full pl-12 pr-4 py-3 bg-white/50 border border-gray-200 rounded-xl
-                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+                  className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl
+                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-800 transition-all dark:text-white"
                   placeholder="Enter your password"
                   required
                 />
@@ -164,7 +164,7 @@ export default function Login() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="text-center text-sm text-gray-500 mt-6"
+          className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6"
         >
           © 2025 Developed by John Ali
         </motion.p>

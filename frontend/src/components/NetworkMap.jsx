@@ -130,8 +130,8 @@ export default function NetworkMap({ onSelectLocation, fromLocationId, toLocatio
                     onMouseEnter={() => setHoveredNode(location.id)}
                     onMouseLeave={() => setHoveredNode(null)}
                     className={`relative flex flex-col items-center p-4 rounded-xl transition-all duration-300
-                        ${(isFrom || isTo) ? 'bg-white shadow-xl z-10 ' + ringClass : 'bg-white/80 shadow-sm'}
-                        ${isValid ? 'cursor-pointer hover:bg-white' : 'opacity-40 grayscale cursor-not-allowed'}
+                        ${(isFrom || isTo) ? 'bg-white dark:bg-gray-800 shadow-xl z-10 ' + ringClass : 'bg-white/80 dark:bg-gray-800/80 shadow-sm'}
+                        ${isValid ? 'cursor-pointer hover:bg-white dark:hover:bg-gray-700' : 'opacity-40 grayscale cursor-not-allowed'}
                         ${glowClass}
                     `}
                 >
@@ -139,12 +139,12 @@ export default function NetworkMap({ onSelectLocation, fromLocationId, toLocatio
                     <div className={`w-3 h-3 rounded-full absolute top-2 right-2 ${color} ${pulseIntensity}`} />
 
                     {/* Choose icon based on location type: Building for Hub, Heart for Ward, MapPin for Remote */}
-                    {isHub ? <Building2 className="w-8 h-8 text-maroon-700 mb-2" /> :
-                        location.type === 'WARD' ? <Heart className="w-6 h-6 text-pink-600 mb-2" /> :
-                            <MapPin className="w-6 h-6 text-blue-600 mb-2" />}
+                    {isHub ? <Building2 className="w-8 h-8 text-maroon-700 dark:text-maroon-400 mb-2" /> :
+                        location.type === 'WARD' ? <Heart className="w-6 h-6 text-pink-600 dark:text-pink-400 mb-2" /> :
+                            <MapPin className="w-6 h-6 text-blue-600 dark:text-blue-400 mb-2" />}
 
                     {/* Display shortened location name */}
-                    <span className="text-xs font-bold text-center max-w-[100px] leading-tight">
+                    <span className="text-xs font-bold text-center max-w-[100px] leading-tight dark:text-gray-200">
                         {location.name.replace('Hospital Pharmacy', '').replace('Hospital', '')}
                     </span>
 
@@ -161,14 +161,14 @@ export default function NetworkMap({ onSelectLocation, fromLocationId, toLocatio
 
     // Main render - network map with hub-and-spoke layout
     return (
-        <div className="bg-sand-50 p-8 rounded-3xl overflow-hidden relative min-h-[500px] flex flex-col">
+        <div className="bg-sand-50 dark:bg-gray-900 p-8 rounded-3xl overflow-hidden relative min-h-[500px] flex flex-col border border-transparent dark:border-gray-700">
             {/* Decorative background pattern */}
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#8A2A2B_1px,transparent_1px)] [background-size:16px_16px]" />
+            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#8A2A2B_1px,transparent_1px)] [background-size:16px_16px] dark:opacity-5" />
 
             {/* Main grid layout - one column per hub */}
             <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 mt-8 flex-grow">
                 {hubs.map(hub => (
-                    <div key={hub.id} className="bg-white/50 backdrop-blur-sm rounded-3xl p-6 border border-white/20">
+                    <div key={hub.id} className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-3xl p-6 border border-white/20 dark:border-gray-700/30">
                         {/* Render hub at the top */}
                         <div className="flex justify-center mb-8">
                             <Node location={hub} isHub={true} />
@@ -177,13 +177,13 @@ export default function NetworkMap({ onSelectLocation, fromLocationId, toLocatio
                         {/* Connection lines and child locations */}
                         <div className="grid grid-cols-3 gap-4 relative">
                             {/* Horizontal line connecting to all children */}
-                            <div className="absolute top-0 left-0 right-0 h-px bg-gray-300 -translate-y-4" />
+                            <div className="absolute top-0 left-0 right-0 h-px bg-gray-300 dark:bg-gray-600 -translate-y-4" />
 
                             {/* Render all child locations (wards/remotes) for this hub */}
                             {getChildren(hub.id).map(child => (
                                 <div key={child.id} className="flex flex-col items-center relative pt-4">
                                     {/* Vertical line connecting child to horizontal line */}
-                                    <div className="absolute top-0 w-px h-4 bg-gray-300 -translate-y-4" />
+                                    <div className="absolute top-0 w-px h-4 bg-gray-300 dark:bg-gray-600 -translate-y-4" />
                                     <Node location={child} />
                                 </div>
                             ))}
@@ -193,34 +193,34 @@ export default function NetworkMap({ onSelectLocation, fromLocationId, toLocatio
             </div>
 
             {/* Controls Footer - Integrated Layout */}
-            <div className="relative z-20 flex items-center justify-between mt-8 pt-4 border-t border-maroon-100/50">
+            <div className="relative z-20 flex items-center justify-between mt-8 pt-4 border-t border-maroon-100/50 dark:border-gray-700">
                 {/* Legend - Left */}
-                <div className="flex items-center gap-6 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/40 shadow-sm">
+                <div className="flex items-center gap-6 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/40 dark:border-gray-700/40 shadow-sm">
                     <div className="flex items-center gap-4">
                         {viewMode === 'expiry' ? (
                             <>
                                 <div className="flex items-center gap-2">
                                     <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                                    <span className="text-xs font-medium text-gray-700">&gt;90d</span>
+                                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300">&gt;90d</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="w-3 h-3 rounded-full bg-amber-500" />
-                                    <span className="text-xs font-medium text-gray-700">30-90d</span>
+                                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300">30-90d</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="w-3 h-3 rounded-full bg-red-500" />
-                                    <span className="text-xs font-medium text-gray-700">&lt;30d</span>
+                                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300">&lt;30d</span>
                                 </div>
                             </>
                         ) : (
                             <>
                                 <div className="flex items-center gap-2">
                                     <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                                    <span className="text-xs font-medium text-gray-700">Adequate Stock</span>
+                                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Adequate Stock</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="w-3 h-3 rounded-full bg-red-500" />
-                                    <span className="text-xs font-medium text-gray-700">Low Stock</span>
+                                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Low Stock</span>
                                 </div>
                             </>
                         )}
@@ -228,12 +228,12 @@ export default function NetworkMap({ onSelectLocation, fromLocationId, toLocatio
                 </div>
 
                 {/* View Mode Toggle - Right */}
-                <div className="bg-white/90 backdrop-blur rounded-lg shadow-sm border border-gray-200 p-1 flex gap-1">
+                <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-1 flex gap-1">
                     <button
                         onClick={() => setViewMode('expiry')}
                         className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${viewMode === 'expiry'
-                            ? 'bg-maroon-100 text-maroon-800 shadow-sm'
-                            : 'text-gray-600 hover:bg-gray-50'
+                            ? 'bg-maroon-100 dark:bg-maroon-900/40 text-maroon-800 dark:text-maroon-300 shadow-sm'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                             }`}
                     >
                         Expiry Status
@@ -241,8 +241,8 @@ export default function NetworkMap({ onSelectLocation, fromLocationId, toLocatio
                     <button
                         onClick={() => setViewMode('level')}
                         className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${viewMode === 'level'
-                            ? 'bg-maroon-100 text-maroon-800 shadow-sm'
-                            : 'text-gray-600 hover:bg-gray-50'
+                            ? 'bg-maroon-100 dark:bg-maroon-900/40 text-maroon-800 dark:text-maroon-300 shadow-sm'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                             }`}
                     >
                         Stock Levels

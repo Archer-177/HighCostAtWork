@@ -159,28 +159,28 @@ export default function Dashboard() {
       value: dashboardData?.stats?.total_stock || 0,
       icon: Package,
       color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50'
+      bgColor: 'bg-blue-50 dark:bg-blue-900/20'
     },
     {
       label: 'Healthy Stock',
       value: dashboardData?.stats?.healthy_stock || 0,
       icon: CheckCircle,
       color: 'from-emerald-500 to-emerald-600',
-      bgColor: 'bg-emerald-50'
+      bgColor: 'bg-emerald-50 dark:bg-emerald-900/20'
     },
     {
       label: 'Warning',
       value: dashboardData?.stats?.warning_stock || 0,
       icon: Clock,
       color: 'from-amber-500 to-amber-600',
-      bgColor: 'bg-amber-50'
+      bgColor: 'bg-amber-50 dark:bg-amber-900/20'
     },
     {
       label: 'Critical',
       value: dashboardData?.stats?.expiring_soon || 0,
       icon: AlertTriangle,
       color: 'from-red-500 to-red-600',
-      bgColor: 'bg-red-50'
+      bgColor: 'bg-red-50 dark:bg-red-900/20'
     }
   ]
 
@@ -203,7 +203,7 @@ export default function Dashboard() {
         <h1 className="text-4xl font-display tracking-wider gradient-text mb-2">
           Medicine Inventory Dashboard
         </h1>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-400">
           Real-time view of high-cost medicine inventory across {user.location_name}
         </p>
       </motion.div>
@@ -220,12 +220,12 @@ export default function Dashboard() {
           >
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-4">
-                <stat.icon className="w-8 h-8 text-gray-700" />
+                <stat.icon className="w-8 h-8 text-gray-700 dark:text-gray-300" />
                 <span className={`text-3xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
                   {stat.value}
                 </span>
               </div>
-              <p className="text-sm font-medium text-gray-700">{stat.label}</p>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{stat.label}</p>
             </div>
 
             {/* Background decoration */}
@@ -240,7 +240,7 @@ export default function Dashboard() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6"
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6"
       >
         <div className="flex flex-wrap gap-4">
           {/* Search */}
@@ -251,8 +251,8 @@ export default function Dashboard() {
               placeholder="Search by drug, asset ID, batch, or category..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-lg focus:outline-none 
-                       focus:ring-2 focus:ring-maroon-500 focus:border-transparent"
+              className="w-full pl-10 pr-10 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none 
+                       focus:ring-2 focus:ring-maroon-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
             />
             {searchTerm && (
               <button
@@ -269,8 +269,8 @@ export default function Dashboard() {
           <select
             value={filterLocation}
             onChange={(e) => setFilterLocation(e.target.value)}
-            className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl
-                     focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+            className="px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl
+                     focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
           >
             <option value="all">All Locations</option>
             {locations.map(location => (
@@ -282,8 +282,8 @@ export default function Dashboard() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl
-                     focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+            className="px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl
+                     focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
           >
             <option value="all">All Status</option>
             <option value="green">Healthy (90+ days)</option>
@@ -292,30 +292,30 @@ export default function Dashboard() {
           </select>
 
           {/* View Toggle */}
-          <div className="flex bg-gray-100 p-1 rounded-lg">
+          <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
             <button
               onClick={() => setViewMode('grid')}
               title="Card View"
-              className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white shadow-sm text-maroon-600' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-gray-600 shadow-sm text-maroon-600 dark:text-maroon-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
             >
               <LayoutGrid className="w-5 h-5" />
             </button>
             <button
               onClick={() => setViewMode('list')}
               title="List View"
-              className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-maroon-600' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-gray-600 shadow-sm text-maroon-600 dark:text-maroon-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
             >
               <List className="w-5 h-5" />
             </button>
           </div>
 
           {/* Grouping Toggle */}
-          <div className="flex bg-gray-100 p-1 rounded-lg">
+          <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
             <button
               onClick={() => setGroupingMode('grouped')}
               title="Group by Category"
               className={`px-4 py-2 text-sm font-medium rounded-md transition-all
-                       ${groupingMode === 'grouped' ? 'bg-white shadow-sm text-maroon-600' : 'text-gray-500 hover:text-gray-700'}`}
+                       ${groupingMode === 'grouped' ? 'bg-white dark:bg-gray-600 shadow-sm text-maroon-600 dark:text-maroon-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
             >
               Grouped
             </button>
@@ -323,16 +323,16 @@ export default function Dashboard() {
               onClick={() => setGroupingMode('ungrouped')}
               title="Show All Items"
               className={`px-4 py-2 text-sm font-medium rounded-md transition-all
-                       ${groupingMode === 'ungrouped' ? 'bg-white shadow-sm text-maroon-600' : 'text-gray-500 hover:text-gray-700'}`}
+                       ${groupingMode === 'ungrouped' ? 'bg-white dark:bg-gray-600 shadow-sm text-maroon-600 dark:text-maroon-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
             >
               Show All
             </button>
           </div>
 
           {/* Scanner Ready Indicator */}
-          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg border border-gray-200" title="Scanner is active globally - no need to click search">
+          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600" title="Scanner is active globally - no need to click search">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span className="text-xs font-medium text-gray-600">Scanner Ready (Anywhere)</span>
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Scanner Ready (Anywhere)</span>
           </div>
 
           {/* QR Scanner Button */}
@@ -368,9 +368,9 @@ export default function Dashboard() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-12 bg-white rounded-2xl">
+            className="text-center py-12 bg-white dark:bg-gray-800 rounded-2xl">
             <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">No stock items found matching your filters</p>
+            <p className="text-gray-500 dark:text-gray-400">No stock items found matching your filters</p>
           </motion.div>
         ) : groupingMode === 'grouped' && viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -391,15 +391,15 @@ export default function Dashboard() {
                     setGroupingMode('ungrouped')
                     setSearchTerm(category)
                   }}
-                  className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md 
+                  className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md 
                            transition-all text-left group cursor-pointer"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="text-lg font-bold text-gray-900 group-hover:text-maroon-600 transition-colors">
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-maroon-600 dark:group-hover:text-maroon-400 transition-colors">
                         {category}
                       </h3>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         {totalQuantity} {totalQuantity === 1 ? 'vial' : 'vials'} • {items.length} {items.length === 1 ? 'batch group' : 'batch groups'}
                       </p>
                     </div>
@@ -435,8 +435,8 @@ export default function Dashboard() {
                     )}
                   </div>
 
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <p className="text-xs text-gray-500">
+                  <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       Click to view all {category} items
                     </p>
                   </div>
@@ -466,10 +466,10 @@ export default function Dashboard() {
               const batchGroupsCount = new Set(items.map(item => `${item.batch_number}-${item.location_id}`)).size
 
               return (
-                <div key={category} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div key={category} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                   <button
                     onClick={() => toggleGroup(category)}
-                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
                     <div className="flex items-center gap-4">
                       <div className={`transform transition-transform ${isCollapsed ? '' : 'rotate-90'}`}>
@@ -478,8 +478,8 @@ export default function Dashboard() {
                         </svg>
                       </div>
                       <div className="text-left">
-                        <h3 className="text-lg font-bold text-gray-900">{category}</h3>
-                        <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{category}</h3>
+                        <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mt-1">
                           <span>{totalVials} {totalVials === 1 ? 'vial' : 'vials'}</span>
                           <span className="text-gray-300">•</span>
                           <span>{batchGroupsCount} {batchGroupsCount === 1 ? 'batch group' : 'batch groups'}</span>
@@ -509,55 +509,55 @@ export default function Dashboard() {
                   </button>
 
                   {!isCollapsed && (
-                    <div className="border-t border-gray-200">
+                    <div className="border-t border-gray-200 dark:border-gray-700">
                       <table className="w-full text-left">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-gray-50 dark:bg-gray-900/50">
                           <tr>
-                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm">Drug Name</th>
-                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm">Asset ID</th>
-                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm">Batch</th>
-                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm">Location</th>
-                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm">Storage</th>
-                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm">Expiry</th>
-                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm">Status</th>
-                            <th className="px-6 py-3 font-semibold text-gray-700 text-sm text-right">Actions</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 dark:text-gray-300 text-sm">Drug Name</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 dark:text-gray-300 text-sm">Asset ID</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 dark:text-gray-300 text-sm">Batch</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 dark:text-gray-300 text-sm">Location</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 dark:text-gray-300 text-sm">Storage</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 dark:text-gray-300 text-sm">Expiry</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 dark:text-gray-300 text-sm">Status</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700 dark:text-gray-300 text-sm text-right">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                           {items.map((item, index) => (
-                            <tr key={item.id} className={`hover:bg-blue-50 transition-colors
-                              ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
+                            <tr key={item.id} className={`hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors
+                              ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50/50 dark:bg-gray-700/30'}`}>
                               <td className="px-6 py-3">
-                                <div className="font-semibold text-gray-900">{item.drug_name}</div>
+                                <div className="font-semibold text-gray-900 dark:text-white">{item.drug_name}</div>
                                 {item.quantity && item.quantity > 1 && (
-                                  <span className="text-xs text-blue-600 font-bold">×{item.quantity}</span>
+                                  <span className="text-xs text-blue-600 dark:text-blue-400 font-bold">×{item.quantity}</span>
                                 )}
                               </td>
-                              <td className="px-6 py-3 font-mono text-xs text-gray-600">{item.asset_id}</td>
-                              <td className="px-6 py-3 font-mono text-sm text-gray-700">{item.batch_number}</td>
-                              <td className="px-6 py-3 text-sm text-gray-700">{item.location_name}</td>
+                              <td className="px-6 py-3 font-mono text-xs text-gray-600 dark:text-gray-400">{item.asset_id}</td>
+                              <td className="px-6 py-3 font-mono text-sm text-gray-700 dark:text-gray-300">{item.batch_number}</td>
+                              <td className="px-6 py-3 text-sm text-gray-700 dark:text-gray-300">{item.location_name}</td>
                               <td className="px-6 py-3">
                                 <div className="flex items-center gap-1.5 text-sm">
                                   {item.storage_temp?.includes('2-8') ? (
                                     <>
-                                      <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 8h6m-5 0a3 3 0 110 6H9l3 3m-3-6h6m6 1a9 9 0 11-18 0 9 9 0 0118 0z" />
                                       </svg>
-                                      <span className="text-xs text-blue-700">2-8°C</span>
+                                      <span className="text-xs text-blue-700 dark:text-blue-300">2-8°C</span>
                                     </>
                                   ) : (
                                     <>
-                                      <svg className="w-4 h-4 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <svg className="w-4 h-4 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                       </svg>
-                                      <span className="text-xs text-orange-700">&lt;25°C</span>
+                                      <span className="text-xs text-orange-700 dark:text-orange-300">&lt;25°C</span>
                                     </>
                                   )}
                                 </div>
                               </td>
                               <td className="px-6 py-3">
-                                <div className="text-sm font-semibold text-gray-900">{format(new Date(item.expiry_date), 'dd MMM yyyy')}</div>
-                                <div className="text-xs text-gray-500">{Math.floor(item.days_until_expiry)} days remaining</div>
+                                <div className="text-sm font-semibold text-gray-900 dark:text-white">{format(new Date(item.expiry_date), 'dd MMM yyyy')}</div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400">{Math.floor(item.days_until_expiry)} days remaining</div>
                               </td>
                               <td className="px-6 py-3">
                                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold
@@ -582,31 +582,31 @@ export default function Dashboard() {
           </div>
         ) : (
           // Ungrouped List View
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
             <table className="w-full text-left">
-              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 border-b-2 border-gray-200 dark:border-gray-700">
                 <tr>
-                  <th className="px-6 py-4 font-bold text-gray-800 text-sm">Drug Name</th>
-                  <th className="px-6 py-4 font-bold text-gray-800 text-sm">Asset ID</th>
-                  <th className="px-6 py-4 font-bold text-gray-800 text-sm">Location</th>
-                  <th className="px-6 py-4 font-bold text-gray-800 text-sm">Expiry</th>
-                  <th className="px-6 py-4 font-bold text-gray-800 text-sm">Status</th>
-                  <th className="px-6 py-4 font-bold text-gray-800 text-sm text-right">Actions</th>
+                  <th className="px-6 py-4 font-bold text-gray-800 dark:text-gray-200 text-sm">Drug Name</th>
+                  <th className="px-6 py-4 font-bold text-gray-800 dark:text-gray-200 text-sm">Asset ID</th>
+                  <th className="px-6 py-4 font-bold text-gray-800 dark:text-gray-200 text-sm">Location</th>
+                  <th className="px-6 py-4 font-bold text-gray-800 dark:text-gray-200 text-sm">Expiry</th>
+                  <th className="px-6 py-4 font-bold text-gray-800 dark:text-gray-200 text-sm">Status</th>
+                  <th className="px-6 py-4 font-bold text-gray-800 dark:text-gray-200 text-sm text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {filteredStock.map((item, index) => (
-                  <tr key={item.id} className={`hover:bg-blue-50 transition-colors cursor-pointer
-                    ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
+                  <tr key={item.id} className={`hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer
+                    ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50/50 dark:bg-gray-700/30'}`}>
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-gray-900">{item.drug_name}</div>
-                      <div className="text-sm text-gray-500">{item.category}</div>
+                      <div className="font-semibold text-gray-900 dark:text-white">{item.drug_name}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">{item.category}</div>
                     </td>
-                    <td className="px-6 py-4 font-mono text-sm text-gray-700 font-medium">{item.asset_id}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{item.location_name}</td>
+                    <td className="px-6 py-4 font-mono text-sm text-gray-700 dark:text-gray-300 font-medium">{item.asset_id}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{item.location_name}</td>
                     <td className="px-6 py-4">
-                      <div className="text-sm font-semibold text-gray-900">{format(new Date(item.expiry_date), 'dd MMM yyyy')}</div>
-                      <div className="text-xs text-gray-500">{Math.floor(item.days_until_expiry)} days remaining</div>
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white">{format(new Date(item.expiry_date), 'dd MMM yyyy')}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{Math.floor(item.days_until_expiry)} days remaining</div>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold

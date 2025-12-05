@@ -158,7 +158,7 @@ export default function Reports() {
       count: `${stats.totalClinicalUse} items`,
       icon: TrendingUp,
       color: 'from-emerald-500 to-emerald-600',
-      bgColor: 'bg-emerald-50'
+      bgColor: 'bg-emerald-50 dark:bg-emerald-900/20'
     },
     {
       label: 'Total Wastage',
@@ -166,7 +166,7 @@ export default function Reports() {
       count: `${stats.totalWastage} items`,
       icon: TrendingDown,
       color: 'from-red-500 to-red-600',
-      bgColor: 'bg-red-50'
+      bgColor: 'bg-red-50 dark:bg-red-900/20'
     },
     {
       label: 'Wastage Rate',
@@ -174,7 +174,7 @@ export default function Reports() {
       count: 'of total usage',
       icon: PieChart,
       color: 'from-amber-500 to-amber-600',
-      bgColor: 'bg-amber-50'
+      bgColor: 'bg-amber-50 dark:bg-amber-900/20'
     },
     {
       label: 'Total Value',
@@ -182,7 +182,7 @@ export default function Reports() {
       count: 'tracked inventory',
       icon: DollarSign,
       color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50'
+      bgColor: 'bg-blue-50 dark:bg-blue-900/20'
     }
   ]
 
@@ -207,7 +207,7 @@ export default function Reports() {
             <h1 className="text-4xl font-display tracking-wider gradient-text mb-2">
               Financial Reports
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Medicine usage and wastage analytics
             </p>
           </div>
@@ -229,20 +229,20 @@ export default function Reports() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1 }}
-        className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6"
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6"
       >
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
             <Calendar className="w-5 h-5 text-gray-400" />
-            <span className="text-sm font-medium text-gray-700">Date Range:</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Date Range:</span>
           </div>
 
           <input
             type="date"
             value={dateRange.start}
             onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-            className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                     focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+            className="px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                     focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
           />
 
           <span className="text-gray-400">to</span>
@@ -251,8 +251,8 @@ export default function Reports() {
             type="date"
             value={dateRange.end}
             onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-            className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                     focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
+            className="px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
+                     focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
           />
 
           <div className="ml-auto flex gap-2">
@@ -261,7 +261,7 @@ export default function Reports() {
                 start: format(subDays(new Date(), 7), 'yyyy-MM-dd'),
                 end: format(new Date(), 'yyyy-MM-dd')
               })}
-              className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors dark:text-gray-300"
             >
               Last 7 days
             </button>
@@ -270,7 +270,7 @@ export default function Reports() {
                 start: format(subDays(new Date(), 30), 'yyyy-MM-dd'),
                 end: format(new Date(), 'yyyy-MM-dd')
               })}
-              className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors dark:text-gray-300"
             >
               Last 30 days
             </button>
@@ -279,7 +279,7 @@ export default function Reports() {
                 start: format(subDays(new Date(), 90), 'yyyy-MM-dd'),
                 end: format(new Date(), 'yyyy-MM-dd')
               })}
-              className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors dark:text-gray-300"
             >
               Last 90 days
             </button>
@@ -299,13 +299,13 @@ export default function Reports() {
           >
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-4">
-                <stat.icon className="w-8 h-8 text-gray-700" />
+                <stat.icon className="w-8 h-8 text-gray-700 dark:text-gray-300" />
                 <span className={`text-2xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
                   {stat.value}
                 </span>
               </div>
-              <p className="text-sm font-medium text-gray-700">{stat.label}</p>
-              <p className="text-xs text-gray-600 mt-1">{stat.count}</p>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{stat.label}</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{stat.count}</p>
             </div>
 
             <div className={`absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br ${stat.color} 
@@ -321,16 +321,16 @@ export default function Reports() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6"
         >
-          <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
-            <BarChart3 className="w-6 h-6 text-maroon-600" />
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-3 dark:text-white">
+            <BarChart3 className="w-6 h-6 text-maroon-600 dark:text-maroon-400" />
             Value by Location
           </h3>
 
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={barData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" strokeOpacity={0.2} />
               <XAxis
                 dataKey="location"
                 angle={-45}
@@ -357,10 +357,10 @@ export default function Reports() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6"
         >
-          <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
-            <PieChart className="w-6 h-6 text-maroon-600" />
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-3 dark:text-white">
+            <PieChart className="w-6 h-6 text-maroon-600 dark:text-maroon-400" />
             Value by Medicine
           </h3>
 
@@ -382,6 +382,7 @@ export default function Reports() {
               </Pie>
               <Tooltip
                 formatter={(value) => `$${value.toLocaleString('en-AU', { minimumFractionDigits: 2 })}`}
+                contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', color: '#f3f4f6' }}
               />
             </RePieChart>
           </ResponsiveContainer>
@@ -393,47 +394,47 @@ export default function Reports() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+        className="mt-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6"
       >
-        <h3 className="text-xl font-bold mb-6">Detailed Breakdown</h3>
+        <h3 className="text-xl font-bold mb-6 dark:text-white">Detailed Breakdown</h3>
 
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Location</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Medicine</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700">Clinical Use</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700">Clinical Value</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700">Wastage</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700">Wastage Value</th>
+              <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Location</th>
+                <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Medicine</th>
+                <th className="text-right py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Clinical Use</th>
+                <th className="text-right py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Clinical Value</th>
+                <th className="text-right py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Wastage</th>
+                <th className="text-right py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Wastage Value</th>
               </tr>
             </thead>
             <tbody>
               {reportData?.data?.map((row, index) => (
-                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-4">{row.location_name}</td>
-                  <td className="py-3 px-4">{row.drug_name}</td>
-                  <td className="text-right py-3 px-4">{row.clinical_use}</td>
-                  <td className="text-right py-3 px-4 text-emerald-600 font-medium">
+                <tr key={index} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                  <td className="py-3 px-4 dark:text-gray-300">{row.location_name}</td>
+                  <td className="py-3 px-4 dark:text-gray-300">{row.drug_name}</td>
+                  <td className="text-right py-3 px-4 dark:text-gray-300">{row.clinical_use}</td>
+                  <td className="text-right py-3 px-4 text-emerald-600 dark:text-emerald-400 font-medium">
                     ${row.clinical_value.toLocaleString('en-AU', { minimumFractionDigits: 2 })}
                   </td>
-                  <td className="text-right py-3 px-4">{row.wastage}</td>
-                  <td className="text-right py-3 px-4 text-red-600 font-medium">
+                  <td className="text-right py-3 px-4 dark:text-gray-300">{row.wastage}</td>
+                  <td className="text-right py-3 px-4 text-red-600 dark:text-red-400 font-medium">
                     ${row.wastage_value.toLocaleString('en-AU', { minimumFractionDigits: 2 })}
                   </td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
-              <tr className="border-t-2 border-gray-300 font-semibold">
+              <tr className="border-t-2 border-gray-300 dark:border-gray-600 font-semibold dark:text-white">
                 <td colSpan="2" className="py-3 px-4">Total</td>
                 <td className="text-right py-3 px-4">{stats.totalClinicalUse}</td>
-                <td className="text-right py-3 px-4 text-emerald-600">
+                <td className="text-right py-3 px-4 text-emerald-600 dark:text-emerald-400">
                   ${stats.totalClinicalValue.toLocaleString('en-AU', { minimumFractionDigits: 2 })}
                 </td>
                 <td className="text-right py-3 px-4">{stats.totalWastage}</td>
-                <td className="text-right py-3 px-4 text-red-600">
+                <td className="text-right py-3 px-4 text-red-600 dark:text-red-400">
                   ${stats.totalWastageValue.toLocaleString('en-AU', { minimumFractionDigits: 2 })}
                 </td>
               </tr>

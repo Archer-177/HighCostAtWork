@@ -197,18 +197,19 @@ export default function StockLevelsSettings() {
     // Access Control
     if (user?.role !== 'PHARMACIST') {
         return (
-            <div className="flex items-center justify-center h-screen bg-sand-50">
-                <div className="text-center p-8 bg-white rounded-2xl shadow-lg border border-maroon-100">
+
+            <div className="flex items-center justify-center h-screen bg-sand-50 dark:bg-gray-900">
+                <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-maroon-100 dark:border-gray-700">
                     <AlertCircle className="w-16 h-16 text-maroon-500 mx-auto mb-4" />
-                    <h2 className="text-xl font-bold text-gray-900">Access Denied</h2>
-                    <p className="text-gray-600 mt-2">Only pharmacists can manage minimum stock levels.</p>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">Access Denied</h2>
+                    <p className="text-gray-600 dark:text-gray-400 mt-2">Only pharmacists can manage minimum stock levels.</p>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="flex flex-col h-screen bg-sand-50 text-slate-900 font-sans overflow-hidden p-6">
+        <div className="flex flex-col h-screen bg-sand-50 dark:bg-gray-900 text-slate-900 dark:text-white font-sans overflow-hidden p-6">
 
             {/* 1. HEADER (Standard App Style) */}
             <motion.div
@@ -219,13 +220,13 @@ export default function StockLevelsSettings() {
                 <h1 className="text-4xl font-display tracking-wider gradient-text mb-2">
                     Minimum Stock Levels
                 </h1>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                     Manage stock thresholds across all sites to trigger automatic alerts
                 </p>
             </motion.div>
 
             {/* 2. FILTERS & CONTROLS (Single Line) */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6 flex-none flex flex-wrap items-center gap-4 z-20">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6 flex-none flex flex-wrap items-center gap-4 z-20">
 
                 {/* Search */}
                 <div className="relative flex-1 min-w-[300px]">
@@ -235,8 +236,8 @@ export default function StockLevelsSettings() {
                         placeholder="Search drug name or category..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:outline-none 
-                                 focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition-all"
+                        className="w-full pl-10 pr-10 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-xl focus:outline-none 
+                                 focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition-all dark:text-white"
                     />
                     {searchQuery && (
                         <button
@@ -248,26 +249,26 @@ export default function StockLevelsSettings() {
                     )}
                 </div>
 
-                <div className="h-8 w-px bg-gray-200 mx-2 hidden md:block"></div>
+                <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 mx-2 hidden md:block"></div>
 
                 {/* Storage Filter */}
-                <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100">
+                <div className="flex bg-gray-50 dark:bg-gray-700 p-1 rounded-xl border border-gray-100 dark:border-gray-600">
                     <button
                         onClick={() => setStorageFilter('all')}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${storageFilter === 'all' ? 'bg-white shadow-sm text-maroon-700' : 'text-gray-500 hover:text-gray-700'}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${storageFilter === 'all' ? 'bg-white dark:bg-gray-600 shadow-sm text-maroon-700 dark:text-maroon-300' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
                     >
                         All
                     </button>
                     <button
                         onClick={() => setStorageFilter('fridge')}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all ${storageFilter === 'fridge' ? 'bg-white shadow-sm text-blue-700' : 'text-gray-500 hover:text-gray-700'}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all ${storageFilter === 'fridge' ? 'bg-white dark:bg-gray-600 shadow-sm text-blue-700 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
                     >
                         <ThermometerSnowflake className="w-4 h-4" />
                         <span>Fridge</span>
                     </button>
                     <button
                         onClick={() => setStorageFilter('ambient')}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all ${storageFilter === 'ambient' ? 'bg-white shadow-sm text-orange-700' : 'text-gray-500 hover:text-gray-700'}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all ${storageFilter === 'ambient' ? 'bg-white dark:bg-gray-600 shadow-sm text-orange-700 dark:text-orange-300' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
                     >
                         <ThermometerSun className="w-4 h-4" />
                         <span>Shelf</span>
@@ -279,8 +280,8 @@ export default function StockLevelsSettings() {
                     <select
                         value={groupFilter}
                         onChange={(e) => setGroupFilter(e.target.value)}
-                        className="w-full pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl
-                                 focus:outline-none focus:border-maroon-500 focus:bg-white transition-all appearance-none cursor-pointer text-sm font-medium text-gray-700"
+                        className="w-full pl-4 pr-10 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl
+                                 focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all appearance-none cursor-pointer text-sm font-medium text-gray-700 dark:text-white"
                     >
                         <option value="All">All Categories</option>
                         {uniqueGroups.map(g => <option key={g} value={g}>{g}</option>)}
@@ -294,38 +295,39 @@ export default function StockLevelsSettings() {
             </div>
 
             {/* 3. MATRIX GRID */}
-            <div className="flex-1 overflow-auto bg-white rounded-2xl shadow-sm border border-gray-200 relative">
+            <div className="flex-1 overflow-auto bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 relative">
                 <table className="w-full border-collapse min-w-[1200px]">
                     <thead className="sticky top-0 z-20 shadow-sm">
-                        <tr className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider h-12">
+                        <tr className="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs uppercase tracking-wider h-12">
                             {/* Sticky Corner */}
-                            <th className="sticky left-0 bg-gray-50 z-30 text-left pl-6 pr-4 w-64 border-b border-r border-gray-200 font-semibold shadow-[4px_0_12px_-4px_rgba(0,0,0,0.05)]">
+                            <th className="sticky left-0 bg-gray-50 dark:bg-gray-700 z-30 text-left pl-6 pr-4 w-64 border-b border-r border-gray-200 dark:border-gray-600 font-semibold shadow-[4px_0_12px_-4px_rgba(0,0,0,0.05)]">
                                 Drug Details
                             </th>
-                            <th className="w-32 px-2 text-center border-b border-gray-200 border-r">Storage</th>
+                            <th className="w-32 px-2 text-center border-b border-gray-200 dark:border-gray-600 border-r">Storage</th>
 
                             {/* Location Columns */}
                             {locations.map(loc => (
-                                <th key={loc.id} className={`px-2 text-center border-b border-gray-200 border-r min-w-[100px] ${loc.type === 'HUB' ? 'bg-maroon-50/30 text-maroon-800 font-bold' : ''}`}>
+                                <th key={loc.id} className={`px-2 text-center border-b border-gray-200 dark:border-gray-600 border-r min-w-[100px] ${loc.type === 'HUB' ? 'bg-maroon-50/30 dark:bg-maroon-900/20 text-maroon-800 dark:text-maroon-300 font-bold' : ''}`}>
                                     <div className="flex flex-col items-center justify-center">
                                         <span>{loc.name}</span>
-                                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full mt-1 ${loc.type === 'HUB' ? 'bg-maroon-100 text-maroon-700' : 'bg-gray-200 text-gray-600'}`}>
+                                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full mt-1 ${loc.type === 'HUB' ? 'bg-maroon-100 dark:bg-maroon-900/40 text-maroon-700 dark:text-maroon-300' : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'}`}>
                                             {loc.type}
                                         </span>
                                     </div>
                                 </th>
                             ))}
                         </tr>
+
                     </thead>
-                    <tbody className="bg-white">
+                    <tbody className="bg-white dark:bg-gray-800">
                         {sortedGroupKeys.map(group => (
                             <React.Fragment key={group}>
                                 {/* Group Header */}
-                                <tr className="bg-gray-50/50 border-b border-gray-100">
-                                    <td colSpan={2 + locations.length} className="sticky left-0 z-10 bg-gray-50/95 backdrop-blur-sm px-6 py-2 border-b border-gray-100">
+                                <tr className="bg-gray-50/50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
+                                    <td colSpan={2 + locations.length} className="sticky left-0 z-10 bg-gray-50/95 dark:bg-gray-700/95 backdrop-blur-sm px-6 py-2 border-b border-gray-100 dark:border-gray-700">
                                         <div className="flex items-center space-x-2">
                                             <div className="w-1.5 h-1.5 rounded-full bg-maroon-400"></div>
-                                            <span className="text-xs font-bold text-gray-700 uppercase tracking-widest">{group}</span>
+                                            <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-widest">{group}</span>
                                             <span className="text-xs text-gray-400 font-normal">({groupedDrugs[group].length})</span>
                                         </div>
                                     </td>
@@ -337,32 +339,33 @@ export default function StockLevelsSettings() {
                                     const isFridge = drug.storage_temp?.includes('2-8') || drug.is_fridge
 
                                     return (
-                                        <tr key={drug.id} className="hover:bg-blue-50/30 group transition-colors h-14 border-b border-gray-100">
+                                        <tr key={drug.id} className="hover:bg-blue-50/30 dark:hover:bg-gray-700/30 group transition-colors h-14 border-b border-gray-100 dark:border-gray-700">
                                             {/* Sticky Name Column */}
-                                            <td className="sticky left-0 bg-white group-hover:bg-blue-50/30 z-10 pl-6 pr-4 py-2 border-r border-gray-200 shadow-[4px_0_12px_-4px_rgba(0,0,0,0.02)]">
+                                            <td className="sticky left-0 bg-white dark:bg-gray-800 group-hover:bg-blue-50/30 dark:group-hover:bg-gray-700/30 z-10 pl-6 pr-4 py-2 border-r border-gray-200 dark:border-gray-700 shadow-[4px_0_12px_-4px_rgba(0,0,0,0.02)]">
                                                 <div className="flex flex-col">
-                                                    <span className="font-medium text-gray-900 text-sm truncate max-w-[220px]" title={drug.name}>
+                                                    <span className="font-medium text-gray-900 dark:text-gray-100 text-sm truncate max-w-[220px]" title={drug.name}>
                                                         {drug.name}
                                                     </span>
-                                                    <span className="text-xs text-gray-500 truncate">{drug.category}</span>
+                                                    <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{drug.category}</span>
                                                 </div>
                                             </td>
 
                                             {/* Storage Type */}
-                                            <td className="text-center py-2 border-r border-gray-100">
+                                            {/* Storage Type */}
+                                            <td className="text-center py-2 border-r border-gray-100 dark:border-gray-700">
                                                 {isFridge ? (
                                                     <div className="inline-flex items-center gap-1.5">
-                                                        <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 8h6m-5 0a3 3 0 110 6H9l3 3m-3-6h6m6 1a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                         </svg>
-                                                        <span className="text-xs font-medium text-blue-700">2-8°C</span>
+                                                        <span className="text-xs font-medium text-blue-700 dark:text-blue-300">2-8°C</span>
                                                     </div>
                                                 ) : (
                                                     <div className="inline-flex items-center gap-1.5">
-                                                        <svg className="w-4 h-4 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <svg className="w-4 h-4 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                                         </svg>
-                                                        <span className="text-xs font-medium text-orange-700">&lt;25°C</span>
+                                                        <span className="text-xs font-medium text-orange-700 dark:text-orange-300">&lt;25°C</span>
                                                     </div>
                                                 )}
                                             </td>
@@ -373,7 +376,7 @@ export default function StockLevelsSettings() {
                                                 const modified = isModified(loc.id, drug.id)
 
                                                 return (
-                                                    <td key={loc.id} className={`p-0 border-r border-gray-100 text-center relative ${loc.type === 'HUB' ? 'bg-maroon-50/5' : ''}`}>
+                                                    <td key={loc.id} className={`p-0 border-r border-gray-100 dark:border-gray-700 text-center relative ${loc.type === 'HUB' ? 'bg-maroon-50/5 dark:bg-maroon-900/5' : ''}`}>
                                                         <div className="h-full w-full p-2 flex items-center justify-center">
                                                             <input
                                                                 type="number"
@@ -382,8 +385,8 @@ export default function StockLevelsSettings() {
                                                                 onChange={(e) => handleStockChange(loc.id, drug.id, e.target.value)}
                                                                 className={`w-16 text-center text-sm p-1.5 rounded-lg border transition-all focus:outline-none focus:ring-2 focus:ring-maroon-500 font-mono
                                                                     ${modified
-                                                                        ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold shadow-sm'
-                                                                        : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                                                                        ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-300 font-bold shadow-sm'
+                                                                        : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:hover:border-gray-500'
                                                                     }`}
                                                             />
                                                         </div>
@@ -410,42 +413,44 @@ export default function StockLevelsSettings() {
                         )}
                     </tbody>
                 </table>
-            </div>
+            </div >
 
             {/* 4. UNSAVED CHANGES FLOATING BAR */}
-            <AnimatePresence>
-                {Object.keys(unsavedChanges).length > 0 && (
-                    <motion.div
-                        initial={{ y: 100, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: 100, opacity: 0 }}
-                        className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50"
-                    >
-                        <div className="bg-gray-900 text-white pl-6 pr-2 py-2 rounded-full shadow-2xl flex items-center space-x-6 border border-gray-700">
-                            <div className="flex items-center space-x-3">
-                                <ShieldAlert className="w-5 h-5 text-amber-400 animate-pulse" />
-                                <span className="text-sm font-medium">
-                                    {Object.keys(unsavedChanges).length} unsaved updates
-                                </span>
-                            </div>
-                            <button
-                                onClick={saveChanges}
-                                disabled={saving}
-                                className="bg-gradient-to-r from-maroon-600 to-maroon-700 hover:from-maroon-500 hover:to-maroon-600 
+            < AnimatePresence >
+                {
+                    Object.keys(unsavedChanges).length > 0 && (
+                        <motion.div
+                            initial={{ y: 100, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: 100, opacity: 0 }}
+                            className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50"
+                        >
+                            <div className="bg-gray-900 text-white pl-6 pr-2 py-2 rounded-full shadow-2xl flex items-center space-x-6 border border-gray-700">
+                                <div className="flex items-center space-x-3">
+                                    <ShieldAlert className="w-5 h-5 text-amber-400 animate-pulse" />
+                                    <span className="text-sm font-medium">
+                                        {Object.keys(unsavedChanges).length} unsaved updates
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={saveChanges}
+                                    disabled={saving}
+                                    className="bg-gradient-to-r from-maroon-600 to-maroon-700 hover:from-maroon-500 hover:to-maroon-600 
                                          text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all 
                                          flex items-center shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {saving ? (
-                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                ) : (
-                                    <Save className="w-4 h-4 mr-2" />
-                                )}
-                                {saving ? 'Saving...' : 'Save Changes'}
-                            </button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
+                                >
+                                    {saving ? (
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    ) : (
+                                        <Save className="w-4 h-4 mr-2" />
+                                    )}
+                                    {saving ? 'Saving...' : 'Save Changes'}
+                                </button>
+                            </div>
+                        </motion.div>
+                    )
+                }
+            </AnimatePresence >
+        </div >
     )
 }

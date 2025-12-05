@@ -6,6 +6,7 @@ import {
   LogOut, Heart, ChevronRight, Pill, Building2, MapPin
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
+import ThemeToggle from './ThemeToggle'
 
 export default function Navigation() {
   const navigate = useNavigate()
@@ -90,14 +91,17 @@ export default function Navigation() {
           </div>
 
           {/* User Info */}
-          <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50">
-            <div className="flex items-center gap-2 mb-1">
-              <LocationIcon className="w-4 h-4 text-ochre-400" />
-              <p className="text-sm font-medium">{user?.location_name}</p>
+          <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <LocationIcon className="w-4 h-4 text-ochre-400 flex-shrink-0" />
+                <p className="text-sm font-medium truncate">{user?.location_name}</p>
+              </div>
+              <p className="text-xs text-gray-400 truncate">
+                {user?.username} • {user?.role.replace('_', ' ')}
+              </p>
             </div>
-            <p className="text-xs text-gray-400">
-              {user?.username} • {user?.role.replace('_', ' ')}
-            </p>
+            <ThemeToggle />
           </div>
         </motion.div>
 
