@@ -8,13 +8,15 @@ import {
   ArrowRightLeft,
   Download,
   Calendar,
-  DollarSign
+  DollarSign,
+  GitBranch
 } from 'lucide-react'
 import { stockAPI } from '../api/stock'
 import { transfersAPI } from '../api/transfers'
 import { adminAPI } from '../api/admin'
 import { useAuthStore } from '../store/authStore'
 import toast from 'react-hot-toast'
+import AssetTimeline from '../components/AssetTimeline'
 
 export default function Reports() {
   const user = useAuthStore((state) => state.user)
@@ -49,6 +51,7 @@ export default function Reports() {
   const tabs = [
     { id: 'overview', label: 'Stock Overview', icon: Package },
     { id: 'expiry', label: 'Expiry Report', icon: AlertTriangle },
+    { id: 'timeline', label: 'Asset Journey', icon: GitBranch },
     { id: 'usage', label: 'Usage Statistics', icon: TrendingUp },
     { id: 'wastage', label: 'Wastage Report', icon: Trash2 },
     { id: 'transfers', label: 'Transfer Activity', icon: ArrowRightLeft }
@@ -142,6 +145,7 @@ export default function Reports() {
         <>
           {activeTab === 'overview' && <StockOverview data={reportData} />}
           {activeTab === 'expiry' && <ExpiryReport data={reportData} />}
+          {activeTab === 'timeline' && <AssetTimeline />}
           {activeTab === 'usage' && <UsageStatistics data={reportData} dateRange={dateRange} />}
           {activeTab === 'wastage' && <WastageReport data={reportData} dateRange={dateRange} />}
           {activeTab === 'transfers' && <TransferActivity data={reportData} dateRange={dateRange} />}
