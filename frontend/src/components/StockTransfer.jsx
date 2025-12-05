@@ -104,7 +104,10 @@ export default function StockTransfer() {
         body: JSON.stringify({
           from_location_id: parseInt(fromLocation),
           to_location_id: parseInt(toLocation),
-          vial_ids: selectedItems,
+          vial_ids: selectedItems.map(id => {
+            const item = availableStock.find(s => s.id === id)
+            return { id, version: item.version }
+          }),
           created_by: user.id
         })
       })

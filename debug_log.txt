@@ -1,0 +1,297 @@
+2025-12-06 07:39:21,731 - INFO - Starting server on port 5001
+2025-12-06 07:39:22,024 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-12-06 07:39:22,024 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-06 07:39:22,384 - INFO - 127.0.0.1 - - [06/Dec/2025 07:39:22] "GET / HTTP/1.1" 200 -
+2025-12-06 07:39:22,446 - INFO - 127.0.0.1 - - [06/Dec/2025 07:39:22] "GET /static/index-693a0160.css HTTP/1.1" 200 -
+2025-12-06 07:39:22,856 - INFO - 127.0.0.1 - - [06/Dec/2025 07:39:22] "GET /static/index-18b5dcb7.js HTTP/1.1" 200 -
+2025-12-06 07:39:28,056 - INFO - 127.0.0.1 - - [06/Dec/2025 07:39:28] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:39:33,062 - INFO - 127.0.0.1 - - [06/Dec/2025 07:39:33] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:39:38,061 - INFO - 127.0.0.1 - - [06/Dec/2025 07:39:38] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:39:43,069 - INFO - 127.0.0.1 - - [06/Dec/2025 07:39:43] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:39:44,678 - INFO - 127.0.0.1 - - [06/Dec/2025 07:39:44] "POST /api/login HTTP/1.1" 200 -
+2025-12-06 07:39:45,110 - INFO - 127.0.0.1 - - [06/Dec/2025 07:39:45] "GET /api/dashboard/2 HTTP/1.1" 200 -
+2025-12-06 07:39:49,825 - INFO - 127.0.0.1 - - [06/Dec/2025 07:39:49] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:39:54,813 - INFO - 127.0.0.1 - - [06/Dec/2025 07:39:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:39:56,953 - INFO - 127.0.0.1 - - [06/Dec/2025 07:39:56] "GET /api/drugs HTTP/1.1" 200 -
+2025-12-06 07:39:59,806 - INFO - 127.0.0.1 - - [06/Dec/2025 07:39:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:40:04,797 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:40:09,799 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:40:14,796 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:14] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:40:19,798 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:40:24,800 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:40:29,810 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:40:34,813 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:34] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:40:38,388 - ERROR - Write queue error: Working outside of application context.
+
+This typically means that you attempted to use functionality that needed
+the current application. To solve this, set up an application context
+with app.app_context(). See the documentation for more information.
+2025-12-06 07:40:38,394 - ERROR - Exception on /api/receive_stock [POST]
+Traceback (most recent call last):
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ~^^^^^^^^^^^^^^^^^
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\GemCli\HighCostAtWork\app\routes\inventory.py", line 67, in receive_stock
+    result, status = queue_write(
+                     ~~~~~~~~~~~^
+        receive_stock_logic,
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+        data.goods_receipt_number
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\GemCli\HighCostAtWork\app\utils.py", line 46, in queue_write
+    raise res
+  File "C:\GemCli\HighCostAtWork\app\utils.py", line 31, in worker
+    res_q.put(func(*args))
+              ~~~~^^^^^^^
+  File "C:\GemCli\HighCostAtWork\app\routes\inventory.py", line 48, in receive_stock_logic
+    return jsonify({
+           ~~~~~~~^^
+        "success": True,
+        ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        "total_value": drug['unit_price'] * quantity
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    }), 200
+    ^^
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\json\__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\werkzeug\local.py", line 311, in __get__
+    obj = instance._get_current_object()
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\werkzeug\local.py", line 508, in _get_current_object
+    raise RuntimeError(unbound_message) from None
+RuntimeError: Working outside of application context.
+
+This typically means that you attempted to use functionality that needed
+the current application. To solve this, set up an application context
+with app.app_context(). See the documentation for more information.
+2025-12-06 07:40:38,519 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:38] "[35m[1mPOST /api/receive_stock HTTP/1.1[0m" 500 -
+2025-12-06 07:40:39,803 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:39] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:40:44,821 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:44] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:40:46,787 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:46] "[36mGET /static/index-693a0160.css HTTP/1.1[0m" 304 -
+2025-12-06 07:40:46,910 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:46] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-12-06 07:40:49,790 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:49] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:40:54,791 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:54] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:40:59,784 - INFO - 127.0.0.1 - - [06/Dec/2025 07:40:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:41:04,785 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:41:09,782 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:41:14,800 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:14] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:41:19,798 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:41:25,745 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:41:29,800 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:29] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:41:34,789 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:34] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:41:39,795 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:39] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:41:44,796 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:44] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:41:46,801 - ERROR - Write queue error: Working outside of application context.
+
+This typically means that you attempted to use functionality that needed
+the current application. To solve this, set up an application context
+with app.app_context(). See the documentation for more information.
+2025-12-06 07:41:46,803 - ERROR - Exception on /api/receive_stock [POST]
+Traceback (most recent call last):
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ~^^^^^^^^^^^^^^^^^
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\GemCli\HighCostAtWork\app\routes\inventory.py", line 67, in receive_stock
+    result, status = queue_write(
+                     ~~~~~~~~~~~^
+        receive_stock_logic,
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+        data.goods_receipt_number
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\GemCli\HighCostAtWork\app\utils.py", line 46, in queue_write
+    raise res
+  File "C:\GemCli\HighCostAtWork\app\utils.py", line 31, in worker
+    res_q.put(func(*args))
+              ~~~~^^^^^^^
+  File "C:\GemCli\HighCostAtWork\app\routes\inventory.py", line 48, in receive_stock_logic
+    return jsonify({
+           ~~~~~~~^^
+        "success": True,
+        ^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        "total_value": drug['unit_price'] * quantity
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    }), 200
+    ^^
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\flask\json\__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\werkzeug\local.py", line 311, in __get__
+    obj = instance._get_current_object()
+  File "C:\Users\yahia\AppData\Local\Programs\Python\Python314\Lib\site-packages\werkzeug\local.py", line 508, in _get_current_object
+    raise RuntimeError(unbound_message) from None
+RuntimeError: Working outside of application context.
+
+This typically means that you attempted to use functionality that needed
+the current application. To solve this, set up an application context
+with app.app_context(). See the documentation for more information.
+2025-12-06 07:41:46,826 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:46] "[35m[1mPOST /api/receive_stock HTTP/1.1[0m" 500 -
+2025-12-06 07:41:49,652 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:49] "[33mGET /api/receive_stock HTTP/1.1[0m" 404 -
+2025-12-06 07:41:49,730 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:49] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-12-06 07:41:50,753 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:41:55,760 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:41:59,788 - INFO - 127.0.0.1 - - [06/Dec/2025 07:41:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:42:04,789 - INFO - 127.0.0.1 - - [06/Dec/2025 07:42:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:42:09,790 - INFO - 127.0.0.1 - - [06/Dec/2025 07:42:09] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:42:14,801 - INFO - 127.0.0.1 - - [06/Dec/2025 07:42:14] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:42:19,786 - INFO - 127.0.0.1 - - [06/Dec/2025 07:42:19] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:42:24,784 - INFO - 127.0.0.1 - - [06/Dec/2025 07:42:24] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:42:30,765 - INFO - 127.0.0.1 - - [06/Dec/2025 07:42:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:42:35,756 - INFO - 127.0.0.1 - - [06/Dec/2025 07:42:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:42:40,753 - INFO - 127.0.0.1 - - [06/Dec/2025 07:42:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:42:45,751 - INFO - 127.0.0.1 - - [06/Dec/2025 07:42:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:42:50,751 - INFO - 127.0.0.1 - - [06/Dec/2025 07:42:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:42:55,758 - INFO - 127.0.0.1 - - [06/Dec/2025 07:42:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:42:59,789 - INFO - 127.0.0.1 - - [06/Dec/2025 07:42:59] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:43:04,788 - INFO - 127.0.0.1 - - [06/Dec/2025 07:43:04] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:43:10,760 - INFO - 127.0.0.1 - - [06/Dec/2025 07:43:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:43:15,752 - INFO - 127.0.0.1 - - [06/Dec/2025 07:43:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:43:20,743 - INFO - 127.0.0.1 - - [06/Dec/2025 07:43:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:43:25,751 - INFO - 127.0.0.1 - - [06/Dec/2025 07:43:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:43:30,745 - INFO - 127.0.0.1 - - [06/Dec/2025 07:43:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:43:35,749 - INFO - 127.0.0.1 - - [06/Dec/2025 07:43:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:43:40,764 - INFO - 127.0.0.1 - - [06/Dec/2025 07:43:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:43:45,760 - INFO - 127.0.0.1 - - [06/Dec/2025 07:43:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:43:50,751 - INFO - 127.0.0.1 - - [06/Dec/2025 07:43:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:43:55,749 - INFO - 127.0.0.1 - - [06/Dec/2025 07:43:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:44:00,758 - INFO - 127.0.0.1 - - [06/Dec/2025 07:44:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:44:24,140 - INFO - Starting server on port 5001
+2025-12-06 07:44:24,423 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-12-06 07:44:24,423 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-06 07:44:24,759 - INFO - 127.0.0.1 - - [06/Dec/2025 07:44:24] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-06 07:44:24,792 - INFO - 127.0.0.1 - - [06/Dec/2025 07:44:24] "[36mGET /static/index-18b5dcb7.js HTTP/1.1[0m" 304 -
+2025-12-06 07:44:24,813 - INFO - 127.0.0.1 - - [06/Dec/2025 07:44:24] "[36mGET /static/index-693a0160.css HTTP/1.1[0m" 304 -
+2025-12-06 07:44:30,115 - INFO - 127.0.0.1 - - [06/Dec/2025 07:44:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:44:35,131 - INFO - 127.0.0.1 - - [06/Dec/2025 07:44:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:44:39,939 - INFO - 127.0.0.1 - - [06/Dec/2025 07:44:39] "POST /api/login HTTP/1.1" 200 -
+2025-12-06 07:44:40,309 - INFO - 127.0.0.1 - - [06/Dec/2025 07:44:40] "GET /api/dashboard/2 HTTP/1.1" 200 -
+2025-12-06 07:44:42,626 - INFO - 127.0.0.1 - - [06/Dec/2025 07:44:42] "GET /api/drugs HTTP/1.1" 200 -
+2025-12-06 07:44:45,095 - INFO - 127.0.0.1 - - [06/Dec/2025 07:44:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:44:50,102 - INFO - 127.0.0.1 - - [06/Dec/2025 07:44:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:44:55,084 - INFO - 127.0.0.1 - - [06/Dec/2025 07:44:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:45:00,109 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:45:05,117 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:45:10,162 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:45:12,111 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:12] "POST /api/receive_stock HTTP/1.1" 200 -
+2025-12-06 07:45:15,103 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:45:17,368 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:17] "[31m[1mPOST /api/generate_labels HTTP/1.1[0m" 405 -
+2025-12-06 07:45:20,087 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:45:25,154 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:45:28,147 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:28] "[36mGET /static/index-693a0160.css HTTP/1.1[0m" 304 -
+2025-12-06 07:45:28,390 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:28] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-12-06 07:45:30,140 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:45:35,077 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:45:40,079 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:45:43,195 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:43] "[31m[1mPOST /api/generate_labels HTTP/1.1[0m" 405 -
+2025-12-06 07:45:45,082 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:45:50,112 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:45:55,102 - INFO - 127.0.0.1 - - [06/Dec/2025 07:45:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:46:00,146 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:46:04,404 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:04] "GET /api/dashboard/2 HTTP/1.1" 200 -
+2025-12-06 07:46:05,082 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:46:10,081 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:46:15,089 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:46:20,083 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:46:23,623 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:23] "GET /api/locations HTTP/1.1" 200 -
+2025-12-06 07:46:23,680 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:23] "GET /api/stock/all HTTP/1.1" 200 -
+2025-12-06 07:46:23,717 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:23] "GET /api/transfers/2 HTTP/1.1" 200 -
+2025-12-06 07:46:23,764 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:23] "GET /api/locations HTTP/1.1" 200 -
+2025-12-06 07:46:23,802 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:23] "GET /api/stock/2 HTTP/1.1" 200 -
+2025-12-06 07:46:25,081 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:46:30,103 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:46:30,657 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:30] "POST /api/create_transfer HTTP/1.1" 200 -
+2025-12-06 07:46:30,786 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:30] "GET /api/transfers/2 HTTP/1.1" 200 -
+2025-12-06 07:46:35,101 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:46:40,098 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:46:45,097 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:46:48,772 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:48] "GET /api/locations HTTP/1.1" 200 -
+2025-12-06 07:46:48,819 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:48] "GET /api/stock/all HTTP/1.1" 200 -
+2025-12-06 07:46:50,090 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:46:50,801 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:50] "GET /api/stock/2 HTTP/1.1" 200 -
+2025-12-06 07:46:55,098 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:46:55,935 - INFO - 127.0.0.1 - - [06/Dec/2025 07:46:55] "GET /api/stock/1 HTTP/1.1" 200 -
+2025-12-06 07:47:00,095 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:47:05,095 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:47:07,848 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:07] "POST /api/create_transfer HTTP/1.1" 200 -
+2025-12-06 07:47:07,962 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:07] "GET /api/transfers/2 HTTP/1.1" 200 -
+2025-12-06 07:47:10,200 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:47:15,097 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:47:20,100 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:47:21,368 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:21] "GET /api/drugs?t=1764969441286 HTTP/1.1" 200 -
+2025-12-06 07:47:23,418 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:23] "GET /api/locations?t=1764969443383 HTTP/1.1" 200 -
+2025-12-06 07:47:25,090 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:47:30,089 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:47:35,183 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:47:40,096 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:47:45,086 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:47:50,102 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:47:55,099 - INFO - 127.0.0.1 - - [06/Dec/2025 07:47:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:48:00,109 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:48:01,431 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:01] "POST /api/locations HTTP/1.1" 200 -
+2025-12-06 07:48:01,475 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:01] "GET /api/locations?t=1764969481447 HTTP/1.1" 200 -
+2025-12-06 07:48:05,133 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:48:10,112 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:48:10,847 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:10] "DELETE /api/locations/12 HTTP/1.1" 200 -
+2025-12-06 07:48:10,874 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:10] "GET /api/locations?t=1764969490849 HTTP/1.1" 200 -
+2025-12-06 07:48:15,095 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:48:20,107 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:48:25,101 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:48:30,750 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:48:35,819 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:48:40,764 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:48:45,750 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:48:50,755 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:48:55,755 - INFO - 127.0.0.1 - - [06/Dec/2025 07:48:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:49:00,758 - INFO - 127.0.0.1 - - [06/Dec/2025 07:49:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:49:05,760 - INFO - 127.0.0.1 - - [06/Dec/2025 07:49:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:49:10,759 - INFO - 127.0.0.1 - - [06/Dec/2025 07:49:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:49:15,761 - INFO - 127.0.0.1 - - [06/Dec/2025 07:49:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:49:20,758 - INFO - 127.0.0.1 - - [06/Dec/2025 07:49:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:49:25,761 - INFO - 127.0.0.1 - - [06/Dec/2025 07:49:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:49:40,927 - INFO - 127.0.0.1 - - [06/Dec/2025 07:49:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:49:43,815 - INFO - 127.0.0.1 - - [06/Dec/2025 07:49:43] "GET /api/users?t=1764969583729 HTTP/1.1" 200 -
+2025-12-06 07:49:43,842 - INFO - 127.0.0.1 - - [06/Dec/2025 07:49:43] "GET /api/locations?t=1764969583729 HTTP/1.1" 200 -
+2025-12-06 07:49:45,094 - INFO - 127.0.0.1 - - [06/Dec/2025 07:49:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:49:50,080 - INFO - 127.0.0.1 - - [06/Dec/2025 07:49:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:49:55,102 - INFO - 127.0.0.1 - - [06/Dec/2025 07:49:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:50:00,753 - INFO - 127.0.0.1 - - [06/Dec/2025 07:50:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:50:05,765 - INFO - 127.0.0.1 - - [06/Dec/2025 07:50:05] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:50:10,762 - INFO - 127.0.0.1 - - [06/Dec/2025 07:50:10] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:50:15,756 - INFO - 127.0.0.1 - - [06/Dec/2025 07:50:15] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:50:20,760 - INFO - 127.0.0.1 - - [06/Dec/2025 07:50:20] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:50:25,755 - INFO - 127.0.0.1 - - [06/Dec/2025 07:50:25] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:50:30,752 - INFO - 127.0.0.1 - - [06/Dec/2025 07:50:30] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:50:35,751 - INFO - 127.0.0.1 - - [06/Dec/2025 07:50:35] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:50:40,762 - INFO - 127.0.0.1 - - [06/Dec/2025 07:50:40] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:50:45,753 - INFO - 127.0.0.1 - - [06/Dec/2025 07:50:45] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:50:50,751 - INFO - 127.0.0.1 - - [06/Dec/2025 07:50:50] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:50:55,751 - INFO - 127.0.0.1 - - [06/Dec/2025 07:50:55] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:51:00,751 - INFO - 127.0.0.1 - - [06/Dec/2025 07:51:00] "POST /api/heartbeat HTTP/1.1" 200 -
+2025-12-06 07:51:05,751 - INFO - 127.0.0.1 - - [06/Dec/2025 07:51:05] "POST /api/heartbeat HTTP/1.1" 200 -

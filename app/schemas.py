@@ -60,7 +60,7 @@ class UseStockRequest(BaseModel):
 class CreateTransferRequest(BaseModel):
     from_location_id: int
     to_location_id: int
-    vial_ids: List[int]
+    vial_ids: List[dict] # {id: int, version: int}
     created_by: int
 
 class TransferActionRequest(BaseModel):

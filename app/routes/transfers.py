@@ -39,24 +39,37 @@ def create_transfer_logic(from_location_id, to_location_id, vial_ids, created_by
         
         transfer_id = cursor.lastrowid
         
-        # Add vials to transfer
-        for vial_id in vial_ids:
+        # Add vials to transfer with Optimistic Locking
+        for item in vial_ids: # Expecting list of {id, version} or just ids if we want to break it... 
+            # The prompt says "Accept version... in POST body".
+            # We need to handle both new format and potentially verify old format didn't slip through (though we are refactoring).
+            
+            # Assuming vial_ids is now a list of dicts: {'id': 1, 'version': 5}
+            vial_id = item['id']
+            expected_version = item['version']
+
             cursor.execute("""
                 INSERT INTO transfer_items (transfer_id, vial_id)
                 VALUES (?, ?)
             """, (transfer_id, vial_id))
             
-            # Update vial status
+            # Update vial status with Version Check
             if status == 'COMPLETED':
                 cursor.execute("""
                     UPDATE vials SET status = 'AVAILABLE', location_id = ?, version = version + 1
-                    WHERE id = ?
-                """, (to_location_id, vial_id))
+                    WHERE id = ? AND version = ?
+                """, (to_location_id, vial_id, expected_version))
             elif status == 'IN_TRANSIT':
                 cursor.execute("""
                     UPDATE vials SET status = 'IN_TRANSIT', version = version + 1
-                    WHERE id = ?
-                """, (vial_id,))
+                    WHERE id = ? AND version = ?
+                """, (vial_id, expected_version))
+            
+            if cursor.rowcount == 0:
+                # Rollback handled by context manager/flask implicitly? 
+                # Actually get_db context manager doesn't auto-rollback on return, but we shouldn't commit.
+                conn.rollback() 
+                return {"error": f"Data has changed for vial ID {vial_id}. Please refresh."}, 409
         
         conn.commit()
         

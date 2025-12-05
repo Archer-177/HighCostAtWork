@@ -50,4 +50,4 @@ def export_pdf():
     else:
         return jsonify({"error": "Failed to generate PDF"}), 500
     
-    return send_from_directory(STATIC_FOLDER, filename, as_attachment=True)
+    # Unreachable code removed

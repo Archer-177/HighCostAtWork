@@ -126,14 +126,16 @@ def send_low_stock_notification(stock_info):
     
     send_email(receiver_email, f"LOW STOCK ALERT: {stock_info['drug_name']}", text)
 
+from .constants import HEARTBEAT_TIMEOUT
+
 # 12. HEARTBEAT & MONITORING
 last_heartbeat = time.time()
 
 def monitor():
     while True:
         time.sleep(5)
-        # Increase timeout to 60 minutes (3600 seconds)
-        if time.time() - last_heartbeat > 3600:
+        # Increase timeout to 17 minutes (1020 seconds) - Sync with Frontend 15m + buffer
+        if time.time() - last_heartbeat > HEARTBEAT_TIMEOUT:
             logging.warning("Heartbeat timeout - shutting down")
             os._exit(0)
 
