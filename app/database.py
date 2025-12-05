@@ -15,6 +15,13 @@ def get_db():
 def init_db():
     with get_db() as conn:
         cursor = conn.cursor()
+
+        # Schema versioning table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS _schema_version (
+                version INTEGER PRIMARY KEY
+            )
+        ''')
         
         # Users table
         cursor.execute('''
@@ -30,6 +37,10 @@ def init_db():
                 is_active BOOLEAN DEFAULT 1,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 version INTEGER DEFAULT 1,
+                must_change_password BOOLEAN DEFAULT 0,
+                reset_token TEXT,
+                reset_token_expiry TIMESTAMP,
+                mobile_number TEXT,
                 FOREIGN KEY (location_id) REFERENCES locations(id)
             )
         ''')
@@ -88,6 +99,8 @@ def init_db():
                 discard_reason TEXT,
                 patient_mrn TEXT,
                 clinical_notes TEXT,
+                goods_receipt_number TEXT,
+                disposal_register_number TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 used_at TIMESTAMP,
                 used_by INTEGER,
@@ -97,65 +110,6 @@ def init_db():
                 FOREIGN KEY (used_by) REFERENCES users(id)
             )
         ''')
-        
-        # Add columns to existing vials table if they don't exist
-        try:
-            cursor.execute("ALTER TABLE vials ADD COLUMN patient_mrn TEXT")
-        except sqlite3.OperationalError:
-            pass  # Column already exists
-        
-        try:
-            cursor.execute("ALTER TABLE vials ADD COLUMN clinical_notes TEXT")
-        except sqlite3.OperationalError:
-            pass  # Column already exists
-
-        # Add completed_by column to transfers table if it doesn't exist
-        try:
-            cursor.execute("ALTER TABLE transfers ADD COLUMN completed_by INTEGER REFERENCES users(id)")
-        except sqlite3.OperationalError:
-            pass
-
-        # Add is_supervisor column to users table if it doesn't exist
-        try:
-            cursor.execute("ALTER TABLE users ADD COLUMN is_supervisor BOOLEAN DEFAULT 0")
-        except sqlite3.OperationalError:
-            pass  # Column already exists
-
-        # Add must_change_password column to users table if it doesn't exist
-        try:
-            cursor.execute("ALTER TABLE users ADD COLUMN must_change_password BOOLEAN DEFAULT 0")
-        except sqlite3.OperationalError:
-            pass  # Column already exists
-
-        # Add reset_token and reset_token_expiry columns
-        try:
-            cursor.execute("ALTER TABLE users ADD COLUMN reset_token TEXT")
-        except sqlite3.OperationalError:
-            pass
-            
-        try:
-            cursor.execute("ALTER TABLE users ADD COLUMN reset_token_expiry TIMESTAMP")
-        except sqlite3.OperationalError:
-            pass
-
-        # Add mobile_number column
-        try:
-            cursor.execute("ALTER TABLE users ADD COLUMN mobile_number TEXT")
-        except sqlite3.OperationalError:
-            pass
-
-        # Add goods_receipt_number to vials
-        try:
-            cursor.execute("ALTER TABLE vials ADD COLUMN goods_receipt_number TEXT")
-        except sqlite3.OperationalError:
-            pass
-
-        # Add disposal_register_number to vials
-        try:
-            cursor.execute("ALTER TABLE vials ADD COLUMN disposal_register_number TEXT")
-        except sqlite3.OperationalError:
-            pass
-
         
         # Stock transfers
         cursor.execute('''
@@ -167,6 +121,7 @@ def init_db():
                     CHECK(status IN ('PENDING', 'IN_TRANSIT', 'COMPLETED', 'CANCELLED')),
                 created_by INTEGER NOT NULL,
                 approved_by INTEGER,
+                completed_by INTEGER,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 approved_at TIMESTAMP,
                 completed_at TIMESTAMP,
@@ -207,10 +162,59 @@ def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 printer_ip TEXT,
                 printer_port TEXT,
+                label_width INTEGER,
+                label_height INTEGER,
+                margin_top INTEGER,
+                margin_right INTEGER,
+                location_id INTEGER,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
-        
+
+        # Get current version
+        cursor.execute("SELECT version FROM _schema_version")
+        current_version = cursor.fetchone()
+        if current_version is None:
+            cursor.execute("INSERT INTO _schema_version (version) VALUES (1)")
+            current_version = (1,)
+            conn.commit()
+
+        # Migrations
+        if current_version[0] < 2:
+            try: cursor.execute("ALTER TABLE vials ADD COLUMN patient_mrn TEXT")
+            except: pass
+            try: cursor.execute("ALTER TABLE vials ADD COLUMN clinical_notes TEXT")
+            except: pass
+            try: cursor.execute("ALTER TABLE transfers ADD COLUMN completed_by INTEGER REFERENCES users(id)")
+            except: pass
+            try: cursor.execute("ALTER TABLE users ADD COLUMN is_supervisor BOOLEAN DEFAULT 0")
+            except: pass
+            try: cursor.execute("ALTER TABLE users ADD COLUMN must_change_password BOOLEAN DEFAULT 0")
+            except: pass
+            try: cursor.execute("ALTER TABLE users ADD COLUMN reset_token TEXT")
+            except: pass
+            try: cursor.execute("ALTER TABLE users ADD COLUMN reset_token_expiry TIMESTAMP")
+            except: pass
+            try: cursor.execute("ALTER TABLE users ADD COLUMN mobile_number TEXT")
+            except: pass
+            try: cursor.execute("ALTER TABLE vials ADD COLUMN goods_receipt_number TEXT")
+            except: pass
+            try: cursor.execute("ALTER TABLE vials ADD COLUMN disposal_register_number TEXT")
+            except: pass
+            try: cursor.execute("ALTER TABLE settings ADD COLUMN label_width INTEGER")
+            except: pass
+            try: cursor.execute("ALTER TABLE settings ADD COLUMN label_height INTEGER")
+            except: pass
+            try: cursor.execute("ALTER TABLE settings ADD COLUMN margin_top INTEGER")
+            except: pass
+            try: cursor.execute("ALTER TABLE settings ADD COLUMN margin_right INTEGER")
+            except: pass
+            try: cursor.execute("ALTER TABLE settings ADD COLUMN location_id INTEGER")
+            except: pass
+
+            cursor.execute("UPDATE _schema_version SET version = 2")
+            conn.commit()
+
         # Insert initial data if empty
         cursor.execute("SELECT COUNT(*) FROM locations")
         if cursor.fetchone()[0] == 0:
@@ -364,6 +368,5 @@ def init_db():
                             VALUES (?, ?, ?, ?, ?, 'AVAILABLE')
                         """, (asset_id, antivenom_id, batch_num, expiry_date, loc['id']))
                         vial_idx += 1
-
         
         conn.commit()

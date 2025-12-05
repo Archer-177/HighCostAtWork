@@ -4,3 +4,4 @@ werkzeug
 pillow
 pyinstaller-hooks-contrib
 reportlab
+pydantic

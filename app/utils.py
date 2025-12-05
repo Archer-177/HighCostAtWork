@@ -132,8 +132,8 @@ last_heartbeat = time.time()
 def monitor():
     while True:
         time.sleep(5)
-        # Increase timeout to 5 minutes (300 seconds) to prevent premature disconnects
-        if time.time() - last_heartbeat > 300:
+        # Increase timeout to 60 minutes (3600 seconds)
+        if time.time() - last_heartbeat > 3600:
             logging.warning("Heartbeat timeout - shutting down")
             os._exit(0)
 

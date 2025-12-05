@@ -15,9 +15,10 @@ def create_app():
     perform_backup()
     
     # Register Blueprints
-    from .routes import auth, stock, reports, settings, core
+    from .routes import auth, inventory, transfers, reports, settings, core
     app.register_blueprint(auth.bp)
-    app.register_blueprint(stock.bp)
+    app.register_blueprint(inventory.bp)
+    app.register_blueprint(transfers.bp)
     app.register_blueprint(reports.bp)
     app.register_blueprint(settings.bp)
     app.register_blueprint(core.bp)

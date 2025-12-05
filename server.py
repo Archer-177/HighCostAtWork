@@ -25,13 +25,5 @@ if __name__ == '__main__':
     # Open browser
     webbrowser.open(f"http://127.0.0.1:{port}")
 
-    # Close splash screen if it exists (PyInstaller)
-    try:
-        import pyi_splash
-        pyi_splash.update_text('Starting server...')
-        pyi_splash.close()
-    except ImportError:
-        pass
-    
     # Run Flask app
     app.run(host='127.0.0.1', port=port, debug=False)

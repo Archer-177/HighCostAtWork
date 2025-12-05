@@ -1,116 +1,123 @@
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus, Search, Filter, Save, X, ChevronDown, ChevronRight, Building2, MapPin, Heart, Edit2, Shield, User, Trash2,
   Pill, Users, Check, AlertCircle, DollarSign, Thermometer, Hash, Printer
-} from 'lucide-react'
-import { useAuth } from '../contexts/AuthContext'
-import { useNotification } from '../contexts/NotificationContext'
+} from 'lucide-react';
+import useAppStore from '../stores/appStore';
+import { useNotification } from '../contexts/NotificationContext';
+import DrugsCatalogue from './settings/DrugsCatalogue';
+import LocationsManagement from './settings/LocationsManagement';
+import UsersManagement from './settings/UsersManagement';
+import PrinterSettings from './settings/PrinterSettings';
+import SecuritySettings from './settings/SecuritySettings';
+import ConfirmationModal from './settings/ConfirmationModal';
+import Modal from './settings/Modal';
 
 export default function Settings() {
-  const { user } = useAuth()
-  const { success, error: showError } = useNotification()
+  const user = useAppStore((state) => state.user);
+  const { success, error: showError } = useNotification();
 
-  const [activeTab, setActiveTab] = useState('drugs')
-  const [drugs, setDrugs] = useState([])
-  const [locations, setLocations] = useState([])
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [showModal, setShowModal] = useState(false)
-  const [modalType, setModalType] = useState('')
-  const [editItem, setEditItem] = useState(null)
-  const [deleteModal, setDeleteModal] = useState({ show: false, type: '', item: null })
+  const [activeTab, setActiveTab] = useState('drugs');
+  const [drugs, setDrugs] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState('');
+  const [editItem, setEditItem] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({ show: false, type: '', item: null });
 
   useEffect(() => {
-    fetchData()
-  }, [activeTab])
+    fetchData();
+  }, [activeTab]);
 
   const fetchData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       // Add timestamp to prevent caching
-      const timestamp = new Date().getTime()
+      const timestamp = new Date().getTime();
 
       if (activeTab === 'users') {
         const [usersRes, locationsRes] = await Promise.all([
           fetch(`/api/users?t=${timestamp}`),
           fetch(`/api/locations?t=${timestamp}`)
-        ])
+        ]);
 
         if (usersRes.ok && locationsRes.ok) {
-          setUsers(await usersRes.json())
-          setLocations(await locationsRes.json())
+          setUsers(await usersRes.json());
+          setLocations(await locationsRes.json());
         }
       } else {
-        let endpoint = ''
+        let endpoint = '';
         switch (activeTab) {
           case 'drugs':
-            endpoint = '/api/drugs'
-            break
+            endpoint = '/api/drugs';
+            break;
           case 'locations':
-            endpoint = '/api/locations'
-            break
+            endpoint = '/api/locations';
+            break;
         }
 
         if (endpoint) {
-          const response = await fetch(`${endpoint}?t=${timestamp}`)
-          const data = await response.json()
+          const response = await fetch(`${endpoint}?t=${timestamp}`);
+          const data = await response.json();
 
           if (response.ok) {
-            if (activeTab === 'drugs') setDrugs(data)
-            if (activeTab === 'locations') setLocations(data)
+            if (activeTab === 'drugs') setDrugs(data);
+            if (activeTab === 'locations') setLocations(data);
           }
         }
       }
     } catch (err) {
-      showError('Failed to load data')
-      console.error(err)
+      showError('Failed to load data');
+      console.error(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleOpenModal = (type, item = null) => {
-    setModalType(type)
-    setEditItem(item)
-    setShowModal(true)
-  }
+    setModalType(type);
+    setEditItem(item);
+    setShowModal(true);
+  };
 
   const handleCloseModal = () => {
-    setShowModal(false)
-    setEditItem(null)
-    setModalType('')
-  }
+    setShowModal(false);
+    setEditItem(null);
+    setModalType('');
+  };
 
   const handleDeleteRequest = (type, item) => {
-    setDeleteModal({ show: true, type, item })
-  }
+    setDeleteModal({ show: true, type, item });
+  };
 
   const handleConfirmDelete = async () => {
-    const { type, item } = deleteModal
-    if (!item) return
+    const { type, item } = deleteModal;
+    if (!item) return;
 
     try {
       const endpoint = type === 'drug' ? `/api/drugs/${item.id}`
         : type === 'location' ? `/api/locations/${item.id}`
-          : `/api/users/${item.id}`
+          : `/api/users/${item.id}`;
 
-      const response = await fetch(endpoint, { method: 'DELETE' })
+      const response = await fetch(endpoint, { method: 'DELETE' });
 
       if (response.ok) {
-        success(`${type.charAt(0).toUpperCase() + type.slice(1)} Deleted`, 'Item has been removed successfully')
-        setDeleteModal({ show: false, type: '', item: null })
-        fetchData()
+        success(`${type.charAt(0).toUpperCase() + type.slice(1)} Deleted`, 'Item has been removed successfully');
+        setDeleteModal({ show: false, type: '', item: null });
+        fetchData();
       } else {
-        const data = await response.json()
-        showError('Delete Failed', data.error || 'Could not delete item')
-        setDeleteModal({ show: false, type: '', item: null }) // Close modal on error too? Or keep open? Better close and show error.
+        const data = await response.json();
+        showError('Delete Failed', data.error || 'Could not delete item');
+        setDeleteModal({ show: false, type: '', item: null }); // Close modal on error too? Or keep open? Better close and show error.
       }
     } catch (err) {
-      showError('Delete Failed', 'An error occurred while deleting')
-      setDeleteModal({ show: false, type: '', item: null })
+      showError('Delete Failed', 'An error occurred while deleting');
+      setDeleteModal({ show: false, type: '', item: null });
     }
-  }
+  };
 
   const tabs = [
     { id: 'drugs', label: 'Medicine Catalogue', icon: Pill },
@@ -118,7 +125,7 @@ export default function Settings() {
     { id: 'users', label: 'User Management', icon: Users },
     { id: 'printer', label: 'Printer', icon: Printer },
     { id: 'security', label: 'Security', icon: Shield }
-  ]
+  ];
 
   return (
     <div className="min-h-screen p-6 bg-sand-50 dark:bg-gray-900 text-slate-900 dark:text-white">
@@ -139,7 +146,7 @@ export default function Settings() {
       {/* Tabs */}
       <div className="flex gap-2 mb-6">
         {tabs.map(tab => {
-          const Icon = tab.icon
+          const Icon = tab.icon;
           return (
             <button
               key={tab.id}
@@ -152,7 +159,7 @@ export default function Settings() {
               <Icon className="w-4 h-4" />
               {tab.label}
             </button>
-          )
+          );
         })}
       </div>
 
@@ -249,8 +256,8 @@ export default function Settings() {
           currentUser={user}
           onClose={handleCloseModal}
           onSuccess={() => {
-            handleCloseModal()
-            fetchData()
+            handleCloseModal();
+            fetchData();
           }}
         />
       )}
@@ -266,923 +273,5 @@ export default function Settings() {
         />
       )}
     </div>
-  )
-}
-
-// Drugs Catalogue Component
-function DrugsCatalogue({ drugs, onAdd, onEdit, onDelete, currentUser }) {
-  const { success, error: showError } = useNotification()
-
-  // Only allow editing/adding drugs if the user is a pharmacist
-  const canManageDrugs = currentUser?.role === 'PHARMACIST';
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-      <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-        <h2 className="text-xl font-bold dark:text-white">Medicine Catalogue</h2>
-        {canManageDrugs && (
-          <button
-            onClick={onAdd}
-            className="px-4 py-2 bg-maroon-600 hover:bg-maroon-700 text-white 
-                   font-medium rounded-lg transition-colors flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Add Medicine
-          </button>
-        )}
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700">
-              <th className="text-left py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Name</th>
-              <th className="text-left py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Category</th>
-              <th className="text-left py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Storage</th>
-              <th className="text-right py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Unit Price</th>
-              <th className="text-right py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {drugs.map(drug => (
-              <tr key={drug.id} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                <td className="py-3 px-6 font-medium dark:text-white">{drug.name}</td>
-                <td className="py-3 px-6 dark:text-gray-300">{drug.category}</td>
-                <td className="py-3 px-6">
-                  <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${drug.storage_temp?.includes('2-8')
-                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                    : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                    }`}>
-                    <Thermometer className="w-3 h-3" />
-                    {drug.storage_temp}
-                  </span>
-                </td>
-                <td className="text-right py-3 px-6 font-mono dark:text-gray-300">
-                  ${drug.unit_price.toFixed(2)}
-                </td>
-                <td className="text-right py-3 px-6">
-                  {canManageDrugs ? (
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => onEdit(drug)}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                      >
-                        <Edit2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                      </button>
-                      <button
-                        onClick={() => onDelete(drug)}
-                        className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
-                      </button>
-                    </div>
-                  ) : (
-                    <span className="text-xs text-gray-400 italic py-2">Read Only</span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  )
-}
-
-// Locations Management Component
-function LocationsManagement({ locations, onAdd, onEdit, onDelete, currentUser }) {
-  const { success, error: showError } = useNotification()
-
-  const locationIcon = {
-    'HUB': Building2,
-    'WARD': Heart,
-    'REMOTE': MapPin
-  }
-
-  // Only allow managing locations if the user is a pharmacist OR a supervisor
-  const canManageLocations = currentUser?.role === 'PHARMACIST' || currentUser?.is_supervisor;
-
-  const handleSetMinStock = async (locationId, drugId, minStock) => {
-    try {
-      const response = await fetch('/api/stock_levels', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ location_id: locationId, drug_id: drugId, min_stock: minStock })
-      })
-
-      if (response.ok) {
-        success('Min Stock Updated', 'Minimum stock level has been set')
-      }
-    } catch (err) {
-      showError('Failed to update stock level')
-    }
-  }
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-      <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-        <h2 className="text-xl font-bold dark:text-white">Locations</h2>
-        {canManageLocations && (
-          <button
-            onClick={onAdd}
-            className="px-4 py-2 bg-maroon-600 hover:bg-maroon-700 text-white 
-                   font-medium rounded-lg transition-colors flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Add Location
-          </button>
-        )}
-      </div>
-
-      <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {locations.map(location => {
-          const Icon = locationIcon[location.type]
-          // 1. No one can edit HUBs (except maybe the Hub supervisor?) -> Let's allow Hub supervisor to edit their hub.
-          // 2. Supervisors can only edit their own hub hierarchy
-          const isHub = location.type === 'HUB'
-
-          // Logic:
-          // - Must have permission (Pharmacist or Supervisor)
-          // - If Supervisor: Must be THEIR location OR a child of THEIR location
-          // - If Pharmacist (non-supervisor): Can edit everything (unless restricted by other rules, but let's assume Pharmacists are admins)
-
-          const isMyHierarchy = currentUser?.is_supervisor && (
-            location.id === currentUser.location_id ||
-            location.parent_hub_id === currentUser.location_id
-          );
-
-          const canEditLocation = canManageLocations && (
-            !currentUser?.is_supervisor || isMyHierarchy
-          );
-
-          return (
-            <motion.div
-              key={location.id}
-              whileHover={{ scale: 1.02 }}
-              className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-md transition-all bg-white dark:bg-gray-800"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${location.type === 'HUB' ? 'bg-maroon-100 dark:bg-maroon-900/40' :
-                    location.type === 'WARD' ? 'bg-ochre-100 dark:bg-amber-900/40' : 'bg-blue-100 dark:bg-blue-900/40'
-                    }`}>
-                    <Icon className={`w-5 h-5 ${location.type === 'HUB' ? 'text-maroon-600 dark:text-maroon-400' :
-                      location.type === 'WARD' ? 'text-ochre-600 dark:text-amber-400' : 'text-blue-600 dark:text-blue-400'
-                      }`} />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold dark:text-white">{location.name}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{location.type}</p>
-                  </div>
-                </div>
-
-                {canEditLocation ? (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => onEdit(location)}
-                      className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                      title="Edit Location"
-                    >
-                      <Edit2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                    </button>
-                    <button
-                      onClick={() => onDelete(location)}
-                      className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                      title="Delete Location"
-                    >
-                      <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
-                    </button>
-                  </div>
-                ) : (
-                  <span className="text-xs text-gray-400 italic py-2">Read Only</span>
-                )}
-              </div>
-
-              {location.parent_hub_id && (
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Parent Hub: {locations.find(l => l.id === location.parent_hub_id)?.name}
-                </p>
-              )}
-            </motion.div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-// Users Management Component
-function UsersManagement({ users, onAdd, onEdit, onDelete, currentUser }) {
-  const roleColors = {
-    'PHARMACIST': 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300',
-    'PHARMACY_TECH': 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
-    'NURSE': 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-  }
-
-  // Only allow managing users if the current user is a pharmacist OR a supervisor
-  const canManageUsers = currentUser?.role === 'PHARMACIST' || currentUser?.is_supervisor;
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-      <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-        <h2 className="text-xl font-bold dark:text-white">Users</h2>
-        {canManageUsers && (
-          <button
-            onClick={onAdd}
-            className="px-4 py-2 bg-maroon-600 hover:bg-maroon-700 text-white 
-                   font-medium rounded-lg transition-colors flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Add User
-          </button>
-        )}
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700">
-              <th className="text-left py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Username</th>
-              <th className="text-left py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Role</th>
-              <th className="text-left py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Location</th>
-              <th className="text-left py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Email</th>
-              <th className="text-center py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Can Delegate</th>
-              <th className="text-center py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Supervisor</th>
-              <th className="text-right py-3 px-6 font-semibold text-gray-700 dark:text-gray-300">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map(user => {
-              // A supervisor can only edit/delete users at their own location or child locations
-              const isMyHierarchy = currentUser?.is_supervisor && (
-                user.location_id === currentUser.location_id ||
-                user.parent_hub_id === currentUser.location_id
-              );
-
-              const canEdit = canManageUsers && (
-                !currentUser?.is_supervisor || isMyHierarchy
-              );
-
-              return (
-                <tr key={user.id} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                  <td className="py-3 px-6 font-medium dark:text-white">{user.username}</td>
-                  <td className="py-3 px-6">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleColors[user.role]}`}>
-                      {user.role.replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td className="py-3 px-6 dark:text-gray-300">{user.location_name}</td>
-                  <td className="py-3 px-6">
-                    <div className="flex flex-col">
-                      <span className="dark:text-gray-300">{user.email || '-'}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{user.mobile_number || ''}</span>
-                    </div>
-                  </td>
-                  <td className="text-center py-3 px-6">
-                    {user.can_delegate ? (
-                      <Check className="w-5 h-5 text-green-600 dark:text-green-400 mx-auto" />
-                    ) : (
-                      <X className="w-5 h-5 text-gray-300 dark:text-gray-600 mx-auto" />
-                    )}
-                  </td>
-                  <td className="text-center py-3 px-6">
-                    {user.is_supervisor ? (
-                      <Check className="w-5 h-5 text-green-600 dark:text-green-400 mx-auto" />
-                    ) : (
-                      <X className="w-5 h-5 text-gray-300 dark:text-gray-600 mx-auto" />
-                    )}
-                  </td>
-                  <td className="text-right py-3 px-6">
-                    {canEdit ? (
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => onEdit(user)}
-                          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                          title="Edit User"
-                        >
-                          <Edit2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                        </button>
-                        <button
-                          onClick={() => onDelete(user)}
-                          className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                          title="Delete User"
-                        >
-                          <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
-                        </button>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-gray-400 italic py-2">Read Only</span>
-                    )}
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  )
-}
-
-// Printer Settings Component
-function PrinterSettings() {
-  const { user } = useAuth()
-  const { success, error: showError } = useNotification()
-  const [settings, setSettings] = useState({
-    printer_ip: '',
-    printer_port: '9100',
-    label_width: 50,
-    label_height: 25,
-    margin_top: 0,
-    margin_right: 0
-  })
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    if (user?.location_id) {
-      fetchSettings()
-    }
-  }, [user])
-
-  const fetchSettings = async () => {
-    try {
-      const response = await fetch(`/api/settings?location_id=${user.location_id}`)
-      if (response.ok) {
-        const data = await response.json()
-        setSettings({
-          printer_ip: data.printer_ip || '',
-          printer_port: data.printer_port || '9100',
-          label_width: data.label_width || 50,
-          label_height: data.label_height || 25,
-          margin_top: data.margin_top || 0,
-          margin_right: data.margin_right || 0
-        })
-      }
-    } catch (err) {
-      showError('Failed to load printer settings')
-    }
-  }
-
-  const handleSave = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    try {
-      const response = await fetch('/api/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...settings,
-          location_id: user.location_id
-        })
-      })
-
-      if (response.ok) {
-        success('Settings Saved', 'Printer configuration updated successfully')
-      } else {
-        showError('Failed to save settings')
-      }
-    } catch (err) {
-      showError('Connection Error')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-          <Printer className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Zebra Printer Configuration</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Configure network printer for label generation</p>
-        </div>
-      </div>
-
-      <form onSubmit={handleSave} className="max-w-2xl space-y-8">
-        {/* Network Settings */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 border-b dark:border-gray-700 pb-2">Network Connection</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Printer IP Address</label>
-              <input
-                type="text"
-                value={settings.printer_ip}
-                onChange={(e) => setSettings({ ...settings, printer_ip: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                         focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                placeholder="e.g., 192.168.1.100"
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Leave blank to disable printing.
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Port</label>
-              <input
-                type="number"
-                value={settings.printer_port}
-                onChange={(e) => setSettings({ ...settings, printer_port: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                         focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                placeholder="Default: 9100"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Label Settings */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 border-b dark:border-gray-700 pb-2">Label Configuration</h3>
-
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Label Width (mm)</label>
-              <input
-                type="number"
-                value={settings.label_width}
-                onChange={(e) => setSettings({ ...settings, label_width: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                         focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Label Height (mm)</label>
-              <input
-                type="number"
-                value={settings.label_height}
-                onChange={(e) => setSettings({ ...settings, label_height: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                         focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Top Margin (mm)</label>
-              <input
-                type="number"
-                value={settings.margin_top}
-                onChange={(e) => setSettings({ ...settings, margin_top: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                         focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                placeholder="Offset from top"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Right Margin (mm)</label>
-              <input
-                type="number"
-                value={settings.margin_right}
-                onChange={(e) => setSettings({ ...settings, margin_right: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                         focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                placeholder="Offset from right"
-              />
-            </div>
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-6 py-2 bg-maroon-600 hover:bg-maroon-700 text-white 
-                   font-medium rounded-lg transition-colors flex items-center gap-2"
-        >
-          {loading ? 'Saving...' : 'Save Configuration'}
-        </button>
-      </form>
-    </div>
-  )
-}
-
-// Security Settings Component
-function SecuritySettings({ currentUser }) {
-  // Only allow pharmacists to view security settings
-  const canViewSecurity = currentUser?.role === 'PHARMACIST';
-
-  if (!canViewSecurity) {
-    return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 text-center text-gray-600 dark:text-gray-400">
-        <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-4" />
-        <p className="text-lg font-semibold dark:text-white">Access Denied</p>
-        <p>You do not have permission to view security settings.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        <h2 className="text-xl font-bold mb-6 dark:text-white">Security Settings</h2>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <div>
-              <p className="font-medium dark:text-white">Session Timeout</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Automatic logout after inactivity</p>
-            </div>
-            <span className="font-mono font-medium">15 minutes</span>
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <div>
-              <p className="font-medium dark:text-white">Password Requirements</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Minimum 8 characters, mixed case</p>
-            </div>
-            <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-sm font-medium">
-              Enforced
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <div>
-              <p className="font-medium dark:text-white">Audit Logging</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Track all user actions</p>
-            </div>
-            <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-sm font-medium">
-              Enabled
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-6">
-        <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="font-semibold text-amber-900 dark:text-amber-200 mb-2">Security Notice</p>
-            <p className="text-sm text-amber-800 dark:text-amber-300">
-              This application runs on a shared network drive with file-based authentication.
-              For enhanced security, ensure the network drive has appropriate access controls
-              and regular backups are maintained.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Confirmation Modal
-function ConfirmationModal({ isOpen, title, message, onConfirm, onCancel }) {
-  if (!isOpen) return null
-
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
-      >
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
-              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h3>
-          </div>
-
-          <p className="text-gray-600 dark:text-gray-300 mb-8">
-            {message}
-          </p>
-
-          <div className="flex gap-3 justify-end">
-            <button
-              onClick={onCancel}
-              className="px-4 py-2 text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={onConfirm}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  )
-}
-
-// Modal Component
-function Modal({ type, item, locations, currentUser, onClose, onSuccess }) {
-  const { success, error: showError } = useNotification()
-  const [formData, setFormData] = useState({})
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    if (item) {
-      setFormData(item)
-    } else {
-      // Initialize empty form based on type
-      switch (type) {
-        case 'drug':
-          setFormData({ name: '', category: '', storage_temp: '<25°C', unit_price: '' })
-          break
-        case 'location':
-          setFormData({ name: '', type: 'WARD', parent_hub_id: '' })
-          break
-        case 'user':
-          setFormData({ username: '', password: '', role: 'NURSE', location_id: '', email: '', mobile_number: '', can_delegate: false, is_supervisor: false })
-          break
-      }
-    }
-  }, [type, item])
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-
-    try {
-      const endpoint = type === 'drug' ? '/api/drugs' : type === 'location' ? '/api/locations' : '/api/users'
-      const method = item ? 'PUT' : 'POST'
-      const url = item ? `${endpoint}/${item.id}` : endpoint
-
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
-
-      if (response.ok) {
-        success(
-          item ? `${type} Updated` : `${type} Created`,
-          `The ${type} has been ${item ? 'updated' : 'created'} successfully`
-        )
-        onSuccess()
-      } else {
-        const data = await response.json()
-        showError(`Failed to ${item ? 'update' : 'create'} ${type}`, data.error)
-      }
-    } catch (err) {
-      showError('Connection Error', `Failed to ${item ? 'update' : 'create'} ${type}`)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.9 }}
-        animate={{ scale: 1 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className="text-xl font-bold mb-4 dark:text-white">
-          {item ? 'Edit' : 'Add'} {type.charAt(0).toUpperCase() + type.slice(1)}
-        </h3>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {type === 'drug' && (
-            <>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Name</label>
-                <input
-                  type="text"
-                  value={formData.name || ''}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Category</label>
-                <input
-                  type="text"
-                  value={formData.category || ''}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Storage Temperature</label>
-                <select
-                  value={formData.storage_temp || '<25°C'}
-                  onChange={(e) => setFormData({ ...formData, storage_temp: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                >
-                  <option value="<25°C">Shelf (&lt;25°C)</option>
-                  <option value="2-8°C">Fridge (2-8°C)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Unit Price (AUD)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.unit_price || ''}
-                  onChange={(e) => setFormData({ ...formData, unit_price: parseFloat(e.target.value) })}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                  required
-                />
-              </div>
-            </>
-          )}
-
-          {type === 'location' && (
-            <>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Name</label>
-                <input
-                  type="text"
-                  value={formData.name || ''}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white transition-all"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Type</label>
-                <select
-                  value={formData.type || 'WARD'}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                >
-                  <option value="HUB">Hub Pharmacy</option>
-                  <option value="WARD">Ward</option>
-                  <option value="REMOTE">Remote Site</option>
-                </select>
-              </div>
-
-              {formData.type !== 'HUB' && (
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Parent Hub</label>
-                  <select
-                    value={formData.parent_hub_id || ''}
-                    onChange={(e) => setFormData({ ...formData, parent_hub_id: e.target.value })}
-                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                             focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                    required
-                  >
-                    <option value="">Select hub...</option>
-                    {locations
-                      ?.filter(l => l.type === 'HUB')
-                      ?.filter(l => !currentUser?.is_supervisor || l.id === currentUser?.location_id)
-                      ?.map(hub => (
-                        <option key={hub.id} value={hub.id}>{hub.name}</option>
-                      ))}
-                  </select>
-                </div>
-              )}
-            </>
-          )}
-
-          {type === 'user' && (
-            <>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Username</label>
-                <input
-                  type="text"
-                  value={formData.username || ''}
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                  Password {item && <span className="text-gray-400 font-normal">(Leave blank to keep current)</span>}
-                </label>
-                <input
-                  type="password"
-                  value={formData.password || ''}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                  required={!item}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Role</label>
-                <select
-                  value={formData.role || 'NURSE'}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                >
-                  <option value="PHARMACIST">Pharmacist</option>
-                  <option value="PHARMACY_TECH">Pharmacy Technician</option>
-                  <option value="NURSE">Nurse</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Location</label>
-                <select
-                  value={formData.location_id || ''}
-                  onChange={(e) => setFormData({ ...formData, location_id: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                  required
-                >
-                  <option value="">Select location...</option>
-                  {locations
-                    ?.filter(l => !currentUser?.is_supervisor || (l.id === currentUser?.location_id || l.parent_hub_id === currentUser?.location_id))
-                    ?.map(loc => (
-                      <option key={loc.id} value={loc.id}>{loc.name}</option>
-                    ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                <input
-                  type="email"
-                  value={formData.email || ''}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Mobile Number</label>
-                <input
-                  type="tel"
-                  value={formData.mobile_number || ''}
-                  onChange={(e) => setFormData({ ...formData, mobile_number: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg
-                           focus:outline-none focus:border-maroon-500 focus:bg-white dark:focus:bg-gray-600 transition-all dark:text-white"
-                  placeholder="+614..."
-                />
-              </div>
-
-              <div className="flex items-center gap-2 pt-2">
-                <input
-                  type="checkbox"
-                  id="can_delegate"
-                  checked={formData.can_delegate || false}
-                  onChange={(e) => setFormData({ ...formData, can_delegate: e.target.checked })}
-                  className="w-4 h-4 text-maroon-600 rounded border-gray-300 dark:border-gray-600 focus:ring-maroon-500 dark:bg-gray-700"
-                />
-                <label htmlFor="can_delegate" className="text-sm text-gray-700 dark:text-gray-300">
-                  Can delegate tasks (e.g. signing)
-                </label>
-              </div>
-
-              <div className="flex items-center gap-2 pt-2">
-                <input
-                  type="checkbox"
-                  id="is_supervisor"
-                  checked={formData.is_supervisor || false}
-                  onChange={(e) => setFormData({ ...formData, is_supervisor: e.target.checked })}
-                  className="w-4 h-4 text-maroon-600 rounded border-gray-300 dark:border-gray-600 focus:ring-maroon-500 dark:bg-gray-700"
-                />
-                <label htmlFor="is_supervisor" className="text-sm text-gray-700 dark:text-gray-300">
-                  Site Supervisor (Admin access for site)
-                </label>
-              </div>
-            </>
-          )}
-
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300
-                       font-medium rounded-lg transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 py-2 bg-maroon-600 hover:bg-maroon-700 text-white 
-                       font-medium rounded-lg transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Saving...' : (item ? 'Update' : 'Create')}
-            </button>
-          </div>
-        </form>
-      </motion.div>
-    </motion.div>
-  )
+  );
 }

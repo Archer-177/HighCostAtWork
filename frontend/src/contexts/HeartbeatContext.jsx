@@ -1,24 +1,19 @@
 import React, { createContext, useContext, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from './AuthContext'
+import useAppStore from '../stores/appStore';
+
+// ... (other imports)
 
 const HeartbeatContext = createContext()
 
 export function useHeartbeat() {
-  const context = useContext(HeartbeatContext)
-  if (!context) {
-    throw new Error('useHeartbeat must be used within a HeartbeatProvider')
-  }
-  return context
+  return useContext(HeartbeatContext)
 }
 
-const WARN_TIME = 9 * 60 * 1000  // 9 minutes
-const SOFT_LOGOUT = 9.5 * 60 * 1000  // 9.5 minutes
-const HARD_LOGOUT = 10 * 60 * 1000  // 10 minutes
-
 export function HeartbeatProvider({ children }) {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  const { user, logout } = useAppStore();
+  const navigate = useNavigate();
+  // ... (rest of the component)
   const lastActivity = useRef(Date.now())
   const heartbeatInterval = useRef(null)
   const activityInterval = useRef(null)

@@ -6,14 +6,14 @@ import {
   LayoutGrid, List, XCircle
 } from 'lucide-react'
 import { format } from 'date-fns'
-import { useAuth } from '../contexts/AuthContext'
-import { useNotification } from '../contexts/NotificationContext'
-import StockCard from './StockCard'
-import QRScanner from './QRScanner'
+import useAppStore from '../stores/appStore';
+import { useNotification } from '../contexts/NotificationContext';
+import StockCard from './StockCard';
+import QRScanner from './QRScanner';
 
 export default function Dashboard() {
-  const { user } = useAuth()
-  const { success, error: showError } = useNotification()
+  const user = useAppStore((state) => state.user);
+  const { success, error: showError } = useNotification();
   const [dashboardData, setDashboardData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')

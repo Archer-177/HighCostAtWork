@@ -2,12 +2,12 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Lock, Key, CheckCircle, AlertCircle } from 'lucide-react'
-import { useAuth } from '../contexts/AuthContext'
-import { useNotification } from '../contexts/NotificationContext'
+import useAppStore from '../stores/appStore';
+import { useNotification } from '../contexts/NotificationContext';
 
 export default function ChangePassword() {
-    const { user, logout } = useAuth()
-    const { success, error: showError } = useNotification()
+    const { user, logout } = useAppStore();
+    const { success, error: showError } = useNotification();
     const navigate = useNavigate()
 
     const [oldPassword, setOldPassword] = useState('')

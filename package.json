@@ -10,7 +10,9 @@
     "framer-motion": "^10.16.1",
     "date-fns": "^2.30.0",
     "recharts": "^2.7.3",
-    "html5-qrcode": "^2.3.8"
+    "html5-qrcode": "^2.3.8",
+    "zustand": "^4.4.1",
+    "react-qr-code": "^2.0.12"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.4",

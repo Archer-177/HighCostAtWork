@@ -6,15 +6,16 @@ import {
   Building2, Heart, Users, Thermometer
 } from 'lucide-react'
 import { format } from 'date-fns'
-import { useAuth } from '../contexts/AuthContext'
-import { useNotification } from '../contexts/NotificationContext'
-import NetworkMap from './NetworkMap'
-import { useLocation } from 'react-router-dom'
+import useAppStore from '../stores/appStore';
+import { useNotification } from '../contexts/NotificationContext';
+import NetworkMap from './NetworkMap';
+import { useLocation } from 'react-router-dom';
 
 export default function StockTransfer() {
-  const { user, isPharmacist } = useAuth()
-  const { success, error: showError } = useNotification()
-  const location = useLocation()
+  const user = useAppStore((state) => state.user);
+  const isPharmacist = user?.role === 'PHARMACIST';
+  const { success, error: showError } = useNotification();
+  const location = useLocation();
 
   const [activeTab, setActiveTab] = useState('create')
   const [locations, setLocations] = useState([])

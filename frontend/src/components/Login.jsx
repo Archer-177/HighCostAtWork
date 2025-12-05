@@ -1,35 +1,51 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { Lock, User, Heart, Pill, Activity, Shield } from 'lucide-react'
-import { useAuth } from '../contexts/AuthContext'
-import { useNotification } from '../contexts/NotificationContext'
+import useAppStore from '../stores/appStore';
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Heart, Pill, Activity, Shield, User, Lock } from 'lucide-react';
+import { useNotification } from '../contexts/NotificationContext';
 
 export default function Login() {
-  const navigate = useNavigate()
-  const { login, loading } = useAuth()
-  const { error, success } = useNotification()
-  const [formData, setFormData] = useState({ username: '', password: '' })
+  const navigate = useNavigate();
+  const login = useAppStore((state) => state.login);
+  const { error, success } = useNotification();
+  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    setLoading(true);
 
-    const result = await login(formData.username, formData.password)
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    if (result.success) {
-      success('Welcome back!', 'Log in successful')
-      navigate('/')
-    } else {
-      error('Log In Failed', result.error || 'Invalid credentials')
+      const result = await response.json();
+
+      if (result.success) {
+        login(result.user);
+        success('Welcome back!', 'Log in successful');
+        navigate('/');
+      } else {
+        error('Log In Failed', result.error || 'Invalid credentials');
+      }
+    } catch (err) {
+      error('Log In Failed', 'An error occurred while logging in.');
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const floatingIcons = [
     { Icon: Heart, delay: 0, x: '10%', y: '20%' },
     { Icon: Pill, delay: 1, x: '85%', y: '15%' },
     { Icon: Activity, delay: 2, x: '90%', y: '70%' },
     { Icon: Shield, delay: 1.5, x: '5%', y: '75%' },
-  ]
+  ];
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -170,5 +186,5 @@ export default function Login() {
         </motion.p>
       </motion.div>
     </div>
-  )
+  );
 }

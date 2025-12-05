@@ -5,24 +5,27 @@ import random
 import sqlite3
 from ..database import get_db
 from ..utils import send_sms
+from ..schemas import LoginRequest, UserCreateRequest, UserUpdateRequest, ChangePasswordRequest, ForgotPasswordRequest, ResetPasswordRequest
+from pydantic import ValidationError
 
 bp = Blueprint('auth', __name__)
 
 # 4. AUTHENTICATION
 @bp.route('/api/login', methods=['POST'])
 def login():
-    data = request.json
-    username = data.get('username')
-    password = data.get('password')
-    
+    try:
+        data = LoginRequest(**request.json)
+    except ValidationError as e:
+        return jsonify({"error": e.errors()}), 422
+
     with get_db() as conn:
-        print(f"DEBUG: Attempting login for username: {username}")
+        print(f"DEBUG: Attempting login for username: {data.username}")
         user = conn.execute("""
             SELECT u.*, l.name as location_name, l.type as location_type, l.parent_hub_id
             FROM users u 
             JOIN locations l ON u.location_id = l.id 
             WHERE u.username = ?
-        """, (username,)).fetchone()
+        """, (data.username,)).fetchone()
         
         if user:
             print(f"DEBUG: User found: {user['username']}, ID: {user['id']}, Role: {user['role']}")
@@ -30,7 +33,7 @@ def login():
             if not user['is_active']:
                  return jsonify({'success': False, 'error': 'Account is inactive'}), 401
 
-            is_valid = check_password_hash(user['password_hash'], password)
+            is_valid = check_password_hash(user['password_hash'], data.password)
             print(f"DEBUG: Password valid: {is_valid}")
             
             if is_valid:
@@ -69,22 +72,14 @@ def handle_users():
             return jsonify([dict(user) for user in users])
     
     # POST - Create new user
-    data = request.json
-    username = data.get('username')
-    password = data.get('password')
-    role = data.get('role')
-    location_id = data.get('location_id')
-    can_delegate = data.get('can_delegate', 0)
-    is_supervisor = data.get('is_supervisor', 0)
-    email = data.get('email')
-    mobile_number = data.get('mobile_number')
-
-    if not all([username, password, role, location_id]):
-        return jsonify({"error": "Missing required fields"}), 400
+    try:
+        data = UserCreateRequest(**request.json)
+    except ValidationError as e:
+        return jsonify({"error": e.errors()}), 422
 
     with get_db() as conn:
         # Verify location exists
-        loc = conn.execute("SELECT id FROM locations WHERE id = ?", (location_id,)).fetchone()
+        loc = conn.execute("SELECT id FROM locations WHERE id = ?", (data.location_id,)).fetchone()
         if not loc:
              return jsonify({"error": "Invalid location"}), 400
 
@@ -93,7 +88,7 @@ def handle_users():
             conn.execute("""
                 INSERT INTO users (username, password_hash, role, location_id, can_delegate, is_supervisor, email, mobile_number, must_change_password, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
-            """, (username, generate_password_hash(password), role, location_id, can_delegate, is_supervisor, email, mobile_number, datetime.now()))
+            """, (data.username, generate_password_hash(data.password), data.role, data.location_id, data.can_delegate, data.is_supervisor, data.email, data.mobile_number, datetime.now()))
             conn.commit()
             return jsonify({"success": True}), 201
         except sqlite3.IntegrityError:
@@ -109,40 +104,40 @@ def handle_user_detail(user_id):
             return jsonify({"success": True})
 
     # PUT - Update user
-    data = request.json
-    username = data.get('username')
-    role = data.get('role')
-    location_id = data.get('location_id')
-    email = data.get('email')
-    mobile_number = data.get('mobile_number')
-    can_delegate = data.get('can_delegate', 0)
-    is_supervisor = data.get('is_supervisor', 0)
-    password = data.get('password') # Optional
-
-    # Validate location_id
-    if not location_id:
-        return jsonify({"error": "Location is required"}), 400
+    try:
+        data = UserUpdateRequest(**request.json)
+    except ValidationError as e:
+        return jsonify({"error": e.errors()}), 422
 
     with get_db() as conn:
+        # Optimistic Locking Check
+        user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        
+        if data.version is not None and user['version'] != data.version:
+            return jsonify({"error": "Data has changed. Please refresh."}), 409
+
         # Verify location exists
-        loc = conn.execute("SELECT id FROM locations WHERE id = ?", (location_id,)).fetchone()
-        if not loc:
-             return jsonify({"error": "Invalid location"}), 400
+        if data.location_id:
+            loc = conn.execute("SELECT id FROM locations WHERE id = ?", (data.location_id,)).fetchone()
+            if not loc:
+                return jsonify({"error": "Invalid location"}), 400
 
         try:
-            if password:
+            if data.password:
                 # If password is reset by supervisor, force change on next login
                 conn.execute("""
                     UPDATE users 
                     SET username = ?, role = ?, location_id = ?, email = ?, mobile_number = ?, can_delegate = ?, is_supervisor = ?, password_hash = ?, must_change_password = 1, version = version + 1
                     WHERE id = ?
-                """, (username, role, location_id, email, mobile_number, can_delegate, is_supervisor, generate_password_hash(password), user_id))
+                """, (data.username, data.role, data.location_id, data.email, data.mobile_number, data.can_delegate, data.is_supervisor, generate_password_hash(data.password), user_id))
             else:
                 conn.execute("""
                     UPDATE users 
                     SET username = ?, role = ?, location_id = ?, email = ?, mobile_number = ?, can_delegate = ?, is_supervisor = ?, version = version + 1
                     WHERE id = ?
-                """, (username, role, location_id, email, mobile_number, can_delegate, is_supervisor, user_id))
+                """, (data.username, data.role, data.location_id, data.email, data.mobile_number, data.can_delegate, data.is_supervisor, user_id))
             
             conn.commit()
             return jsonify({"success": True})
@@ -151,21 +146,18 @@ def handle_user_detail(user_id):
 
 @bp.route('/api/change_password', methods=['POST'])
 def change_password():
-    data = request.json
-    username = data.get('username')
-    old_password = data.get('oldPassword')
-    new_password = data.get('newPassword')
-
-    if not all([username, old_password, new_password]):
-        return jsonify({"error": "Missing required fields"}), 400
+    try:
+        data = ChangePasswordRequest(**request.json)
+    except ValidationError as e:
+        return jsonify({"error": e.errors()}), 422
 
     with get_db() as conn:
-        user = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+        user = conn.execute("SELECT * FROM users WHERE username = ?", (data.username,)).fetchone()
         
         if not user:
             return jsonify({"error": "User not found"}), 404
             
-        if not check_password_hash(user['password_hash'], old_password):
+        if not check_password_hash(user['password_hash'], data.oldPassword):
             return jsonify({"error": "Invalid current password"}), 401
 
         try:
@@ -173,7 +165,7 @@ def change_password():
                 UPDATE users 
                 SET password_hash = ?, must_change_password = 0, version = version + 1
                 WHERE id = ?
-            """, (generate_password_hash(new_password), user['id']))
+            """, (generate_password_hash(data.newPassword), user['id']))
             conn.commit()
             return jsonify({"success": True})
         except Exception as e:
@@ -181,15 +173,14 @@ def change_password():
 
 @bp.route('/api/forgot_password', methods=['POST'])
 def forgot_password():
-    data = request.json
-    username = data.get('username')
-    
-    if not username:
-        return jsonify({"error": "Username is required"}), 400
-        
+    try:
+        data = ForgotPasswordRequest(**request.json)
+    except ValidationError as e:
+        return jsonify({"error": e.errors()}), 422
+
     with get_db() as conn:
-        print(f"DEBUG: Searching for user: {username}")
-        user = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+        print(f"DEBUG: Searching for user: {data.username}")
+        user = conn.execute("SELECT * FROM users WHERE username = ?", (data.username,)).fetchone()
         
         if not user:
             print("DEBUG: User not found in database")
@@ -221,22 +212,19 @@ def forgot_password():
 
 @bp.route('/api/reset_password', methods=['POST'])
 def reset_password():
-    data = request.json
-    username = data.get('username')
-    code = data.get('code')
-    new_password = data.get('newPassword')
-    
-    if not all([username, code, new_password]):
-        return jsonify({"error": "Missing required fields"}), 400
+    try:
+        data = ResetPasswordRequest(**request.json)
+    except ValidationError as e:
+        return jsonify({"error": e.errors()}), 422
         
     with get_db() as conn:
-        user = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+        user = conn.execute("SELECT * FROM users WHERE username = ?", (data.username,)).fetchone()
         
         if not user:
              return jsonify({"error": "Invalid request"}), 400
              
         # Verify code and expiry
-        if user['reset_token'] != code:
+        if user['reset_token'] != data.code:
             return jsonify({"error": "Invalid code"}), 400
             
         if datetime.strptime(user['reset_token_expiry'], '%Y-%m-%d %H:%M:%S') < datetime.now():
@@ -248,7 +236,7 @@ def reset_password():
                 UPDATE users 
                 SET password_hash = ?, reset_token = NULL, reset_token_expiry = NULL, must_change_password = 0, version = version + 1
                 WHERE id = ?
-            """, (generate_password_hash(new_password), user['id']))
+            """, (generate_password_hash(data.newPassword), user['id']))
             conn.commit()
             return jsonify({"success": True})
         except Exception as e:

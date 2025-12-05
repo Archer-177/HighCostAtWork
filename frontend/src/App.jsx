@@ -12,33 +12,34 @@ import StockLevelsSettings from './components/StockLevelsSettings'
 import StockJourney from './components/StockJourney'
 import Navigation from './components/Navigation'
 import { HeartbeatProvider } from './contexts/HeartbeatContext'
-import { AuthProvider, useAuth } from './contexts/AuthContext'
 
-import { NotificationProvider } from './contexts/NotificationContext'
-import { ThemeProvider } from './contexts/ThemeContext'
+import { ThemeProvider } from './contexts/ThemeContext';
+import { NotificationProvider } from './contexts/NotificationContext';
+import ChangePassword from './components/ChangePassword';
+import ForgotPassword from './components/ForgotPassword';
+import useAppStore from './stores/appStore';
 
-import ChangePassword from './components/ChangePassword'
-import ForgotPassword from './components/ForgotPassword'
+// ... (other imports)
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
-  const { user } = useAuth()
+  const user = useAppStore((state) => state.user);
 
   if (!user) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/login" replace />;
   }
 
   // Force password change if flag is set
   if (user.must_change_password) {
-    return <Navigate to="/change-password" replace />
+    return <Navigate to="/change-password" replace />;
   }
 
-  return children
+  return children;
 }
 
 // Main App Layout
 function AppLayout({ children }) {
-  const { user } = useAuth()
+  const user = useAppStore((state) => state.user);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sand-50 via-white to-sand-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
@@ -61,99 +62,97 @@ function AppLayout({ children }) {
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-ochre-200/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
       </div>
     </div>
-  )
+  );
 }
 
 function App() {
   return (
     <Router>
       <ThemeProvider>
-        <AuthProvider>
-          <HeartbeatProvider>
-            <NotificationProvider>
-              <Routes>
-                <Route path="/login" element={
+        <HeartbeatProvider>
+          <NotificationProvider>
+            <Routes>
+              <Route path="/login" element={
+                <AppLayout>
+                  <Login />
+                </AppLayout>
+              } />
+
+              <Route path="/shutdown" element={<Shutdown />} />
+
+              <Route path="/change-password" element={
+                <AppLayout>
+                  <ChangePassword />
+                </AppLayout>
+              } />
+
+              <Route path="/forgot-password" element={
+                <AppLayout>
+                  <ForgotPassword />
+                </AppLayout>
+              } />
+
+              <Route path="/" element={
+                <ProtectedRoute>
                   <AppLayout>
-                    <Login />
+                    <Dashboard />
                   </AppLayout>
-                } />
+                </ProtectedRoute>
+              } />
 
-                <Route path="/shutdown" element={<Shutdown />} />
-
-                <Route path="/change-password" element={
+              <Route path="/receive" element={
+                <ProtectedRoute>
                   <AppLayout>
-                    <ChangePassword />
+                    <StockReceive />
                   </AppLayout>
-                } />
+                </ProtectedRoute>
+              } />
 
-                <Route path="/forgot-password" element={
+              <Route path="/transfer" element={
+                <ProtectedRoute>
                   <AppLayout>
-                    <ForgotPassword />
+                    <StockTransfer />
                   </AppLayout>
-                } />
+                </ProtectedRoute>
+              } />
 
-                <Route path="/" element={
-                  <ProtectedRoute>
-                    <AppLayout>
-                      <Dashboard />
-                    </AppLayout>
-                  </ProtectedRoute>
-                } />
+              <Route path="/reports" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Reports />
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
 
-                <Route path="/receive" element={
-                  <ProtectedRoute>
-                    <AppLayout>
-                      <StockReceive />
-                    </AppLayout>
-                  </ProtectedRoute>
-                } />
+              <Route path="/settings" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Settings />
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
 
-                <Route path="/transfer" element={
-                  <ProtectedRoute>
-                    <AppLayout>
-                      <StockTransfer />
-                    </AppLayout>
-                  </ProtectedRoute>
-                } />
+              <Route path="/stock-levels" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <StockLevelsSettings />
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
 
-                <Route path="/reports" element={
-                  <ProtectedRoute>
-                    <AppLayout>
-                      <Reports />
-                    </AppLayout>
-                  </ProtectedRoute>
-                } />
-
-                <Route path="/settings" element={
-                  <ProtectedRoute>
-                    <AppLayout>
-                      <Settings />
-                    </AppLayout>
-                  </ProtectedRoute>
-                } />
-
-                <Route path="/stock-levels" element={
-                  <ProtectedRoute>
-                    <AppLayout>
-                      <StockLevelsSettings />
-                    </AppLayout>
-                  </ProtectedRoute>
-                } />
-
-                <Route path="/journey" element={
-                  <ProtectedRoute>
-                    <AppLayout>
-                      <StockJourney />
-                    </AppLayout>
-                  </ProtectedRoute>
-                } />
-              </Routes>
-            </NotificationProvider>
-          </HeartbeatProvider>
-        </AuthProvider>
+              <Route path="/journey" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <StockJourney />
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </NotificationProvider>
+        </HeartbeatProvider>
       </ThemeProvider>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -5,13 +5,13 @@ import {
   AlertCircle, CheckCircle, ChevronDown, Pill
 } from 'lucide-react'
 import { format } from 'date-fns'
-import { useAuth } from '../contexts/AuthContext'
-import { useNotification } from '../contexts/NotificationContext'
-import QRCode from 'react-qr-code'
+import useAppStore from '../stores/appStore';
+import { useNotification } from '../contexts/NotificationContext';
+import QRCode from 'react-qr-code';
 
 export default function StockReceive() {
-  const { user } = useAuth()
-  const { success, error: showError } = useNotification()
+  const user = useAppStore((state) => state.user);
+  const { success, error: showError } = useNotification();
 
   const [drugs, setDrugs] = useState([])
   const [selectedDrug, setSelectedDrug] = useState('')

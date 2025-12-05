@@ -10,12 +10,12 @@ import {
   BarChart, Bar, LineChart, Line, PieChart as RePieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts'
-import { useAuth } from '../contexts/AuthContext'
-import { useNotification } from '../contexts/NotificationContext'
+import useAppStore from '../stores/appStore';
+import { useNotification } from '../contexts/NotificationContext';
 
 export default function Reports() {
-  const { user } = useAuth()
-  const { error: showError, success } = useNotification()
+  const user = useAppStore((state) => state.user);
+  const { error: showError, success } = useNotification();
 
   const [dateRange, setDateRange] = useState({
     start: format(subDays(new Date(), 30), 'yyyy-MM-dd'),

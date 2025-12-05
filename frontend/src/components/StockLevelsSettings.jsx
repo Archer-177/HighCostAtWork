@@ -11,12 +11,12 @@ import {
     Loader2,
     XCircle
 } from 'lucide-react'
-import { useAuth } from '../contexts/AuthContext'
-import { useNotification } from '../contexts/NotificationContext'
+import useAppStore from '../stores/appStore';
+import { useNotification } from '../contexts/NotificationContext';
 
 export default function StockLevelsSettings() {
-    const { user } = useAuth()
-    const { success, error: showError } = useNotification()
+    const user = useAppStore((state) => state.user);
+    const { success, error: showError } = useNotification();
 
     // --- STATE ---
     const [loading, setLoading] = useState(true)

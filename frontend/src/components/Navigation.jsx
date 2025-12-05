@@ -5,17 +5,23 @@ import {
   LayoutDashboard, Package, TruckIcon, FileText, Settings,
   LogOut, Heart, ChevronRight, Pill, Building2, MapPin
 } from 'lucide-react'
-import { useAuth } from '../contexts/AuthContext'
+import useAppStore from '../stores/appStore'
 import ThemeToggle from './ThemeToggle'
 
 export default function Navigation() {
   const navigate = useNavigate()
-  const { user, logout, canReceiveStock, canTransferStock, canViewReports, canManageSettings, canViewStockLevels } = useAuth()
+  const { user, logout } = useAppStore()
 
   const handleLogout = () => {
     logout()
     navigate('/login')
   }
+
+  const canReceiveStock = user?.role === 'PHARMACIST' || user?.role === 'PHARMACY_TECH';
+  const canTransferStock = true; // All roles can transfer
+  const canViewReports = user?.role === 'PHARMACIST' || user?.is_supervisor;
+  const canManageSettings = user?.role === 'PHARMACIST' || user?.is_supervisor;
+  const canViewStockLevels = user?.role === 'PHARMACIST' || user?.is_supervisor;
 
   const navItems = [
     {

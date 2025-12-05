@@ -16,7 +16,12 @@ pip install -r requirements.txt --quiet
 echo.
 echo [3/3] Building executable...
 REM Note: This creates a FOLDER named 'dist\FUNLHN_Medicine_Tracker'
-py -m PyInstaller --noconfirm --onedir --windowed --icon="app.ico" --splash "splash.png" --add-data "frontend/build;build" --name "FUNLHN_Medicine_Tracker" --version-file="version_info.txt" server.py
+py -m PyInstaller --noconfirm --onedir --windowed --icon="app.ico" --add-data "frontend/build;app_static" --name "FUNLHN_Medicine_Tracker" --version-file="version_info.txt" server.py
+
+echo.
+echo [3.5/4] Manually copying frontend files...
+mkdir dist\FUNLHN_Medicine_Tracker\_internal\app_static
+xcopy /E /I /Y frontend\build dist\FUNLHN_Medicine_Tracker\_internal\app_static
 
 echo.
 echo [4/4] Signing executable...

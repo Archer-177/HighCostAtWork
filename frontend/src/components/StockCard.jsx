@@ -5,14 +5,14 @@ import {
   CheckCircle, XCircle, AlertTriangle, MoreVertical, QrCode, TruckIcon
 } from 'lucide-react'
 import { format, differenceInDays } from 'date-fns'
-import { useAuth } from '../contexts/AuthContext'
-import { useNotification } from '../contexts/NotificationContext'
-import { useNavigate } from 'react-router-dom'
+import useAppStore from '../stores/appStore';
+import { useNotification } from '../contexts/NotificationContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function StockCard({ item, onRefresh, compact = false, hideActions = false }) {
-  const { user } = useAuth()
-  const { success, error: showError } = useNotification()
-  const navigate = useNavigate()
+  const user = useAppStore((state) => state.user);
+  const { success, error: showError } = useNotification();
+  const navigate = useNavigate();
   const [showActions, setShowActions] = useState(false)
   const [showDiscardModal, setShowDiscardModal] = useState(false)
   const [showClinicalUseModal, setShowClinicalUseModal] = useState(false)
