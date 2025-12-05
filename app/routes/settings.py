@@ -211,6 +211,11 @@ def handle_stock_levels():
     except ValidationError as e:
         return jsonify({"error": e.errors()}), 422
     
+        try:
+            cursor.execute("ALTER TABLE stock_levels ADD COLUMN version INTEGER DEFAULT 1")
+        except Exception:
+            pass
+
     def update_logic():
         with get_db() as conn:
             cursor = conn.cursor()
@@ -228,13 +233,13 @@ def handle_stock_levels():
                 if existing:
                     cursor.execute("""
                         UPDATE stock_levels 
-                        SET min_stock = ?
+                        SET min_stock = ?, version = version + 1
                         WHERE location_id = ? AND drug_id = ?
                     """, (min_stock, location_id, drug_id))
                 else:
                     cursor.execute("""
-                        INSERT INTO stock_levels (location_id, drug_id, min_stock)
-                        VALUES (?, ?, ?)
+                        INSERT INTO stock_levels (location_id, drug_id, min_stock, version)
+                        VALUES (?, ?, ?, 1)
                     """, (location_id, drug_id, min_stock))
             
             conn.commit()

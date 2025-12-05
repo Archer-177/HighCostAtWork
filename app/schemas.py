@@ -47,6 +47,7 @@ class ReceiveStockRequest(BaseModel):
     location_id: int
     user_id: int
     goods_receipt_number: Optional[str] = None
+    stock_level_version: Optional[int] = None # Opt Lock for stock levels
 
 class UseStockRequest(BaseModel):
     vial_id: int

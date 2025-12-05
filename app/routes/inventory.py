@@ -11,10 +11,20 @@ from pydantic import ValidationError
 bp = Blueprint('inventory', __name__)
 
 # 5. STOCK OPERATIONS
-def receive_stock_logic(drug_id, batch_number, expiry_date, quantity, location_id, user_id, goods_receipt_number=None):
+def receive_stock_logic(drug_id, batch_number, expiry_date, quantity, location_id, user_id, goods_receipt_number=None, stock_level_version=None):
     with get_db() as conn:
         cursor = conn.cursor()
-        
+
+        # OPTIMISTIC LOCKING for Stock Levels (Configuration)
+        if stock_level_version is not None:
+            current = cursor.execute(
+                "SELECT version FROM stock_levels WHERE location_id=? AND drug_id=?",
+                (location_id, drug_id)
+            ).fetchone()
+            # If entry exists and version mismatched
+            if current and current['version'] != stock_level_version:
+                 return {"error": "Stock levels changed. Please refresh."}, 409
+
         # Get drug info
         drug = cursor.execute("SELECT * FROM drugs WHERE id = ?", (drug_id,)).fetchone()
         if not drug:
@@ -72,7 +82,8 @@ def receive_stock():
         data.quantity,
         data.location_id,
         data.user_id,
-        data.goods_receipt_number
+        data.goods_receipt_number,
+        data.stock_level_version
     )
     return jsonify(result), status
 
